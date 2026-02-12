@@ -6,85 +6,131 @@
 <title>MA İmtahan Mərkəzi</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Montserrat',sans-serif;}
-body{background:#f2f4f8;color:#222;line-height:1.6;}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Montserrat',sans-serif;
+}
+
+body{
+background:#f8fbff;
+color:#2c3e50;
+line-height:1.6;
+}
+
+/* HEADER */
 header{
-background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-color:#fff;
+background: linear-gradient(135deg, #e3f2fd, #bbdefb, #90caf9);
+color:#1a2a3a;
 padding:80px 20px;
 text-align:center;
 }
+
 header h1{
 font-size:42px;
 margin-bottom:20px;
-color:#00bfff;
-text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+color:#1565c0;
 }
+
 header p{
 font-size:18px;
 margin-bottom:15px;
-color:#d0e8ff;
+color:#37474f;
 }
+
 header p.highlight{
-color:#ffd700;
+color:#c62828;
 font-weight:600;
 }
+
+/* BUTTON */
 .btn{
 display:inline-block;
 padding:12px 28px;
-background:#ffcc00;
-color:#000;
+background:#ef5350;
+color:#fff;
 border-radius:30px;
 text-decoration:none;
 font-weight:600;
 transition:0.3s;
 margin-top:20px;
 }
-.btn:hover{background:#fff;}
-section{padding:60px 20px;text-align:center;}
-.container{max-width:1100px;margin:auto;}
+
+.btn:hover{
+background:#d32f2f;
+}
+
+/* SECTIONS */
+section{
+padding:60px 20px;
+text-align:center;
+background:#ffffff;
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+}
+
 .section-title{
 font-size:28px;
 margin-bottom:40px;
-color:#0f2027;
+color:#1565c0;
 }
+
+/* CARDS */
 .cards{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
 gap:25px;
 }
+
 .card{
-background:#fff;
+background:#ffffff;
 padding:30px;
 border-radius:12px;
-box-shadow:0 8px 20px rgba(0,0,0,0.08);
+box-shadow:0 6px 15px rgba(21,101,192,0.1);
 }
-.card h3{margin-bottom:15px;color:#203a43;}
+
+.card h3{
+margin-bottom:15px;
+color:#1565c0;
+}
+
 .highlight{
-background:#e9f0f7;
+background:#e3f2fd;
 padding:20px;
 border-radius:10px;
 margin-top:20px;
 }
+
+/* FOOTER */
 footer{
-background:#0f2027;
-color:#fff;
+background:#bbdefb;
+color:#1a2a3a;
 text-align:center;
 padding:20px;
 margin-top:40px;
 font-size:14px;
 }
+
+/* WhatsApp */
 .whatsapp{
 position:fixed;
 bottom:20px;
 right:20px;
-background:#25D366;
+background:#ef5350;
 color:#fff;
 padding:15px 18px;
 border-radius:50%;
 font-size:20px;
 text-decoration:none;
-box-shadow:0 5px 15px rgba(0,0,0,0.3);
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+.whatsapp:hover{
+background:#d32f2f;
 }
 </style>
 </head>
@@ -93,10 +139,10 @@ box-shadow:0 5px 15px rgba(0,0,0,0.3);
 <header>
 <h1>MA İMTAHAN MƏRKƏZİ</h1>
 <p class="highlight">1–7-ci siniflər üzrə Hədiyyəli Sınaq İmtahanları</p>
-<p color:#d0e8ff;">MQM.AZ/OTK ilə rəsmi əməkdaşlıq çərçivəsində sınaqlar keçirilir</p>
+<p>MQM.AZ/OTK ilə rəsmi əməkdaşlıq çərçivəsində sınaqlar keçirilir</p>
 <p class="highlight">8,9,10,11-ci siniflər üzrə buraxılış sınaq imtahanı</p>
 <p class="highlight">RFM, Lütfi Zadə və Lisey Gimnazya qəbul sınaq imtahanı</p>
-<!-- Qeydiyyat düyməsi -->
+
 <a href="https://www.examine.space/searchexam.php?id=152&lang=1" class="btn" target="_blank">Nəticəni öyrən</a>
 </header>
 
@@ -143,7 +189,6 @@ Elmlər m/st yaxınlığı, Məmməd Rahim küçəsi 31A<br>
 <h2 class="section-title">Əlaqə</h2>
 <p>Qeydiyyat və ətraflı məlumat üçün:</p>
 <br>
-<!-- Əlaqə düyməsi -->
 <a href="https://www.examine.space/searchexam.php?id=152&lang=1" class="btn" target="_blank">Nəticəni öyrən</a>
 </div>
 </section>
@@ -152,7 +197,6 @@ Elmlər m/st yaxınlığı, Məmməd Rahim küçəsi 31A<br>
 © 2026 MA İmtahan Mərkəzi | Bütün hüquqlar qorunur
 </footer>
 
-<!-- WhatsApp ikonu -->
 <a href="https://www.examine.space/searchexam.php?id=152&lang=1" class="whatsapp" target="_blank">💬</a>
 
 </body>
