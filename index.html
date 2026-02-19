@@ -409,21 +409,6 @@ Qızım 2-ci sinifde oxuyur, hər ay mənə məcbur bilet aldırır)
 <a href="mailto:maimtahanmerkezi@gmail.com" class="whatsapp">
 ✉
 </a>
-<script>
-const faders = document.querySelectorAll('.fade');
-
-window.addEventListener('scroll', () => {
-const triggerBottom = window.innerHeight * 0.85;
-
-faders.forEach(fade => {
-const boxTop = fade.getBoundingClientRect().top;
-
-if(boxTop < triggerBottom){
-fade.classList.add('show');
-}
-});
-});
-</script>
 
 </body>
 </html>
