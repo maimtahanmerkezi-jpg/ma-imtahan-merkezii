@@ -12,6 +12,111 @@ padding:0;
 box-sizing:border-box;
 font-family:'Montserrat',sans-serif;
 }
+body{
+background:#f8fbff;
+color:#2c3e50;
+line-height:1.6;
+}
+
+/* HEADER */
+header{
+background: linear-gradient(135deg, #e3f2fd, #bbdefb, #90caf9);
+color:#1a2a3a;
+padding:80px 20px;
+text-align:center;
+}
+
+header h1{
+font-size:42px;
+margin-bottom:20px;
+color:#1565c0;
+animation: headerGlow 2s infinite alternate;
+}
+
+@keyframes headerGlow{
+0% { text-shadow: 0 0 5px #1565c0; }
+50% { text-shadow: 0 0 15px #1565c0, 0 0 20px #42a5f5; }
+100% { text-shadow: 0 0 5px #1565c0; }
+}
+
+header p{
+font-size:18px;
+margin-bottom:15px;
+color:#37474f;
+}
+
+header p.highlight{
+color:#c62828;
+font-weight:600;
+}
+
+/* BUTTON */
+.btn{
+display:inline-block;
+padding:12px 28px;
+background:#ef5350;
+color:#fff;
+border-radius:30px;
+text-decoration:none;
+font-weight:600;
+transition:0.3s;
+margin-top:20px;
+}
+
+.btn:hover{
+background:#d32f2f;
+}
+
+/* SECTIONS */
+section{
+padding:60px 20px;
+text-align:center;
+background:#ffffff;
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+}
+
+.section-title{
+font-size:28px;
+margin-bottom:40px;
+color:#1565c0;
+}
+
+/* CARDS */
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:25px;
+}
+
+.card{
+background:#ffffff;
+padding:30px;
+border-radius:12px;
+box-shadow:0 6px 15px rgba(21,101,192,0.1);
+transition: all 0.4s ease;
+}
+
+.card:hover{
+transform: translateY(-10px) scale(1.03);
+box-shadow: 0 10px 20px rgba(21,101,192,0.2);
+}
+
+.card h3{
+margin-bottom:15px;
+color:#1565c0;
+}
+
+.highlight{
+background:#e3f2fd;
+padding:20px;
+border-radius:10px;
+margin-top:20px;
+}
+
 /* STATISTICS */
 .stats{
 display:flex;
@@ -50,7 +155,7 @@ gap:25px;
 margin-top:40px;
 }
 
-* TESTIMONIALS */
+/* TESTIMONIALS */
 .testimonials{
 display:grid;
 gap:25px;
@@ -85,141 +190,6 @@ font-weight:700;
 font-size:16px;
 }
 
-<script>
-const counters = document.querySelectorAll('.counter');
-
-counters.forEach(counter => {
-counter.innerText = '0';
-
-const updateCounter = () => {
-const target = +counter.getAttribute('data-target');
-const count = +counter.innerText;
-
-const increment = target / 100;
-
-if(count < target){
-counter.innerText = `${Math.ceil(count + increment)}`;
-setTimeout(updateCounter, 20);
-}else{
-counter.innerText = target;
-}
-};
-
-updateCounter();
-});
-</script>
-body{
-background:#f8fbff;
-color:#2c3e50;
-line-height:1.6;
-}
-
-/* HEADER */
-header{
-background: linear-gradient(135deg, #e3f2fd, #bbdefb, #90caf9);
-color:#1a2a3a;
-padding:80px 20px;
-text-align:center;
-}
-
-header h1{
-font-size:42px;
-margin-bottom:20px;
-color:#1565c0;
-}
-
-header p{
-font-size:18px;
-margin-bottom:15px;
-color:#37474f;
-}
-
-header p.highlight{
-color:#c62828;
-font-weight:600;
-}
-
-* BUTTON */
-.btn{
-display:inline-block;
-padding:12px 28px;
-background:#ef5350;
-color:#fff;
-border-radius:30px;
-text-decoration:none;
-font-weight:600;
-transition:0.3s;
-margin-top:20px;
-}
-
-.btn:hover{
-background:#d32f2f;
-}
-.fade{
-opacity:0;
-transform:translateY(30px);
-transition:all 0.8s ease;
-}
-
-.fade.show{
-opacity:1;
-transform:translateY(0);
-}
-
-/* SECTIONS */
-section{
-padding:60px 20px;
-text-align:center;
-background:#ffffff;
-}
-
-.container{
-max-width:1100px;
-margin:auto;
-}
-
-.section-title{
-font-size:28px;
-margin-bottom:40px;
-color:#1565c0;
-}
-
-/* CARDS */
-.cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-gap:25px;
-}
-
-.card{
-background:#ffffff;
-padding:30px;
-border-radius:12px;
-box-shadow:0 6px 15px rgba(21,101,192,0.1);
-}
-
-.card h3{
-margin-bottom:15px;
-color:#1565c0;
-}
-
-.highlight{
-background:#e3f2fd;
-padding:20px;
-border-radius:10px;
-margin-top:20px;
-}
-
-/* FOOTER */
-footer{
-background:#bbdefb;
-color:#1a2a3a;
-text-align:center;
-padding:20px;
-margin-top:40px;
-font-size:14px;
-}
-
 /* WhatsApp */
 .whatsapp{
 position:fixed;
@@ -232,16 +202,30 @@ border-radius:50%;
 font-size:20px;
 text-decoration:none;
 box-shadow:0 5px 15px rgba(0,0,0,0.2);
+transition: all 0.3s ease;
 }
 
 .whatsapp:hover{
 background:#d32f2f;
+transform: scale(1.1);
+}
+
+/* Fade-in scroll animasiya */
+.fade{
+opacity:0;
+transform:translateY(40px);
+transition:all 0.8s ease-out;
+}
+
+.fade.show{
+opacity:1;
+transform:translateY(0);
 }
 </style>
 </head>
 <body>
 
-<header>
+<header class="fade">
 <h1>MA İMTAHAN MƏRKƏZİ</h1>
 <p class="highlight">1–7-ci siniflər üzrə Hədiyyəli Sınaq İmtahanları</p>
 <p class="highlight">MQM.AZ/OTK ilə rəsmi əməkdaşlıq çərçivəsində sınaq imtahanları</p>
@@ -249,7 +233,7 @@ background:#d32f2f;
 <p class="highlight">RFM, Lütfi Zadə və Lisey Gimnazya qəbul sınaq imtahanı</p>
 
 <a href="https://www.examine.space/searchexam.php?id=152&lang=1" class="btn" target="_blank">Nəticəni öyrən</a>
-<div class="stats">
+<div class="stats fade">
 <div class="stat-box">
 <h3>4000+</h3>
 <p>İştirakçı Şagird</p>
@@ -267,26 +251,26 @@ background:#d32f2f;
 </div>
 </header>
 
-<section>
+<section class="fade">
 <div class="container">
 <h2 class="section-title">İmtahan Formatı</h2>
-<section class="why">
+<section class="why fade">
 <div class="container">
 <h2 class="section-title">Niyə MA İmtahan Mərkəzi?</h2>
 
-<div class="why-cards">
+<div class="why-cards fade">
 
-<div class="card">
+<div class="card fade">
 <h3>📊 Real Statistik Analiz</h3>
 <p>Hər şagird üçün detallı nəticə hesabatı təqdim olunur.</p>
 </div>
 
-<div class="card">
+<div class="card fade">
 <h3>🎁 Hədiyyəli Qaliblər</h3>
 <p>Yüksək nəticə göstərən şagirdlər üçün xüsusi mükafatlar.</p>
 </div>
 
-<div class="card">
+<div class="card fade">
 <h3>🏫 Rəsmi Əməkdaşlıq</h3>
 <p>MQM.AZ/OTK ilə rəsmi əməkdaşlıq çərçivəsində keçirilir.</p>
 </div>
@@ -294,8 +278,8 @@ background:#d32f2f;
 </div>
 </div>
 </section>
-<div class="cards">
-<div class="card">
+<div class="cards fade">
+<div class="card fade">
 <h3>1–4-cü siniflər</h3>
 <p>Ana dili • Riyaziyyat • İngilis dili • Məntiq</p>
 <div class="highlight">
@@ -303,7 +287,7 @@ background:#d32f2f;
 1 sual = 14 bal
 </div>
 </div>
-<div class="card">
+<div class="card fade">
 <h3>5–7-ci siniflər</h3>
 <p>Ana dili • Riyaziyyat • İngilis dili • Məntiq</p>
 <div class="highlight">
@@ -315,11 +299,10 @@ background:#d32f2f;
 </div>
 </section>
 
-<section>
+<section class="fade">
 <div class="container">
 <h2 class="section-title">Əməkdaşlıq etdiymiz təhsil müəssisələri</h2>
 
-<!-- Olympiad School -->
 <p><strong>Olympiad School</strong> – Sumqayıt şəhər, Heydər Əliyev prospekti 509 (14 mərtəbənin yanı)</p>
 
 <iframe 
@@ -333,9 +316,6 @@ allowfullscreen
 style="max-width:600px; border-radius:12px; margin:20px auto; display:block;">
 </iframe>
 
-<br><br>
-
-<!-- MA Tədris Mərkəzi – Sumqayıt filialı -->
 <p><strong>MA Tədris Mərkəzi – Sumqayıt filialı</strong><br>
 Sülh Plaza, 2-ci mərtəbə, otaq 206/208</p>
 
@@ -350,9 +330,6 @@ allowfullscreen
 style="max-width:600px; border-radius:12px; margin:20px auto; display:block;">
 </iframe>
 
-<br><br>
-
-<!-- MA Tədris Mərkəzi – Elmlər filialı -->
 <p><strong>MA Tədris Mərkəzi – Elmlər filialı</strong><br>
 Elmlər m/st yaxınlığı, Məmməd Rahim küçəsi 31A<br>
 (Texniki Universitetinin yaxınlığı, Milli Ensiklopediya ilə üzbəüz)</p>
@@ -371,44 +348,65 @@ style="max-width:600px; border-radius:12px; margin:20px auto; display:block;">
 </div>
 </section>
 
-<section id="contact">
-<div class="container">
-<section>
+<section id="contact" class="fade">
 <div class="container">
 <h2 class="section-title">Valideyn Rəyləri</h2>
 
-<div class="testimonials">
+<div class="testimonials fade">
 
-<div class="testimonial">
+<div class="testimonial fade">
 ⭐⭐⭐⭐⭐  
 "İmtahan çox peşəkar təşkil olunmuşdu. Uşağımın zəif tərəflərini dəqiq gördüm."
 </div>
-<div class="testimonial">
+<div class="testimonial fade">
 ⭐⭐⭐⭐⭐ 
 Qızım 2-ci sinifde oxuyur, hər ay mənə məcbur bilet aldırır)
 </div>
-<div class="testimonial">
+<div class="testimonial fade">
 ⭐⭐⭐⭐⭐  
 "Sumqayıtda ən keyfiyyətli sınaq imtahanlarından biridir."
 </div>
 
 </div>
-</div>
-</section>
+
 <h2 class="section-title">Əlaqə</h2>
 <p>Qeydiyyat və ətraflı məlumat üçün:</p>
-<br>
 <a href="https://wa.me/994704945094" class="btn" target="_blank">070 494 50 94</a>
 </div>
 </section>
 
-<footer>
+<footer class="fade">
 © 2026 MA İmtahan Mərkəzi | Bütün hüquqlar qorunur
 </footer>
 
 <a href="mailto:maimtahanmerkezi@gmail.com" class="whatsapp">
 ✉
 </a>
+
+<script>
+// Fade-in scroll animasiya
+const faders = document.querySelectorAll('.fade');
+
+const appearOptions = {
+threshold: 0.1,
+rootMargin: "0px 0px -50px 0px"
+};
+
+const appearOnScroll = new IntersectionObserver(function(entries, appearOnScroll){
+entries.forEach(entry => {
+if(!entry.isIntersecting){
+return;
+} else {
+entry.target.classList.add('show');
+appearOnScroll.unobserve(entry.target);
+}
+});
+}, appearOptions);
+
+faders.forEach(fader => {
+appearOnScroll.observe(fader);
+});
+</script>
 
 </body>
 </html>
