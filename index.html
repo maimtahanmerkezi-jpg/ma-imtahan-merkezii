@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MA İmtahan Mərkəzi</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+
 <style>
 *{
 margin:0;
@@ -14,234 +15,213 @@ font-family:'Montserrat',sans-serif;
 }
 
 body{
-background:#f8fbff;
+background:#f4f8ff;
 color:#2c3e50;
 line-height:1.6;
 }
 
-/* HEADER */
 header{
-background: linear-gradient(135deg, #e3f2fd, #bbdefb, #90caf9);
-color:#1a2a3a;
-padding:80px 20px;
+background: linear-gradient(135deg,#1565c0,#1e88e5,#42a5f5);
+color:white;
+padding:90px 20px;
 text-align:center;
 }
 
 header h1{
 font-size:42px;
 margin-bottom:20px;
-color:#1565c0;
+font-weight:800;
 }
 
 header p{
 font-size:18px;
-margin-bottom:15px;
-color:#37474f;
+margin-bottom:10px;
 }
 
-header p.highlight{
-color:#c62828;
-font-weight:600;
+.cta{
+margin-top:25px;
 }
 
-/* BUTTON */
 .btn{
 display:inline-block;
-padding:12px 28px;
-background:#ef5350;
-color:#fff;
-border-radius:30px;
+padding:14px 30px;
+background:#ff5252;
+color:white;
+border-radius:40px;
 text-decoration:none;
-font-weight:600;
+font-weight:700;
 transition:0.3s;
-margin-top:20px;
+margin:10px;
 }
 
 .btn:hover{
 background:#d32f2f;
 }
 
-/* SECTIONS */
-section{
-padding:60px 20px;
-text-align:center;
-background:#ffffff;
+.stats{
+display:flex;
+justify-content:center;
+gap:40px;
+margin-top:40px;
+flex-wrap:wrap;
 }
 
-.container{
-max-width:1100px;
-margin:auto;
+.stat{
+font-size:22px;
+font-weight:700;
+}
+
+section{
+padding:70px 20px;
+text-align:center;
 }
 
 .section-title{
 font-size:28px;
 margin-bottom:40px;
 color:#1565c0;
+font-weight:700;
 }
 
-/* CARDS */
 .cards{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
 gap:25px;
+max-width:1100px;
+margin:auto;
 }
 
 .card{
-background:#ffffff;
+background:white;
 padding:30px;
-border-radius:12px;
-box-shadow:0 6px 15px rgba(21,101,192,0.1);
+border-radius:14px;
+box-shadow:0 8px 25px rgba(0,0,0,0.05);
 }
 
 .card h3{
-margin-bottom:15px;
 color:#1565c0;
+margin-bottom:15px;
 }
 
-.highlight{
+.highlight-box{
 background:#e3f2fd;
 padding:20px;
 border-radius:10px;
 margin-top:20px;
+font-weight:600;
 }
 
-/* FOOTER */
+.testimonials{
+max-width:900px;
+margin:auto;
+display:grid;
+gap:25px;
+}
+
+.testimonial{
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,0.05);
+}
+
 footer{
-background:#bbdefb;
-color:#1a2a3a;
-text-align:center;
+background:#1565c0;
+color:white;
 padding:20px;
-margin-top:40px;
+text-align:center;
 font-size:14px;
 }
 
-/* WhatsApp */
-.whatsapp{
+.fixed-cta{
 position:fixed;
-bottom:20px;
-right:20px;
-background:#ef5350;
-color:#fff;
-padding:15px 18px;
-border-radius:50%;
-font-size:20px;
-text-decoration:none;
-box-shadow:0 5px 15px rgba(0,0,0,0.2);
+bottom:0;
+left:0;
+width:100%;
+background:#ff5252;
+text-align:center;
+padding:15px;
 }
 
-.whatsapp:hover{
-background:#d32f2f;
+.fixed-cta a{
+color:white;
+text-decoration:none;
+font-weight:700;
+font-size:18px;
 }
 </style>
 </head>
+
 <body>
 
 <header>
 <h1>MA İMTAHAN MƏRKƏZİ</h1>
-<p class="highlight">1–7-ci siniflər üzrə Hədiyyəli Sınaq İmtahanları</p>
-<p class="highlight">MQM.AZ/OTK ilə rəsmi əməkdaşlıq çərçivəsində sınaq imtahanları</p>
-<p class="highlight">8,9,10,11-ci siniflər üzrə buraxılış sınaq imtahanı</p>
-<p class="highlight">RFM, Lütfi Zadə və Lisey Gimnazya qəbul sınaq imtahanı</p>
+<p>1–11-ci siniflər üçün peşəkar sınaq imtahanları</p>
+<p><strong>Rəsmi əməkdaşlıq • Real nəticə analizi • Hədiyyəli qaliblər</strong></p>
 
-<a href="https://www.examine.space/searchexam.php?id=152&lang=1" class="btn" target="_blank">Nəticəni öyrən</a>
+<div class="cta">
+<a href="https://wa.me/994704945094" class="btn">📲 Qeydiyyat</a>
+<a href="https://www.examine.space/searchexam.php?id=152&lang=1" class="btn">📊 Nəticəni yoxla</a>
+</div>
+
+<div class="stats">
+<div class="stat">3000+ Şagird</div>
+<div class="stat">92% Valideyn Məmnuniyyəti</div>
+<div class="stat">3 Filial</div>
+</div>
 </header>
 
 <section>
-<div class="container">
-<h2 class="section-title">İmtahan Formatı</h2>
+<h2 class="section-title">Niyə bizi seçməlisiniz?</h2>
 <div class="cards">
 <div class="card">
-<h3>1–4-cü siniflər</h3>
-<p>Ana dili • Riyaziyyat • İngilis dili • Məntiq</p>
-<div class="highlight">
-50 sual 📝 <br>
-1 sual = 14 bal
+<h3>📊 Real Statistik Analiz</h3>
+<p>Şagirdin zəif və güclü tərəfləri detallı hesabatla təqdim olunur.</p>
 </div>
-</div>
+
 <div class="card">
-<h3>5–7-ci siniflər</h3>
-<p>Ana dili • Riyaziyyat • İngilis dili • Məntiq</p>
-<div class="highlight">
-70 sual 📝 <br>
-1 sual = 10 bal
+<h3>🎁 Hədiyyəli İmtahan</h3>
+<p>Yüksək nəticə göstərən şagirdlər üçün qiymətli mükafatlar.</p>
 </div>
-</div>
+
+<div class="card">
+<h3>🏫 Rəsmi Əməkdaşlıq</h3>
+<p>MQM.AZ/OTK ilə rəsmi əməkdaşlıq çərçivəsində təşkil olunur.</p>
 </div>
 </div>
 </section>
 
 <section>
-<div class="container">
-<h2 class="section-title">Əməkdaşlıq etdiymiz təhsil müəssisələri</h2>
+<h2 class="section-title">Valideyn Rəyləri</h2>
 
-<!-- Olympiad School -->
-<p><strong>Olympiad School</strong> – Sumqayıt şəhər, Heydər Əliyev prospekti 509 (14 mərtəbənin yanı)</p>
+<div class="testimonials">
+<div class="testimonial">
+⭐⭐⭐⭐⭐  
+"İmtahan sistemi çox peşəkar qurulub. Uşağımın zəif tərəflərini dəqiq gördük."
+</div>
 
-<iframe 
-width="100%" 
-height="360" 
-src="https://www.youtube.com/embed/QVEPf5Rt3GI" 
-title="Olympiad School Videosu" 
-frameborder="0" 
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-allowfullscreen
-style="max-width:600px; border-radius:12px; margin:20px auto; display:block;">
-</iframe>
-
-<br><br>
-
-<!-- MA Tədris Mərkəzi – Sumqayıt filialı -->
-<p><strong>MA Tədris Mərkəzi – Sumqayıt filialı</strong><br>
-Sülh Plaza, 2-ci mərtəbə, otaq 206/208</p>
-
-<iframe 
-width="100%" 
-height="360" 
-src="https://www.youtube.com/embed/CFxW59sz27s" 
-title="MA Tədris Mərkəzi – Sumqayıt filialı" 
-frameborder="0" 
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-allowfullscreen
-style="max-width:600px; border-radius:12px; margin:20px auto; display:block;">
-</iframe>
-
-<br><br>
-
-<!-- MA Tədris Mərkəzi – Elmlər filialı -->
-<p><strong>MA Tədris Mərkəzi – Elmlər filialı</strong><br>
-Elmlər m/st yaxınlığı, Məmməd Rahim küçəsi 31A<br>
-(Texniki Universitetinin yaxınlığı, Milli Ensiklopediya ilə üzbəüz)</p>
-
-<iframe 
-width="100%" 
-height="360" 
-src="https://www.youtube.com/embed/F_W0pEon3Kw" 
-title="MA Tədris Mərkəzi – Elmlər filialı" 
-frameborder="0" 
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-allowfullscreen
-style="max-width:600px; border-radius:12px; margin:20px auto; display:block;">
-</iframe>
-
+<div class="testimonial">
+⭐⭐⭐⭐⭐  
+"Sumqayıtda ən keyfiyyətli sınaq imtahanı təşkil edən mərkəzdir."
+</div>
 </div>
 </section>
 
-<section id="contact">
-<div class="container">
-<h2 class="section-title">Əlaqə</h2>
-<p>Qeydiyyat və ətraflı məlumat üçün:</p>
+<section>
+<h2 class="section-title">Növbəti İmtahan Tarixi</h2>
+<p><strong>📅 15 Mart 2026</strong></p>
+<p>📍 Sumqayıt • Elmlər • Olympiad School</p>
 <br>
-<a href="https://wa.me/994704945094" class="btn" target="_blank">070 494 50 94</a>
-</div>
+<a href="https://wa.me/994704945094" class="btn">Yerini indi rezerv et</a>
 </section>
 
 <footer>
 © 2026 MA İmtahan Mərkəzi | Bütün hüquqlar qorunur
 </footer>
 
-<a href="mailto:maimtahanmerkezi@gmail.com" class="whatsapp">
-✉
-</a>
+<div class="fixed-cta">
+<a href="https://wa.me/994704945094">📲 İndi Qeydiyyatdan Keç</a>
+</div>
 
 </body>
 </html>
