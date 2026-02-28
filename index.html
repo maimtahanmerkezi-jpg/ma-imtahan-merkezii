@@ -20,7 +20,39 @@ line-height:1.6;
 
 /* HEADER */
 header{
-background: linear-gradient(135deg, #e3f2fd, #bbdefb, #90caf9);
+/* MODAL */
+.modal{
+  display:none;
+  position:fixed;
+  z-index:1000;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.8);
+  padding-top:60px;
+}
+
+.modal-gallery{
+  display:flex;
+  gap:20px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+.modal-gallery img{
+  max-width:300px;
+  border-radius:10px;
+}
+
+.close{
+  position:absolute;
+  top:20px;
+  right:40px;
+  color:white;
+  font-size:40px;
+  cursor:pointer;
+}background: linear-gradient(135deg, #e3f2fd, #bbdefb, #90caf9);
 color:#1a2a3a;
 padding:80px 20px;
 text-align:center;
@@ -230,23 +262,20 @@ transform:translateY(0);
 }
 </style>
 </head>
-<body>
-
-<header class="fade">
-
-}<!-- Şəkil Modal -->
+<!-- Şəkil Modal -->
 <div id="imageModal" class="modal">
   <span class="close">&times;</span>
   <div class="modal-gallery">
     <img src="numune1">
   </div>
+  <body>
+
+<header class="fade">
+
 </div><h1>MA İMTAHAN MƏRKƏZİ</h1>
 <p class="highlight" id="openGallery" style="cursor:pointer;">
-<style>
-
-SƏNİN ƏVVƏLKİ CSS KODLARIN
-
-.modal{
+1–7-ci siniflər üzrə Hədiyyəli Sınaq İmtahanları
+</p>
   display:none;
   position:fixed;
   z-index:1000;
