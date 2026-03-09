@@ -3,481 +3,316 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MA İmtahan Mərkəzi</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+<title>MA İmtahan Mərkəzi — Azərbaycanın Aparıcı Sınaq Platforması</title>
+<meta name="description" content="1-11-ci siniflər üçün professional sınaq imtahanları. MQM.AZ/OTK rəsmi əməkdaşı. Bakı və Sumqayıtda 3 filial.">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Montserrat',sans-serif;
-}
-body{
-background:#f8fbff;
-color:#2c3e50;
-line-height:1.6;
-}
+:root{--ink:#06080f;--ink-2:#131929;--ink-3:#1e2d4a;--blue:#1852f0;--blue-mid:#2d6aff;--blue-glow:rgba(24,82,240,0.22);--amber:#f5a623;--rose:#e83b3b;--white:#ffffff;--ghost:#f5f8ff;--border:rgba(255,255,255,0.08);--border-lt:#e4ecfa;--text-dim:rgba(255,255,255,0.48);--text-mid:rgba(255,255,255,0.75);--r-sm:10px;--r-md:16px;--r-lg:24px;--r-xl:36px}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--ink);color:var(--white);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#131929}::-webkit-scrollbar-thumb{background:var(--blue);border-radius:4px}
 
-/* HEADER */
-header{
-background: linear-gradient(135deg, #e3f2fd, #bbdefb, #90caf9);
-color:#1a2a3a;
-padding:80px 20px;
-text-align:center;
-}
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:500;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 56px;background:rgba(6,8,15,0.7);backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid var(--border);transition:background .3s}
+.nav-logo{display:flex;align-items:center;gap:12px}
+.logo-mark{width:40px;height:40px;background:var(--blue);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:white;letter-spacing:-.03em;box-shadow:0 0 24px var(--blue-glow);position:relative;overflow:hidden}
+.logo-mark::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.18),transparent)}
+.logo-text{font-size:16px;font-weight:700;color:var(--white);letter-spacing:-.02em;line-height:1.15}
+.logo-text small{display:block;font-size:10px;font-weight:400;color:var(--text-dim);letter-spacing:.12em;text-transform:uppercase}
+.nav-menu{display:flex;align-items:center;gap:36px;list-style:none}
+.nav-menu a{font-size:13.5px;font-weight:500;color:var(--text-dim);transition:color .2s}
+.nav-menu a:hover{color:var(--white)}
+.nav-cta{height:38px;padding:0 22px;background:var(--blue);border-radius:var(--r-sm);font-size:13px;font-weight:600;color:white!important;display:inline-flex;align-items:center;transition:background .2s,box-shadow .2s,transform .15s}
+.nav-cta:hover{background:var(--blue-mid);box-shadow:0 0 24px var(--blue-glow);transform:translateY(-1px)}
 
-header h1{
-font-size:42px;
-margin-bottom:20px;
-color:#1565c0;
-animation: headerGlow 2s infinite alternate;
-}
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;padding:100px 56px 80px;position:relative;overflow:hidden}
+.hero-spot{position:absolute;border-radius:50%;pointer-events:none;filter:blur(80px);z-index:0}
+.hero-spot-1{width:700px;height:700px;background:radial-gradient(circle,rgba(24,82,240,0.35) 0%,transparent 70%);top:-200px;right:-100px;animation:driftA 14s ease-in-out infinite alternate}
+.hero-spot-2{width:500px;height:500px;background:radial-gradient(circle,rgba(232,59,59,0.18) 0%,transparent 70%);bottom:-100px;left:5%;animation:driftB 18s ease-in-out infinite alternate}
+.hero-spot-3{width:300px;height:300px;background:radial-gradient(circle,rgba(245,166,35,0.12) 0%,transparent 70%);top:30%;left:40%;animation:driftA 22s ease-in-out infinite alternate}
+@keyframes driftA{from{transform:translate(0,0) scale(1)}to{transform:translate(40px,-40px) scale(1.1)}}
+@keyframes driftB{from{transform:translate(0,0) scale(1)}to{transform:translate(-30px,30px) scale(0.9)}}
+.hero-dots{position:absolute;inset:0;z-index:0;background-image:radial-gradient(circle,rgba(255,255,255,0.06) 1px,transparent 1px);background-size:40px 40px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%)}
+.hero-inner{position:relative;z-index:1;width:100%;display:grid;grid-template-columns:1fr 420px;gap:80px;align-items:center}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(24,82,240,0.45);background:rgba(24,82,240,0.1);color:#91b5ff;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:7px 16px;border-radius:100px;margin-bottom:28px;animation:slideIn .6s ease both}
+.hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:#91b5ff;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-h1{font-size:clamp(44px,5.5vw,82px);font-weight:800;line-height:1.0;letter-spacing:-.03em;color:var(--white);margin-bottom:24px;animation:slideIn .7s .1s ease both;opacity:0}
+.hero-h1 .c-blue{color:var(--blue-mid)}.hero-h1 .c-amber{color:var(--amber)}
+.hero-lead{font-size:17px;font-weight:300;color:var(--text-mid);line-height:1.8;max-width:500px;margin-bottom:40px;animation:slideIn .7s .2s ease both;opacity:0}
+.hero-chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:44px;animation:slideIn .7s .3s ease both;opacity:0}
+.chip{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.75);font-size:13px;padding:8px 14px;border-radius:var(--r-sm);transition:border-color .2s,background .2s}
+.chip:hover{border-color:rgba(24,82,240,0.5);background:rgba(24,82,240,0.08)}
+.chip-dot{width:6px;height:6px;border-radius:50%;background:var(--blue-mid);flex-shrink:0}
+.chip-dot.amber{background:var(--amber)}.chip-dot.rose{background:var(--rose)}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;animation:slideIn .7s .4s ease both;opacity:0}
+.btn-primary{height:52px;padding:0 32px;background:var(--blue);border-radius:var(--r-md);font-size:15px;font-weight:600;color:white;display:inline-flex;align-items:center;gap:8px;transition:background .2s,box-shadow .2s,transform .15s;box-shadow:0 4px 32px var(--blue-glow)}
+.btn-primary:hover{background:var(--blue-mid);box-shadow:0 8px 40px rgba(24,82,240,0.4);transform:translateY(-2px)}
+.btn-primary:hover svg{transform:translateX(3px)}
+.btn-primary svg{transition:transform .2s}
+.btn-ghost{height:52px;padding:0 28px;border:1px solid rgba(255,255,255,0.15);border-radius:var(--r-md);font-size:15px;font-weight:500;color:var(--text-mid);display:inline-flex;align-items:center;transition:border-color .2s,color .2s,background .2s}
+.btn-ghost:hover{border-color:rgba(255,255,255,0.35);color:var(--white);background:rgba(255,255,255,0.04)}
+.hero-panel{animation:slideIn .8s .5s ease both;opacity:0}
+.glass-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:var(--r-lg);padding:28px;backdrop-filter:blur(20px);margin-bottom:14px;transition:border-color .25s,background .25s}
+.glass-card:hover{background:rgba(24,82,240,0.1);border-color:rgba(24,82,240,0.4)}
+.glass-card:last-child{margin-bottom:0}
+.gc-label{font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
+.gc-val{font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--white)}
+.gc-val.blue{color:var(--blue-mid)}.gc-val.amber{color:var(--amber)}.gc-val.rose{color:#ff7070}
+.gc-sub{font-size:13px;font-weight:300;color:var(--text-dim);margin-top:4px}
+.gc-row{display:flex;gap:28px}.gc-row>div{flex:1}
+@keyframes slideIn{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
 
-@keyframes headerGlow{
-0% { text-shadow: 0 0 5px #1565c0; }
-50% { text-shadow: 0 0 15px #1565c0, 0 0 20px #42a5f5; }
-100% { text-shadow: 0 0 5px #1565c0; }
-}
-
-header p{
-font-size:18px;
-margin-bottom:15px;
-color:#37474f;
-}
-
-header p.highlight{
-color:#c62828;
-font-weight:600;
-}
-
-/* BUTTON */
-.btn{
-display:inline-block;
-padding:12px 28px;
-background:#ef5350;
-color:#fff;
-border-radius:30px;
-text-decoration:none;
-font-weight:600;
-transition:0.3s;
-margin-top:20px;
-}
-
-.btn:hover{
-background:#d32f2f;
-transform: scale(1.05);
-}
+/* TICKER */
+.ticker{height:52px;background:var(--blue);overflow:hidden;display:flex;align-items:center}
+.ticker-track{display:flex;align-items:center;animation:tick 28s linear infinite;white-space:nowrap}
+.ticker-item{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:white;padding:0 36px;display:inline-flex;align-items:center;gap:12px;flex-shrink:0}
+.ticker-item::after{content:'◆';font-size:8px;opacity:.5}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
 /* SECTIONS */
-section{
-padding:60px 20px;
-text-align:center;
-background:#ffffff;
-}
+.section{padding:104px 56px;position:relative}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--blue-mid);margin-bottom:14px}
+.eyebrow::before{content:'';width:24px;height:2px;background:var(--blue-mid);border-radius:2px}
+.section-h2{font-size:clamp(30px,4vw,54px);font-weight:800;letter-spacing:-.03em;line-height:1.05;color:var(--white);margin-bottom:16px}
+.section-h2 .c-blue{color:var(--blue-mid)}.section-h2 .c-amber{color:var(--amber)}
+.section-lead{font-size:17px;font-weight:300;color:var(--text-mid);line-height:1.75;max-width:540px}
+.section-header{margin-bottom:60px}
+.section.light{background:var(--white)}
+.section.light .eyebrow,.section.light .eyebrow::before{color:var(--blue);background:var(--blue)}
+.section.light .section-h2{color:#06080f}
+.section.light .section-lead{color:#4a5778}
+.section.ghost{background:#f5f8ff}
+.section.ghost .eyebrow{color:var(--blue)}.section.ghost .eyebrow::before{background:var(--blue)}
+.section.ghost .section-h2{color:#06080f}.section.ghost .section-lead{color:#4a5778}
 
-.container{
-max-width:1100px;
-margin:auto;
-}
+/* FORMAT */
+.format-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.fc{border:1px solid var(--border);border-radius:var(--r-lg);padding:36px 32px;position:relative;overflow:hidden;background:rgba(255,255,255,0.03);transition:border-color .25s,transform .25s,box-shadow .25s;cursor:default}
+.fc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--blue-mid),transparent);transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+.fc:hover{border-color:rgba(24,82,240,0.5);transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,0.4)}
+.fc:hover::before{transform:scaleX(1)}
+.fc-grade{font-size:24px;font-weight:800;letter-spacing:-.02em;color:var(--white);margin-bottom:8px}
+.fc-subjects{font-size:14px;font-weight:300;color:var(--text-dim);line-height:1.6;margin-bottom:24px}
+.fc-meta{display:flex;gap:10px;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:500;padding:5px 12px;border-radius:100px;letter-spacing:.04em}
+.tag-blue{background:rgba(24,82,240,0.2);color:#91b5ff;border:1px solid rgba(24,82,240,0.3)}
+.tag-rose{background:rgba(232,59,59,0.15);color:#ff9090;border:1px solid rgba(232,59,59,0.25)}
+.tag-amber{background:rgba(245,166,35,0.15);color:#ffc966;border:1px solid rgba(245,166,35,0.25)}
+.tag-green{background:rgba(52,211,99,0.12);color:#7ddda3;border:1px solid rgba(52,211,99,0.2)}
+.fc-icon{position:absolute;bottom:24px;right:28px;font-size:48px;opacity:.07;user-select:none;pointer-events:none;transition:opacity .25s}
+.fc:hover .fc-icon{opacity:.13}
 
-.section-title{
-font-size:28px;
-margin-bottom:40px;
-color:#1565c0;
-}
+/* BENTO */
+.bento{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto;gap:16px}
+.bento-item{background:var(--ghost);border:1.5px solid var(--border-lt);border-radius:var(--r-lg);padding:36px 32px;position:relative;overflow:hidden;transition:border-color .25s,transform .25s,box-shadow .25s}
+.bento-item:hover{border-color:var(--blue);transform:translateY(-4px);box-shadow:0 16px 48px rgba(24,82,240,0.1)}
+.bento-item.span2{grid-column:span 2}
+.bento-icon{width:52px;height:52px;border-radius:var(--r-sm);background:#e8effe;border:1.5px solid rgba(24,82,240,0.2);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px}
+.bento-item h3{font-size:20px;font-weight:700;letter-spacing:-.01em;color:#06080f;margin-bottom:10px}
+.bento-item p{font-size:14px;font-weight:300;color:#4a5778;line-height:1.7}
+.bento-big-num{font-size:72px;font-weight:800;letter-spacing:-.04em;color:var(--blue);line-height:1;margin-bottom:8px}
+.bento-big-label{font-size:16px;font-weight:500;color:#06080f}
+.bento-item.dark{background:var(--ink-2);border-color:var(--border)}
+.bento-item.dark h3{color:white}.bento-item.dark p{color:var(--text-dim)}
 
-/* CARDS */
-.cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-gap:25px;
-}
+/* BRANCHES */
+.branches{display:flex;flex-direction:column;gap:32px}
+.branch{display:grid;grid-template-columns:1fr 1.5fr;gap:0;border:1.5px solid var(--border-lt);border-radius:var(--r-xl);overflow:hidden;background:var(--white);transition:border-color .25s,box-shadow .25s}
+.branch:hover{border-color:var(--blue);box-shadow:0 12px 48px rgba(24,82,240,0.1)}
+.branch-info{padding:44px;display:flex;flex-direction:column;justify-content:center}
+.branch-num{font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
+.branch-name{font-size:26px;font-weight:800;letter-spacing:-.02em;color:#06080f;margin-bottom:14px}
+.branch-addr{font-size:14px;font-weight:300;color:#4a5778;line-height:1.75;margin-bottom:24px}
+.branch-addr strong{color:#06080f;font-weight:500}
+.branch-pill{display:inline-flex;align-items:center;gap:7px;background:#f5f8ff;border:1.5px solid var(--border-lt);border-radius:var(--r-sm);font-size:13px;font-weight:500;color:#1e2d4a;padding:8px 14px;align-self:flex-start}
+.branch-video{aspect-ratio:16/9;position:relative;background:#06080f;overflow:hidden;align-self:stretch}
+.branch-video iframe{width:100%;height:100%;border:none;display:block}
 
-.card{
-background:#ffffff;
-padding:30px;
-border-radius:12px;
-box-shadow:0 6px 15px rgba(21,101,192,0.1);
-transition: all 0.4s ease;
-cursor:pointer;
-}
+/* REVIEWS */
+.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.review{background:var(--white);border:1.5px solid var(--border-lt);border-radius:var(--r-lg);padding:32px 28px;position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s}
+.review:hover{transform:translateY(-5px);box-shadow:0 20px 52px rgba(24,82,240,0.1)}
+.review::after{content:'"';position:absolute;bottom:-20px;right:20px;font-size:120px;font-weight:800;color:var(--blue);opacity:.05;line-height:1;pointer-events:none;user-select:none}
+.review-stars{display:flex;gap:3px;margin-bottom:16px}
+.star{width:16px;height:16px;background:var(--amber);clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.review-text{font-size:15px;font-weight:300;color:#2a3550;line-height:1.75;font-style:italic}
+.review-author{margin-top:20px;display:flex;align-items:center;gap:12px}
+.review-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-mid));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white}
+.review-name{font-size:14px;font-weight:600;color:#06080f}
+.review-role{font-size:12px;font-weight:300;color:#6b7a99}
 
-.card:hover{
-transform: translateY(-10px) scale(1.03);
-box-shadow: 0 10px 20px rgba(21,101,192,0.2);
-}
+/* CTA */
+.cta-section{background:var(--ink-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:120px 56px;position:relative;overflow:hidden;text-align:center}
+.cta-glow{position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 50% 100%,rgba(24,82,240,0.2) 0%,transparent 70%);pointer-events:none}
+.cta-section .eyebrow{justify-content:center}
+.cta-section .section-h2{margin:0 auto 16px;max-width:640px}
+.cta-section .section-lead{margin:0 auto 48px;text-align:center}
+.cta-grid{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+.btn-cta{height:56px;padding:0 36px;border-radius:var(--r-md);font-size:15px;font-weight:600;display:inline-flex;align-items:center;gap:10px;transition:transform .15s,box-shadow .2s,background .2s}
+.btn-cta:hover{transform:translateY(-2px)}
+.btn-cta-solid{background:var(--blue);color:white;box-shadow:0 4px 32px var(--blue-glow)}
+.btn-cta-solid:hover{background:var(--blue-mid);box-shadow:0 8px 48px rgba(24,82,240,0.45)}
+.btn-cta-outline{border:1.5px solid rgba(255,255,255,0.2);color:var(--text-mid)}
+.btn-cta-outline:hover{border-color:rgba(255,255,255,0.4);color:white;background:rgba(255,255,255,0.04)}
 
-.card h3{
-margin-bottom:15px;
-color:#1565c0;
-}
+/* FOOTER */
+footer{background:var(--ink);border-top:1px solid var(--border);padding:36px 56px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px}
+.footer-left{display:flex;flex-direction:column;gap:6px}
+.footer-copy{font-size:13px;font-weight:300;color:rgba(255,255,255,0.3)}
+.footer-links{display:flex;gap:28px;list-style:none}
+.footer-links a{font-size:13px;font-weight:300;color:rgba(255,255,255,0.35);transition:color .2s}
+.footer-links a:hover{color:rgba(255,255,255,0.75)}
 
-.highlight{
-background:#e3f2fd;
-padding:20px;
-border-radius:10px;
-margin-top:20px;
-}
+/* WA FLOAT */
+.wa-btn{position:fixed;bottom:28px;right:28px;z-index:400;width:58px;height:58px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(37,211,102,0.45);transition:transform .2s,box-shadow .2s}
+.wa-btn:hover{transform:scale(1.1);box-shadow:0 12px 40px rgba(37,211,102,0.55)}
+.wa-btn svg{width:26px;height:26px;fill:white}
 
-/* STATISTICS */
-.stats{
-display:flex;
-justify-content:center;
-gap:40px;
-margin-top:40px;
-flex-wrap:wrap;
-}
+/* REVEAL */
+.r{opacity:0;transform:translateY(30px);transition:opacity .75s ease,transform .75s ease}
+.r.on{opacity:1;transform:translateY(0)}
+.r-d1{transition-delay:.08s}.r-d2{transition-delay:.16s}.r-d3{transition-delay:.24s}.r-d4{transition-delay:.32s}
 
-.stat-box{
-background:white;
-padding:20px 35px;
-border-radius:12px;
-box-shadow:0 5px 15px rgba(0,0,0,0.08);
-text-align:center;
-}
-
-.stat-box h3{
-font-size:28px;
-color:#1565c0;
-}
-
-.stat-box p{
-font-size:14px;
-}
-
-/* WHY US */
-.why{
-background:#f1f7ff;
-}
-
-.why-cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:25px;
-margin-top:40px;
-}
-
-/* TESTIMONIALS */
-.testimonials{
-display:grid;
-gap:25px;
-max-width:900px;
-margin:auto;
-}
-
-.testimonial{
-background:white;
-padding:25px;
-border-radius:12px;
-box-shadow:0 5px 15px rgba(0,0,0,0.05);
-font-style:italic;
-transition: transform 0.3s ease;
-}
-
-.testimonial:hover{
-transform: scale(1.02);
-}
-
-/* FIXED CTA */
-.fixed-cta{
-position:fixed;
-bottom:0;
-left:0;
-width:100%;
-background:#ef5350;
-text-align:center;
-padding:15px;
-z-index:999;
-}
-
-.fixed-cta a{
-color:white;
-text-decoration:none;
-font-weight:700;
-font-size:16px;
-}
-
-/* WhatsApp */
-.whatsapp{
-position:fixed;
-bottom:20px;
-right:20px;
-background:#ef5350;
-color:#fff;
-padding:15px 18px;
-border-radius:50%;
-font-size:20px;
-text-decoration:none;
-box-shadow:0 5px 15px rgba(0,0,0,0.2);
-transition: all 0.3s ease;
-}
-
-.whatsapp:hover{
-background:#d32f2f;
-transform: scale(1.2);
-}
-
-/* Fade-in scroll animasiya */
-.fade{
-opacity:0;
-transform:translateY(40px);
-transition:all 0.8s ease-out;
-}
-
-.fade.show{
-opacity:1;
-transform:translateY(0);
-}
+/* RESPONSIVE */
+@media(max-width:1024px){.hero-inner{grid-template-columns:1fr}.hero-panel{display:none}.format-grid{grid-template-columns:1fr}.bento{grid-template-columns:1fr 1fr}.bento-item.span2{grid-column:span 2}.branch{grid-template-columns:1fr}.branch-video{min-height:220px}.reviews-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.nav{padding:0 20px}.nav-menu{display:none}.section{padding:72px 24px}.hero{padding:90px 24px 64px}.cta-section{padding:80px 24px}footer{padding:28px 24px;flex-direction:column;text-align:center}.footer-links{justify-content:center}.bento{grid-template-columns:1fr}.bento-item.span2{grid-column:auto}}
 </style>
 </head>
 <body>
 
-<header class="fade">
+<nav class="nav">
+  <a href="#" class="nav-logo">
+    <div class="logo-mark">MA</div>
+    <div class="logo-text">İmtahan Mərkəzi<small>MQM.AZ / OTK Rəsmi Əməkdaşı</small></div>
+  </a>
+  <ul class="nav-menu">
+    <li><a href="#format">İmtahan Formatı</a></li>
+    <li><a href="#niye">Niyə Biz</a></li>
+    <li><a href="#filiallar">Filiallar</a></li>
+    <li><a href="#reyler">Rəylər</a></li>
+    <li><a href="https://www.examine.space/searchexam.php?id=178&lang=1" target="_blank">Nəticə</a></li>
+    <li><a href="#elaqe" class="nav-cta">Qeydiyyat</a></li>
+  </ul>
+</nav>
 
-<!-- Şəkil Modal -->
-<div id="imageModal" class="modal">
-  <span class="close">&times;</span>
-  <div class="modal-gallery">
-    <img src="numune1">
+<section class="hero">
+  <div class="hero-spot hero-spot-1"></div>
+  <div class="hero-spot hero-spot-2"></div>
+  <div class="hero-spot hero-spot-3"></div>
+  <div class="hero-dots"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">MQM.AZ / OTK Rəsmi Əməkdaşı</div>
+      <h1 class="hero-h1">Azərbaycanın<br><span class="c-blue">Aparıcı</span><br><span class="c-amber">Sınaq Platforması</span></h1>
+      <p class="hero-lead">1–11-ci siniflər üçün professional sınaq imtahanları. Hər şagirdin potensialını real rəqəmlərlə ölçürük — detallı analiz, hədiyyəli qaliblər, rəsmi sertifikat.</p>
+      <div class="hero-chips">
+        <span class="chip"><span class="chip-dot"></span>1–7-ci siniflər · Hədiyyəli Sınaq</span>
+        <span class="chip"><span class="chip-dot amber"></span>8–11-ci siniflər · Buraxılış Sınağı</span>
+        <span class="chip"><span class="chip-dot rose"></span>RFM · Lütfi Zadə · Lisey Gimnaziya</span>
+      </div>
+      <div class="hero-actions">
+        <a href="#elaqe" class="btn-primary">Qeydiyyatdan Keç <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        <a href="https://www.examine.space/searchexam.php?id=178&lang=1" target="_blank" class="btn-ghost">Nəticəmi Öyrən</a>
+      </div>
+    </div>
+    <div class="hero-panel">
+      <div class="glass-card"><div class="gc-row"><div><div class="gc-label">İştirakçı şagird</div><div class="gc-val blue">4 000+</div><div class="gc-sub">Bu günə qədər</div></div><div><div class="gc-label">Filial sayı</div><div class="gc-val rose">3</div><div class="gc-sub">Bakı · Sumqayıt</div></div></div></div>
+      <div class="glass-card"><div class="gc-label">Valideyn məmnuniyyəti</div><div class="gc-val amber">92%</div><div class="gc-sub">Son anket nəticəsi əsasında</div></div>
+      <div class="glass-card"><div class="gc-label">Əməkdaşlıq</div><div class="gc-val" style="font-size:22px">MQM.AZ / OTK</div><div class="gc-sub">Rəsmi tərəfdaşlıq çərçivəsində</div></div>
+    </div>
   </div>
-</div><h1>MA İMTAHAN MƏRKƏZİ</h1>
-<p class="highlight" id="openGallery" style="cursor:pointer;">
-<style>
-
-SƏNİN ƏVVƏLKİ CSS KODLARIN
-
-.modal{
-  display:none;
-  position:fixed;
-  z-index:1000;
-  left:0;
-  top:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.8);
-  padding-top:60px;
-}
-
-.modal-gallery{
-  display:flex;
-  gap:20px;
-  justify-content:center;
-  flex-wrap:wrap;
-}
-
-.modal-gallery img{
-  max-width:300px;
-  border-radius:10px;
-}
-
-.close{
-  position:absolute;
-  top:20px;
-  right:40px;
-  color:white;
-  font-size:40px;
-  cursor:pointer;
-}
-
-</style>1–7-ci siniflər üzrə Hədiyyəli Sınaq İmtahanları
-</p>
-<p class="highlight">MQM.AZ/OTK ilə rəsmi əməkdaşlıq çərçivəsində sınaq imtahanları</p>
-<p class="highlight">8,9,10,11-ci siniflər üzrə buraxılış sınaq imtahanı</p>
-<p class="highlight">RFM, Lütfi Zadə və Lisey Gimnazya qəbul sınaq imtahanı</p>
-
-<a href="https://www.examine.space/searchexam.php?id=178&lang=1" class="btn" target="_blank">Nəticəni öyrən</a>
-<div class="stats fade">
-<div class="stat-box">
-<h3>4000+</h3>
-<p>İştirakçı Şagird</p>
-</div>
-
-<div class="stat-box">
-<h3>92%</h3>
-<p>Valideyn Məmnuniyyəti</p>
-</div>
-
-<div class="stat-box">
-<h3>3</h3>
-<p>Filial</p>
-</div>
-</div>
-</header>
-
-<section class="fade">
-<div class="container">
-<h2 class="section-title">İmtahan Formatı</h2>
-<section class="why fade">
-<div class="container">
-<h2 class="section-title">Niyə MA İmtahan Mərkəzi?</h2>
-
-<div class="why-cards fade">
-
-<div class="card fade">
-<h3>📊 Real Statistik Analiz</h3>
-<p>Hər şagird üçün detallı nəticə hesabatı təqdim olunur.</p>
-</div>
-
-<div class="card fade">
-<h3>🎁 Hədiyyəli Qaliblər</h3>
-<p>Yüksək nəticə göstərən şagirdlər üçün xüsusi mükafatlar.</p>
-</div>
-
-<div class="card fade">
-<h3>🏫 Rəsmi Əməkdaşlıq</h3>
-<p>MQM.AZ/OTK ilə rəsmi əməkdaşlıq çərçivəsində keçirilir.</p>
-</div>
-
-</div>
-</div>
-</section>
-<div class="cards fade">
-<div class="card fade">
-<h3>1–4-cü siniflər</h3>
-<p>Ana dili • Riyaziyyat • İngilis dili • Məntiq</p>
-<div class="highlight">
-50 sual 📝 <br>
-1 sual = 14 bal
-</div>
-</div>
-<div class="card fade">
-<h3>5–7-ci siniflər</h3>
-<p>Ana dili • Riyaziyyat • İngilis dili • Məntiq</p>
-<div class="highlight">
-70 sual 📝 <br>
-1 sual = 10 bal
-</div>
-</div>
-</div>
-</div>
 </section>
 
-<section class="fade">
-<div class="container">
-<h2 class="section-title">Əməkdaşlıq etdiymiz təhsil müəssisələri</h2>
+<div class="ticker"><div class="ticker-track">
+  <span class="ticker-item">1–7-ci Siniflər · Hədiyyəli Sınaq</span><span class="ticker-item">8–11-ci Siniflər · Buraxılış Sınağı</span><span class="ticker-item">RFM Qəbul İmtahanı</span><span class="ticker-item">Lütfi Zadə Olimpiadası</span><span class="ticker-item">Lisey · Gimnaziya Qəbulu</span><span class="ticker-item">MQM.AZ / OTK Rəsmi Əməkdaşı</span><span class="ticker-item">4 000+ İştirakçı Şagird</span><span class="ticker-item">Bakı · Sumqayıt · 3 Filial</span>
+  <span class="ticker-item">1–7-ci Siniflər · Hədiyyəli Sınaq</span><span class="ticker-item">8–11-ci Siniflər · Buraxılış Sınağı</span><span class="ticker-item">RFM Qəbul İmtahanı</span><span class="ticker-item">Lütfi Zadə Olimpiadası</span><span class="ticker-item">Lisey · Gimnaziya Qəbulu</span><span class="ticker-item">MQM.AZ / OTK Rəsmi Əməkdaşı</span><span class="ticker-item">4 000+ İştirakçı Şagird</span><span class="ticker-item">Bakı · Sumqayıt · 3 Filial</span>
+</div></div>
 
-<p><strong>Olympiad School</strong> – Sumqayıt şəhər, Heydər Əliyev prospekti 509 (14 mərtəbənin yanı)</p>
-
-<iframe 
-width="100%" 
-height="360" 
-src="https://www.youtube.com/embed/QVEPf5Rt3GI" 
-title="Olympiad School Videosu" 
-frameborder="0" 
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-allowfullscreen
-style="max-width:600px; border-radius:12px; margin:20px auto; display:block;">
-</iframe>
-
-<p><strong>MA Tədris Mərkəzi – Sumqayıt filialı</strong><br>
-Sülh Plaza, 2-ci mərtəbə, otaq 206/208</p>
-
-<iframe 
-width="100%" 
-height="360" 
-src="https://www.youtube.com/embed/CFxW59sz27s" 
-title="MA Tədris Mərkəzi – Sumqayıt filialı" 
-frameborder="0" 
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-allowfullscreen
-style="max-width:600px; border-radius:12px; margin:20px auto; display:block;">
-</iframe>
-
-<p><strong>MA Tədris Mərkəzi – Elmlər filialı</strong><br>
-Elmlər m/st yaxınlığı, Məmməd Rahim küçəsi 31A<br>
-(Texniki Universitetinin yaxınlığı, Milli Ensiklopediya ilə üzbəüz)</p>
-
-<iframe 
-width="100%" 
-height="360" 
-src="https://www.youtube.com/embed/F_W0pEon3Kw" 
-title="MA Tədris Mərkəzi – Elmlər filialı" 
-frameborder="0" 
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-allowfullscreen
-style="max-width:600px; border-radius:12px; margin:20px auto; display:block;">
-</iframe>
-
-</div>
+<section class="section" id="format">
+  <div class="section-header r"><div class="eyebrow">İmtahan formatı</div><h2 class="section-h2">Siniflərə görə <span class="c-blue">struktur</span></h2><p class="section-lead">Hər yaş qrupu üçün xüsusi hazırlanmış sual paketi, bal sistemi və nəticə hesabatı.</p></div>
+  <div class="format-grid">
+    <div class="fc r r-d1"><div class="fc-grade">1–4-cü Siniflər</div><div class="fc-subjects">Ana dili · Riyaziyyat · İngilis dili · Məntiq</div><div class="fc-meta"><span class="tag tag-blue">📝 50 sual</span><span class="tag tag-rose">1 sual = 14 bal</span><span class="tag tag-green">Hədiyyəli Qaliblər</span></div><div class="fc-icon">📚</div></div>
+    <div class="fc r r-d2"><div class="fc-grade">5–7-ci Siniflər</div><div class="fc-subjects">Ana dili · Riyaziyyat · İngilis dili · Məntiq</div><div class="fc-meta"><span class="tag tag-blue">📝 70 sual</span><span class="tag tag-rose">1 sual = 10 bal</span><span class="tag tag-green">Hədiyyəli Qaliblər</span></div><div class="fc-icon">🏆</div></div>
+    <div class="fc r r-d3"><div class="fc-grade">8–11-ci Siniflər</div><div class="fc-subjects">Tam proqram üzrə buraxılış sınaq imtahanı — dövlət standartları əsasında</div><div class="fc-meta"><span class="tag tag-blue">🎓 Buraxılış formatı</span><span class="tag tag-amber">MQM.AZ əsaslı</span></div><div class="fc-icon">🎓</div></div>
+    <div class="fc r r-d4"><div class="fc-grade">RFM · Lütfi Zadə · Lisey</div><div class="fc-subjects">Güclü məktəb və olimpiad mərkəzlərinə qəbul üçün ixtisaslaşmış sınaq</div><div class="fc-meta"><span class="tag tag-amber">🌟 Seçim imtahanı</span><span class="tag tag-rose">Xüsusi paket</span></div><div class="fc-icon">🌟</div></div>
+  </div>
 </section>
 
-<section id="contact" class="fade">
-<div class="container">
-<h2 class="section-title">Valideyn Rəyləri</h2>
-
-<div class="testimonials fade">
-
-<div class="testimonial fade">
-⭐⭐⭐⭐⭐  
-"İmtahan çox peşəkar təşkil olunmuşdu. Uşağımın zəif tərəflərini dəqiq gördüm."
-</div>
-<div class="testimonial fade">
-⭐⭐⭐⭐⭐ 
-Qızım 2-ci sinifde oxuyur, hər ay mənə məcbur bilet aldırır)
-</div>
-<div class="testimonial fade">
-⭐⭐⭐⭐⭐  
-"Sumqayıtda ən keyfiyyətli sınaq imtahanlarından biridir."
-</div>
-
-</div>
-
-<h2 class="section-title">Əlaqə</h2>
-<p>Qeydiyyat və ətraflı məlumat üçün:</p>
-<a href="https://wa.me/994704945094" class="btn" target="_blank">070 494 50 94</a>
-</div>
+<section class="section ghost" id="niye">
+  <div class="section-header r"><div class="eyebrow">Üstünlüklərimiz</div><h2 class="section-h2">Niyə <span class="c-blue">MA İmtahan Mərkəzi?</span></h2><p class="section-lead">Sadəcə imtahan yox — şagirdin irəliləyişini sistemli izləyən, valideynə şəffaf hesabat verən platforma.</p></div>
+  <div class="bento">
+    <div class="bento-item r r-d1"><div class="bento-icon">📊</div><h3>Real Statistik Analiz</h3><p>Hər şagird üçün detallı fərdi hesabat. Güclü və zəif tərəflər aydın görünür, valideynlər hər dəfə daha geniş mənzərəni izləyir.</p></div>
+    <div class="bento-item r r-d2"><div class="bento-big-num">92%</div><div class="bento-big-label">Valideyn məmnuniyyəti — son anket əsasında</div></div>
+    <div class="bento-item dark r r-d3"><div class="bento-icon" style="background:rgba(24,82,240,0.2);border-color:rgba(24,82,240,0.3)">🏛️</div><h3>Rəsmi Əməkdaşlıq</h3><p>MQM.AZ / OTK ilə rəsmi tərəfdaşlıq. İmtahanlar dövlət standartları əsasında keçirilir.</p></div>
+    <div class="bento-item dark span2 r r-d1"><div class="bento-icon" style="background:rgba(245,166,35,0.15);border-color:rgba(245,166,35,0.25)">🎁</div><h3>Hədiyyəli Qaliblər Sistemi</h3><p>Yüksək nəticə göstərən şagirdlər xüsusi mükafatlar alır. Bu motivasiya uşaqları daha çox çalışmağa sövq edir — valideynlər isə artım dinamikasını saylarla izləyir.</p></div>
+    <div class="bento-item r r-d2"><div class="bento-big-num" style="color:#34d363">3</div><div class="bento-big-label">Əlverişli lokasiyada filial — Bakı və Sumqayıtda</div></div>
+    <div class="bento-item r r-d3"><div class="bento-icon">⚡</div><h3>Ani Nəticə</h3><p>İmtahan bitdikdən dərhal sonra nəticə onlayn sistemdə görünür.</p></div>
+    <div class="bento-item r r-d4"><div class="bento-icon">👨‍👩‍👧</div><h3>Valideyn Paneli</h3><p>Uşağının inkişafını ay-ay izlə, digər iştirakçılarla müqayisə et.</p></div>
+  </div>
 </section>
 
-<footer class="fade">
-© 2026 MA İmtahan Mərkəzi | Bütün hüquqlar qorunur
+<section class="section light" id="filiallar">
+  <div class="section-header r"><div class="eyebrow">Filiallarımız</div><h2 class="section-h2">Əməkdaşlıq etdiyimiz <span class="c-blue">mərkəzlər</span></h2><p class="section-lead">Bakı və Sumqayıtda 3 müxtəlif lokasiyada imtahan imkanı.</p></div>
+  <div class="branches">
+    <div class="branch r"><div class="branch-info"><div class="branch-num">Filial 01 · Sumqayıt</div><div class="branch-name">Olympiad School</div><div class="branch-addr"><strong>Ünvan:</strong><br>Sumqayıt şəhər, Heydər Əliyev prospekti 509<br>(14 mərtəbənin yanı)</div><span class="branch-pill"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Sumqayıt şəhəri</span></div><div class="branch-video"><iframe src="https://www.youtube.com/embed/QVEPf5Rt3GI" title="Olympiad School" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
+    <div class="branch r"><div class="branch-info"><div class="branch-num">Filial 02 · Sumqayıt</div><div class="branch-name">MA Tədris Mərkəzi</div><div class="branch-addr"><strong>Ünvan:</strong><br>Sülh Plaza, 2-ci mərtəbə, otaq 206/208</div><span class="branch-pill"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Sumqayıt · Sülh Plaza</span></div><div class="branch-video"><iframe src="https://www.youtube.com/embed/CFxW59sz27s" title="MA Tədris Mərkəzi – Sumqayıt" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
+    <div class="branch r"><div class="branch-info"><div class="branch-num">Filial 03 · Bakı</div><div class="branch-name">MA Tədris Mərkəzi — Elmlər</div><div class="branch-addr"><strong>Ünvan:</strong><br>Elmlər m/st yaxınlığı, Məmməd Rahim küçəsi 31A<br>Texniki Universitetin yaxınlığı,<br>Milli Ensiklopediya ilə üzbəüz</div><span class="branch-pill"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Bakı · Elmlər m/st</span></div><div class="branch-video"><iframe src="https://www.youtube.com/embed/F_W0pEon3Kw" title="MA Tədris Mərkəzi – Elmlər" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
+  </div>
+</section>
+
+<section class="section ghost" id="reyler">
+  <div class="section-header r"><div class="eyebrow">Valideyn rəyləri</div><h2 class="section-h2">Onlar <span class="c-blue">nə deyir?</span></h2><p class="section-lead">4 000+ iştirakçının valideynlərindən canlı fikirlər.</p></div>
+  <div class="reviews-grid">
+    <div class="review r r-d1"><div class="review-stars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div><div class="review-text">"İmtahan çox peşəkar təşkil olunmuşdu. Uşağımın zəif tərəflərini dəqiq gördüm. Əvvəllər bilmirdim hardan başlayım, bu hesabat hər şeyi aydınlaşdırdı."</div><div class="review-author"><div class="review-avatar">S</div><div><div class="review-name">Sevinc X.</div><div class="review-role">4-cü sinif valideynisi</div></div></div></div>
+    <div class="review r r-d2"><div class="review-stars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div><div class="review-text">"Qızım 2-ci sinifdə oxuyur — hər ay mənə məcbur bilet aldırır 😄 İmtahana getməyi o özü istəyir, bu məni çox sevindirdi."</div><div class="review-author"><div class="review-avatar">N</div><div><div class="review-name">Nərmin Ə.</div><div class="review-role">2-ci sinif valideynisi</div></div></div></div>
+    <div class="review r r-d3"><div class="review-stars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div><div class="review-text">"Sumqayıtda ən keyfiyyətli sınaq imtahanlarından biridir. Oğlum RFM-ə qəbul oldu — hazırlıqda MA-nın böyük rolu var."</div><div class="review-author"><div class="review-avatar">R</div><div><div class="review-name">Rauf M.</div><div class="review-role">6-cı sinif valideynisi</div></div></div></div>
+  </div>
+</section>
+
+<section class="cta-section" id="elaqe">
+  <div class="cta-glow"></div>
+  <div class="eyebrow r">Qeydiyyat & Əlaqə</div>
+  <h2 class="section-h2 r" style="margin:0 auto 16px;max-width:640px">Uşağınızın potensialını<br><span class="c-blue">ölçməyə başlayın</span></h2>
+  <p class="section-lead r" style="margin:0 auto 48px;text-align:center">Qeydiyyat, ətraflı məlumat və növbəti imtahan tarixi üçün bizimlə əlaqə saxlayın. WhatsApp ilə 1 dəqiqədə cavab alırsınız.</p>
+  <div class="cta-grid r r-d1">
+    <a href="https://wa.me/994704945094" target="_blank" class="btn-cta btn-cta-solid"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>070 494 50 94</a>
+    <a href="mailto:maimtahanmerkezi@gmail.com" class="btn-cta btn-cta-outline"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>E-poçt Göndər</a>
+    <a href="https://www.examine.space/searchexam.php?id=178&lang=1" target="_blank" class="btn-cta btn-cta-outline"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Nəticəmi Öyrən</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-left">
+    <div class="nav-logo"><div class="logo-mark">MA</div><div class="logo-text">İmtahan Mərkəzi<small>MQM.AZ / OTK Rəsmi Əməkdaşı</small></div></div>
+    <div class="footer-copy">© 2026 MA İmtahan Mərkəzi · Bütün hüquqlar qorunur</div>
+  </div>
+  <ul class="footer-links">
+    <li><a href="#format">İmtahan Formatı</a></li>
+    <li><a href="#filiallar">Filiallar</a></li>
+    <li><a href="mailto:maimtahanmerkezi@gmail.com">E-poçt</a></li>
+    <li><a href="https://wa.me/994704945094" target="_blank">WhatsApp</a></li>
+  </ul>
 </footer>
 
-<a href="mailto:maimtahanmerkezi@gmail.com" class="whatsapp">
-✉
+<a href="https://wa.me/994704945094" target="_blank" class="wa-btn" title="WhatsApp ilə yaz">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
 
 <script>
-// Fade-in scroll animasiya
-const faders = document.querySelectorAll('.fade');
+const revealEls = document.querySelectorAll('.r');
+const ro = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('on'); ro.unobserve(e.target); } });
+}, { threshold: 0.08, rootMargin: '0px 0px -36px 0px' });
+revealEls.forEach(el => ro.observe(el));
 
-const appearOptions = {
-threshold: 0.1,
-rootMargin: "0px 0px -50px 0px"
-};
-
-const appearOnScroll = new IntersectionObserver(function(entries, appearOnScroll){
-entries.forEach(entry => {
-if(!entry.isIntersecting){
-return;
-} else {
-entry.target.classList.add('show');
-appearOnScroll.unobserve(entry.target);
-}
+const nav = document.querySelector('.nav');
+window.addEventListener('scroll', () => {
+  nav.style.background = window.scrollY > 60 ? 'rgba(6,8,15,0.92)' : 'rgba(6,8,15,0.7)';
 });
-}, appearOptions);
-
-faders.forEach(fader => {
-appearOnScroll.observe(fader);
-});
-</script>
-<script>
-const modal = document.getElementById("imageModal");
-const openBtn = document.getElementById("openGallery");
-const closeBtn = document.querySelector(".close");
-
-openBtn.onclick = function(){
-  modal.style.display = "block";
-}
-
-closeBtn.onclick = function(){
-  modal.style.display = "none";
-}
-
-window.onclick = function(event){
-  if(event.target == modal){
-    modal.style.display = "none";
-  }
-}
 </script>
 </body>
 </html>
