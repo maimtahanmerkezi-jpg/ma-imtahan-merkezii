@@ -213,6 +213,34 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:36px 56p
 .elan-btn-ghost{height:48px;padding:0 24px;border:1px solid rgba(255,255,255,0.15);border-radius:var(--r-md);font-size:14px;font-weight:500;color:var(--text-mid);display:inline-flex;align-items:center;transition:border-color .2s,color .2s}
 .elan-btn-ghost:hover{border-color:rgba(255,255,255,0.35);color:var(--white)}
 
+/* ===== QALİBLƏRİMİZ ===== */
+.qalibler-section{background:var(--ink)}
+.qalib-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:52px}
+.qalib-card{background:rgba(255,255,255,0.03);border:1.5px solid rgba(255,255,255,0.07);border-radius:var(--r-lg);overflow:hidden;position:relative;transition:border-color .3s,transform .3s,box-shadow .3s;cursor:default}
+.qalib-card:hover{border-color:rgba(245,166,35,0.45);transform:translateY(-6px);box-shadow:0 24px 60px rgba(245,166,35,0.12)}
+.qalib-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--amber),#ffdd88,var(--amber));background-size:200%;animation:shimmer 3s linear infinite;z-index:1}
+.qalib-img-wrap{width:100%;aspect-ratio:1/1;overflow:hidden;background:#0d1535;position:relative}
+.qalib-img-wrap img{width:100%;height:100%;object-fit:cover;object-position:top center;transition:transform .5s ease}
+.qalib-card:hover .qalib-img-wrap img{transform:scale(1.06)}
+.qalib-img-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#0d1535,#1a1040)}
+.qalib-img-placeholder span{font-size:48px}
+.qalib-img-placeholder p{font-size:12px;color:rgba(255,255,255,0.2);font-weight:300}
+.qalib-body{padding:20px 22px 24px}
+.qalib-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(245,166,35,0.12);border:1px solid rgba(245,166,35,0.25);color:var(--amber);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:5px 12px;border-radius:100px;margin-bottom:12px}
+.qalib-name{font-size:17px;font-weight:700;color:var(--white);margin-bottom:4px;letter-spacing:-.01em}
+.qalib-sinif{font-size:13px;font-weight:300;color:var(--text-dim);margin-bottom:12px}
+.qalib-hediyye{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:var(--r-sm);padding:10px 14px;font-size:13px;font-weight:400;color:var(--text-mid)}
+.qalib-hediyye-icon{font-size:18px;flex-shrink:0}
+.qalib-add-btn-wrap{display:flex;justify-content:center}
+.qalib-add-btn{display:inline-flex;align-items:center;gap:10px;background:rgba(245,166,35,0.1);border:1.5px dashed rgba(245,166,35,0.4);border-radius:var(--r-lg);padding:28px 48px;font-size:15px;font-weight:600;color:var(--amber);transition:background .25s,border-color .25s,transform .2s;cursor:pointer}
+.qalib-add-btn:hover{background:rgba(245,166,35,0.18);border-color:rgba(245,166,35,0.7);transform:translateY(-3px)}
+.qalib-add-btn svg{width:22px;height:22px;flex-shrink:0}
+.qalib-info-box{background:rgba(24,82,240,0.08);border:1.5px solid rgba(24,82,240,0.2);border-radius:var(--r-lg);padding:28px 32px;margin-top:20px;display:flex;align-items:flex-start;gap:20px}
+.qalib-info-icon{font-size:32px;flex-shrink:0;margin-top:2px}
+.qalib-info-text h4{font-size:15px;font-weight:700;color:var(--white);margin-bottom:6px}
+.qalib-info-text p{font-size:14px;font-weight:300;color:var(--text-dim);line-height:1.65}
+.qalib-info-text a{color:var(--blue-mid);text-decoration:underline;text-underline-offset:3px}
+
 /* RESPONSIVE */
 @media(max-width:1024px){
   .hero-inner{grid-template-columns:1fr}.hero-panel{display:none}
@@ -223,6 +251,7 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:36px 56p
   .elan-card{grid-template-columns:1fr}
   .elan-img-wrap{min-height:280px}
   .elan-img-overlay{background:linear-gradient(0deg,rgba(6,8,15,0.5) 0%,transparent 60%)}
+  .qalib-grid{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:768px){
   .nav{padding:0 20px}.nav-menu{display:none}
@@ -233,6 +262,8 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:36px 56p
   .bento{grid-template-columns:1fr}.bento-item.span2{grid-column:auto}
   .elan-body{padding:32px 24px}
   .elan-prizes{grid-template-columns:repeat(2,1fr)}
+  .qalib-grid{grid-template-columns:1fr}
+  .qalib-add-btn{padding:22px 28px;text-align:center}
 }
 </style>
 </head>
@@ -332,6 +363,75 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:36px 56p
   </div>
 </section>
 
+<section class="section qalibler-section" id="qalibler">
+  <div class="section-header r">
+    <div class="eyebrow">Keçmiş İmtahanlar</div>
+    <h2 class="section-h2">Bizim <span class="c-amber">Qaliblərimiz</span> 🏆</h2>
+    <p class="section-lead">Hədiyyə qazanan şagirdlərimiz. Sən də növbəti imtahanda bu sırada ola bilərsən!</p>
+  </div>
+
+  <!-- QALİB KARTLARI — şəkillər əlavə olunduqca buraya yeni kart əlavə et -->
+  <div class="qalib-grid">
+
+    <!-- NÜMUNƏ KART 1 — şəkil yüklədikdən sonra "qalib1.jpg" yazırsın -->
+    <div class="qalib-card r r-d1">
+      <div class="qalib-img-wrap">
+        <img src="qalib1.jpg" alt="Qalib şagird"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="qalib-img-placeholder" style="display:none">
+          <span>🏆</span>
+          <p>Şəkil tezliklə əlavə olunacaq</p>
+        </div>
+      </div>
+      <div class="qalib-body">
+        <div class="qalib-badge">🥇 700 bal</div>
+        <div class="qalib-name">Əli Məmmədov</div>
+        <div class="qalib-sinif">5-ci sinif · Mart 2026</div>
+        <div class="qalib-hediyye"><span class="qalib-hediyye-icon">💵</span>100 AZN + Diamond Sertifikat</div>
+      </div>
+    </div>
+
+    <!-- NÜMUNƏ KART 2 -->
+    <div class="qalib-card r r-d2">
+      <div class="qalib-img-wrap">
+        <img src="qalib2.jpg" alt="Qalib şagird"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="qalib-img-placeholder" style="display:none">
+          <span>🥈</span>
+          <p>Şəkil tezliklə əlavə olunacaq</p>
+        </div>
+      </div>
+      <div class="qalib-body">
+        <div class="qalib-badge">🥈 694 bal</div>
+        <div class="qalib-name">Aytən Hüseynova</div>
+        <div class="qalib-sinif">3-cü sinif · Mart 2026</div>
+        <div class="qalib-hediyye"><span class="qalib-hediyye-icon">⌚</span>Smart Saat + Qızıl Sertifikat</div>
+      </div>
+    </div>
+
+    <!-- NÜMUNƏ KART 3 -->
+    <div class="qalib-card r r-d3">
+      <div class="qalib-img-wrap">
+        <img src="qalib3.jpg" alt="Qalib şagird"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="qalib-img-placeholder" style="display:none">
+          <span>🥉</span>
+          <p>Şəkil tezliklə əlavə olunacaq</p>
+        </div>
+      </div>
+      <div class="qalib-body">
+        <div class="qalib-badge">🥉 685 bal</div>
+        <div class="qalib-name">Nicat Quliyev</div>
+        <div class="qalib-sinif">7-ci sinif · Mart 2026</div>
+        <div class="qalib-hediyye"><span class="qalib-hediyye-icon">🏓</span>Tennis Dəsti + Gümüş Sertifikat</div>
+      </div>
+    </div>
+
+  </div>
+  <!-- YENİ QALIB ƏLAVƏ ETMƏK ÜÇÜN YUXARIYA KOPYALA -->
+
+</section>
+
 <section class="section" id="format">
   <div class="section-header r"><div class="eyebrow">İmtahan formatı</div><h2 class="section-h2">Siniflərə görə <span class="c-blue">struktur</span></h2><p class="section-lead">Hər yaş qrupu üçün xüsusi hazırlanmış sual paketi, bal sistemi və nəticə hesabatı.</p></div>
   <div class="format-grid">
@@ -383,7 +483,7 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:36px 56p
   <p class="section-lead r" style="margin:0 auto 48px;text-align:center">Qeydiyyat, ətraflı məlumat və növbəti imtahan tarixi üçün bizimlə əlaqə saxlayın. WhatsApp ilə 1 dəqiqədə cavab alırsınız.</p>
   <div class="cta-grid r r-d1">
     <a href="https://wa.me/994704945094" target="_blank" class="btn-cta btn-cta-solid"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>070 494 50 94</a>
-    <a href="mailto:maimtahanmerkezi@gmail.com" class="btn-cta btn-cta-outline"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>E-poçt Göndər</a>
+    <a href="/cdn-cgi/l/email-protection#c8a5a9a1a5bca9a0a9a6a5adbaa3adb2a188afa5a9a1a4e6aba7a5" class="btn-cta btn-cta-outline"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>E-poçt Göndər</a>
     <a href="https://www.examine.space/searchexam.php?id=178&lang=1" target="_blank" class="btn-cta btn-cta-outline"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Nəticəmi Öyrən</a>
   </div>
 </section>
@@ -395,9 +495,10 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:36px 56p
   </div>
   <ul class="footer-links">
     <li><a href="#elanlar">Elanlar</a></li>
+    <li><a href="#qalibler">Qaliblərimiz</a></li>
     <li><a href="#format">İmtahan Formatı</a></li>
     <li><a href="#filiallar">Filiallar</a></li>
-    <li><a href="mailto:maimtahanmerkezi@gmail.com">E-poçt</a></li>
+    <li><a href="/cdn-cgi/l/email-protection#f29f939b9f86939a939c9f97809997889bb2959f939b9edc919d9f">E-poçt</a></li>
     <li><a href="https://wa.me/994704945094" target="_blank">WhatsApp</a></li>
   </ul>
 </footer>
@@ -406,17 +507,9 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:36px 56p
   <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
 </a>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const revealEls = document.querySelectorAll('.r');
 const ro = new IntersectionObserver((entries) => {
   entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('on'); ro.unobserve(e.target); } });
 }, { threshold: 0.08, rootMargin: '0px 0px -36px 0px' });
 revealEls.forEach(el => ro.observe(el));
-
-const nav = document.querySelector('.nav');
-window.addEventListener('scroll', () => {
-  nav.style.background = window.scrollY > 60 ? 'rgba(6,8,15,0.92)' : 'rgba(6,8,15,0.7)';
-});
-</script>
-</body>
-</html>
