@@ -284,7 +284,8 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:36px 56p
   </ul>
 </nav>
 
-<section class="hero">
+<section class="hero" id="heroSection">
+  <canvas id="heroBg" style="position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none"></canvas>
   <div class="hero-spot hero-spot-1"></div>
   <div class="hero-spot hero-spot-2"></div>
   <div class="hero-spot hero-spot-3"></div>
@@ -305,7 +306,7 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:36px 56p
       </div>
     </div>
     <div class="hero-panel">
-      <div class="glass-card"><div class="gc-row"><div><div class="gc-label">İştirakçı şagird</div><div class="gc-val blue">4 000+</div><div class="gc-sub">Bu günə qədər</div></div><div><div class="gc-label">Filial sayı</div><div class="gc-val rose">5</div><div class="gc-sub">Bakı · Sumqayıt</div></div></div></div>
+      <div class="glass-card"><div class="gc-row"><div><div class="gc-label">İştirakçı şagird</div><div class="gc-val blue">4 000+</div><div class="gc-sub">Bu günə qədər</div></div><div><div class="gc-label">Filial sayı</div><div class="gc-val rose">3</div><div class="gc-sub">Bakı · Sumqayıt</div></div></div></div>
       <div class="glass-card"><div class="gc-label">Valideyn məmnuniyyəti</div><div class="gc-val amber">92%</div><div class="gc-sub">Son anket nəticəsi əsasında</div></div>
       <div class="glass-card"><div class="gc-label">Əməkdaşlıq</div><div class="gc-val" style="font-size:22px">MQM.AZ / OTK</div><div class="gc-sub">Rəsmi tərəfdaşlıq çərçivəsində</div></div>
     </div>
@@ -324,6 +325,41 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:36px 56p
     <h2 class="section-h2">Növbəti <span class="c-amber">imtahan</span></h2>
     <p class="section-lead">Yaxınlaşan sınaq imtahanı haqqında ətraflı məlumat. Vaxtında qeydiyyatdan keç!</p>
   </div>
+  <!-- ELAN 2: Pony Academy -->
+  <div class="elan-card r" style="margin-bottom:32px">
+    <div class="elan-img-wrap">
+      <img src='elan2.jpg' alt='Pony Academy Baharın İlk Sınağı' onerror="this.style.display='none'">
+      <div class="elan-img-overlay"></div>
+    </div>
+    <div class="elan-body">
+      <div class="elan-badge"><span class="elan-badge-dot"></span>Aktiv Elan</div>
+      <div class="elan-title">1–7-ci siniflər üçün<br><span class="c-rose">Pony-də</span> <span class="c-amber">Hədiyyəli</span><br>"Baharın İlk Sınağı"</div>
+      <div class="elan-subtitle">Pony Academy-də möhtəşəm hədiyyəli sınaq! 19 Mart tarixinə kimi qeydiyyatdan keçənlərə endirimli qiymət!</div>
+      <div class="elan-date-row">
+        <div class="elan-date-icon">📅</div>
+        <div>
+          <div class="elan-date-text">29 Mart 2026</div>
+          <div class="elan-date-sub">Pony Academy — Sülh Plaza, 2-ci mərtəbə, otaq 206</div>
+        </div>
+      </div>
+      <div class="elan-prizes">
+        <div class="elan-prize"><div class="elan-prize-icon">💵</div><div class="elan-prize-score">700 bal</div><div class="elan-prize-gift">100 AZN + Diamond sertifikat</div></div>
+        <div class="elan-prize"><div class="elan-prize-icon">⌚</div><div class="elan-prize-score">690–699</div><div class="elan-prize-gift">Smart saat + qızıl sertifikat</div></div>
+        <div class="elan-prize"><div class="elan-prize-icon">🏓</div><div class="elan-prize-score">680–689</div><div class="elan-prize-gift">Tennis dəsti + gümüş sertifikat</div></div>
+        <div class="elan-prize"><div class="elan-prize-icon">🔊</div><div class="elan-prize-score">670–679</div><div class="elan-prize-gift">Səs ucaldıcı + bürünc sertifikat</div></div>
+        <div class="elan-prize"><div class="elan-prize-icon">🎖️</div><div class="elan-prize-score">600+</div><div class="elan-prize-gift">Təltifnamə + sertifikat</div></div>
+        <div class="elan-prize"><div class="elan-prize-icon">💰</div><div class="elan-prize-score">Qiymət</div><div class="elan-prize-gift">8₼ deyil, 7₼ (19 Mart-a kimi)</div></div>
+      </div>
+      <div class="elan-actions">
+        <a href="https://wa.me/994504050809" target="_blank" class="elan-btn-main">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Qeydiyyat — 050 405 08 09
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ELAN 1: Olympiad School -->
   <div class="elan-card r">
     <div class="elan-img-wrap">
       <!-- ŞƏKİL: elan1.jpg faylını GitHub-a yüklədikdən sonra bu avtomatik görünəcək -->
@@ -404,19 +440,8 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:36px 56p
           <div class="qalib-img-placeholder" style="display:none"><span>🎧</span><p>Şəkil tezliklə</p></div>
         </div>
         <div class="qalib-body">
-          <div class="qalib-name">Qaçayzadə Özal</div>
-          <div class="qalib-sinif">1-ci sinif · Fevral 2026</div>
-          <div class="qalib-hediyye"><span class="qalib-hediyye-icon">🎧</span>Qulaqcıq + Bürünc Sertifikat</div>
-        </div>
-      </div>
-     <div class="qalib-card r r-d1">
-        <div class="qalib-img-wrap">
-          <img src="fevral_650_2.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="qalib-img-placeholder" style="display:none"><span>🎧</span><p>Şəkil tezliklə</p></div>
-        </div>
-        <div class="qalib-body">
-          <div class="qalib-name">Şirinli Türkay</div>
-          <div class="qalib-sinif">1-ci sinif · Fevral 2026</div>
+          <div class="qalib-name">Ad Soyad</div>
+          <div class="qalib-sinif">N-ci sinif · Fevral 2026</div>
           <div class="qalib-hediyye"><span class="qalib-hediyye-icon">🎧</span>Qulaqcıq + Bürünc Sertifikat</div>
         </div>
       </div>
@@ -450,17 +475,6 @@ footer{background:var(--ink);border-top:1px solid var(--border);padding:36px 56p
         <div class="qalib-body">
           <div class="qalib-name">Qəhrəmanlı Leyla</div>
           <div class="qalib-sinif">1-ci sinif · Fevral 2026</div>
-          <div class="qalib-hediyye"><span class="qalib-hediyye-icon">⌚</span>Qol Saatı + Təltifnamə</div>
-        </div>
-      </div>
-     <div class="qalib-card r r-d2">
-        <div class="qalib-img-wrap">
-          <img src="fevral_630_3.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="qalib-img-placeholder" style="display:none"><span>⌚</span><p>Şəkil tezliklə</p></div>
-        </div>
-        <div class="qalib-body">
-          <div class="qalib-name">Allahverdiyev Əbəlfəz</div>
-          <div class="qalib-sinif">4-ci sinif · Fevral 2026</div>
           <div class="qalib-hediyye"><span class="qalib-hediyye-icon">⌚</span>Qol Saatı + Təltifnamə</div>
         </div>
       </div>
@@ -600,6 +614,257 @@ const ro = new IntersectionObserver((entries) => {
   entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('on'); ro.unobserve(e.target); } });
 }, { threshold: 0.08, rootMargin: '0px 0px -36px 0px' });
 revealEls.forEach(el => ro.observe(el));
+
+
+
+// ===== MA HERO BACKGROUND =====
+(function(){
+  const canvas = document.getElementById('heroBg');
+  if(!canvas) return;
+  const hero = document.getElementById('heroSection');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+
+  function resize(){
+    W = hero.offsetWidth;
+    H = hero.offsetHeight;
+    canvas.width = W;
+    canvas.height = H;
+  }
+
+  const TEXTS = ['MA','İMTAHAN','MƏRKƏZİ','MA','UĞURUN','SƏNIN','İMTAHAN','MƏRKƏZİ','MA','BİLİK','QƏLƏBƏ','İMTAHAN','MƏRKƏZİ','MA','UĞUR'];
+  const COLORS = [
+    'rgba(24,82,240,',
+    'rgba(45,106,255,',
+    'rgba(245,166,35,',
+    'rgba(232,59,59,',
+    'rgba(100,180,255,',
+    'rgba(160,100,255,',
+    'rgba(40,200,160,',
+  ];
+
+  // Single floating word block
+  function Block(i){
+    this.id = i;
+    this._init();
+  }
+
+  Block.prototype._init = function(){
+    this.text = TEXTS[this.id % TEXTS.length];
+    this.fontSize = 16 + Math.random()*38;
+    this.colorBase = COLORS[Math.floor(Math.random()*COLORS.length)];
+    this.alpha = 0.12 + Math.random()*0.22;
+
+    // position anywhere in hero
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+
+    // continuous drift velocity
+    this.vx = (Math.random()-0.5)*0.5;
+    this.vy = (Math.random()-0.5)*0.4 - 0.15; // slight upward bias
+
+    // individual letter offsets for wave effect
+    this.waveOffset = Math.random()*Math.PI*2;
+    this.waveSpeed = 0.012 + Math.random()*0.01;
+    this.waveAmp = 1.5 + Math.random()*2;
+
+    // shatter state
+    this.shards = [];
+    this.broken = false;
+    this.respawning = false;
+    this.respawnTimer = 0;
+    this.respawnDelay = 0;
+
+    // fade in
+    this.fadeIn = 0;
+  };
+
+  Block.prototype._makeShards = function(){
+    const chars = this.text.split('');
+    const spacing = this.fontSize * 0.64;
+    const totalW = chars.length * spacing;
+    this.shards = chars.map((ch, i)=>{
+      const lx = this.x - totalW/2 + i*spacing + spacing/2;
+      const ly = this.y;
+      return {
+        ch, lx, ly,
+        x: lx, y: ly,
+        vx: (Math.random()-0.5)*14,
+        vy: (Math.random()-0.5)*12 - 4,
+        rot: 0,
+        vrot: (Math.random()-0.5)*0.2,
+        alpha: this.alpha,
+        life: 1
+      };
+    });
+  };
+
+  Block.prototype.shatter = function(){
+    if(this.broken || this.respawning) return;
+    this.broken = true;
+    this._makeShards();
+  };
+
+  Block.prototype.update = function(ts){
+    if(this.respawning){
+      this.respawnTimer++;
+      if(this.respawnTimer > this.respawnDelay){
+        // respawn at random NEW position
+        this.text = TEXTS[Math.floor(Math.random()*TEXTS.length)];
+        this.fontSize = 16 + Math.random()*38;
+        this.colorBase = COLORS[Math.floor(Math.random()*COLORS.length)];
+        this.alpha = 0.12 + Math.random()*0.22;
+        this.x = Math.random() * W;
+        this.y = H + 20 + Math.random()*60; // spawn from bottom
+        this.vx = (Math.random()-0.5)*0.5;
+        this.vy = -(0.2 + Math.random()*0.4);
+        this.waveOffset = Math.random()*Math.PI*2;
+        this.broken = false;
+        this.respawning = false;
+        this.shards = [];
+        this.fadeIn = 0;
+      }
+      return;
+    }
+
+    if(this.broken){
+      let allDead = true;
+      this.shards.forEach(s=>{
+        s.x += s.vx;
+        s.y += s.vy;
+        s.vy += 0.3;
+        s.vx *= 0.97;
+        s.rot += s.vrot;
+        s.life -= 0.02;
+        s.alpha = this.alpha * Math.max(0, s.life);
+        if(s.life > 0) allDead = false;
+      });
+      if(allDead){
+        this.respawning = true;
+        this.respawnTimer = 0;
+        this.respawnDelay = 30 + Math.random()*60;
+      }
+      return;
+    }
+
+    // normal drift
+    this.waveOffset += this.waveSpeed;
+    this.x += this.vx + Math.cos(this.waveOffset*0.7)*0.12;
+    this.y += this.vy + Math.sin(this.waveOffset)*0.1;
+
+    // fade in
+    if(this.fadeIn < 1) this.fadeIn = Math.min(1, this.fadeIn + 0.015);
+
+    // wrap around edges
+    const margin = this.fontSize * this.text.length * 0.4;
+    if(this.y < -this.fontSize*2){
+      this.y = H + this.fontSize;
+      this.x = Math.random()*W;
+    }
+    if(this.x < -margin) this.x = W + margin;
+    if(this.x > W + margin) this.x = -margin;
+  };
+
+  Block.prototype.draw = function(ts){
+    if(this.respawning) return;
+    const chars = this.text.split('');
+    const spacing = this.fontSize * 0.64;
+    const totalW = chars.length * spacing;
+
+    if(this.broken){
+      this.shards.forEach(s=>{
+        if(s.life<=0) return;
+        ctx.save();
+        ctx.translate(s.x, s.y);
+        ctx.rotate(s.rot);
+        ctx.globalAlpha = Math.max(0, s.alpha);
+        ctx.font = `800 ${this.fontSize}px Outfit,sans-serif`;
+        ctx.fillStyle = this.colorBase + '1)';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(s.ch, 0, 0);
+        ctx.restore();
+      });
+      return;
+    }
+
+    const baseAlpha = this.alpha * this.fadeIn;
+    chars.forEach((ch, i)=>{
+      const lx = this.x - totalW/2 + i*spacing + spacing/2;
+      const wave = Math.sin(this.waveOffset + i*0.6) * this.waveAmp;
+      const ly = this.y + wave;
+      const letterAlpha = baseAlpha * (0.75 + 0.25*Math.sin(this.waveOffset*1.3 + i));
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, letterAlpha);
+      ctx.font = `800 ${this.fontSize}px Outfit,sans-serif`;
+      ctx.fillStyle = this.colorBase + '1)';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(ch, lx, ly);
+      ctx.restore();
+    });
+  };
+
+  // Init blocks — more of them
+  const COUNT = 22;
+  let blocks = [];
+
+  function buildBlocks(){
+    blocks = [];
+    for(let i=0;i<COUNT;i++){
+      const b = new Block(i);
+      // spread evenly at start
+      b.x = (i/COUNT)*W + Math.random()*100 - 50;
+      b.y = Math.random()*H;
+      b.fadeIn = Math.random()*0.5;
+      blocks.push(b);
+    }
+  }
+
+  // pointer interaction
+  function handlePointer(ex, ey){
+    blocks.forEach(b=>{
+      if(b.broken||b.respawning) return;
+      const chars = b.text.split('');
+      const span = chars.length * b.fontSize * 0.64;
+      const dx = ex - b.x, dy = ey - b.y;
+      if(Math.abs(dx) < span/1.6 && Math.abs(dy) < b.fontSize*1.2) b.shatter();
+    });
+  }
+
+  hero.addEventListener('mousemove', e=>{
+    const r = hero.getBoundingClientRect();
+    handlePointer(e.clientX-r.left, e.clientY-r.top);
+  });
+  hero.addEventListener('click', e=>{
+    const r = hero.getBoundingClientRect();
+    handlePointer(e.clientX-r.left, e.clientY-r.top);
+  });
+  hero.addEventListener('touchstart', e=>{
+    const r = hero.getBoundingClientRect();
+    Array.from(e.touches).forEach(t=>handlePointer(t.clientX-r.left, t.clientY-r.top));
+  },{passive:true});
+
+  function animate(ts){
+    ctx.clearRect(0,0,W,H);
+    blocks.forEach(b=>{ b.update(ts); b.draw(ts); });
+    requestAnimationFrame(animate);
+  }
+
+  function init(){
+    resize();
+    buildBlocks();
+    requestAnimationFrame(animate);
+  }
+
+  window.addEventListener('resize',()=>{ resize(); buildBlocks(); });
+
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(init);
+  } else {
+    setTimeout(init, 300);
+  }
+})();
 </script>
 </body>
 </html>
