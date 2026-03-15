@@ -34,7 +34,7 @@ a{text-decoration:none;color:inherit}
 .nav-cta:hover{background:var(--blue-mid);box-shadow:0 0 24px var(--blue-glow);transform:translateY(-1px)}
 .nav-game{height:38px;padding:0 18px;background:rgba(245,166,35,0.15);border:1px solid rgba(245,166,35,0.4);border-radius:var(--r-sm);font-size:13px;font-weight:600;color:var(--amber)!important;display:inline-flex;align-items:center;gap:6px;transition:background .2s,transform .15s}
 .nav-game:hover{background:rgba(245,166,35,0.25);transform:translateY(-1px)}
-.hero{min-height:100vh;display:flex;align-items:center;padding:100px 56px 80px;position:relative;overflow:hidden;background:linear-gradient(135deg,#e8f0ff 0%,#f0f5ff 50%,#dceeff 100%)}
+.hero{min-height:100svh;display:flex;align-items:center;padding:100px 56px 80px;position:relative;overflow:hidden;background:linear-gradient(135deg,#e8f0ff 0%,#f0f5ff 50%,#dceeff 100%)}
 .hero-spot{position:absolute;border-radius:50%;pointer-events:none;filter:blur(80px);z-index:0}
 .hero-spot-1{width:700px;height:700px;background:radial-gradient(circle,rgba(24,82,240,0.35) 0%,transparent 70%);top:-200px;right:-100px;animation:driftA 14s ease-in-out infinite alternate}
 .hero-spot-2{width:500px;height:500px;background:radial-gradient(circle,rgba(232,59,59,0.18) 0%,transparent 70%);bottom:-100px;left:5%;animation:driftB 18s ease-in-out infinite alternate}
@@ -238,21 +238,30 @@ footer{background:#0a1e50;border-top:1px solid rgba(255,255,255,0.1);padding:36p
 .hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 .mobile-menu{display:none;position:fixed;top:68px;left:0;right:0;background:rgba(240,245,255,0.97);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:20px 24px;flex-direction:column;gap:4px;z-index:499}
 .mobile-menu.open{display:flex}
-.mobile-menu a{font-size:15px;font-weight:500;color:rgba(10,30,80,0.7);padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);transition:color .2s}
+.mobile-menu a{font-size:15px;font-weight:500;color:rgba(10,30,80,0.7);padding:12px 0;border-bottom:1px solid rgba(24,82,240,0.08);transition:color .2s}
 .mobile-menu a:last-child{border-bottom:none}
 .mobile-menu a:hover{color:#0a1e50}
 .mobile-menu .nav-cta{margin-top:8px;justify-content:center;height:46px;border-radius:var(--r-sm)}
 .mobile-menu .nav-game{margin-top:4px;justify-content:center;height:46px;border-radius:var(--r-sm)}
 @media(max-width:768px){
-  .nav{padding:0 20px}.nav-menu{display:none}.hamburger{display:flex}.nav-game-fixed{display:inline-flex}
-  .section{padding:72px 24px}
-  .hero{padding:90px 24px 64px}
-  .cta-section{padding:80px 24px}
-  footer{padding:28px 24px;flex-direction:column;text-align:center}.footer-links{justify-content:center}
+  .nav{padding:0 16px}.nav-menu{display:none}.hamburger{display:flex}.nav-game-fixed{display:inline-flex}
+  .section{padding:60px 16px}
+  .hero{padding:80px 16px 48px;min-height:auto}
+  .hero-h1{font-size:clamp(32px,8vw,52px)}
+  .hero-lead{font-size:15px}
+  .hero-actions{flex-direction:column}
+  .btn-primary,.btn-ghost{width:100%;justify-content:center}
+  .cta-section{padding:64px 16px}
+  footer{padding:24px 16px;flex-direction:column;text-align:center}.footer-links{justify-content:center;flex-wrap:wrap;gap:16px}
   .bento{grid-template-columns:1fr}.bento-item.span2{grid-column:auto}
-  .elan-body{padding:32px 24px}
+  .elan-body{padding:24px 16px}
   .elan-prizes{grid-template-columns:repeat(2,1fr)}
   .qalib-grid{grid-template-columns:repeat(2,1fr)}
+  .branch-info{padding:24px 16px}
+  .format-grid{grid-template-columns:1fr}
+  .reviews-grid{grid-template-columns:1fr}
+  .hero-chips{gap:8px}
+  .chip{font-size:12px;padding:6px 10px}
 }
 </style>
 </head>
