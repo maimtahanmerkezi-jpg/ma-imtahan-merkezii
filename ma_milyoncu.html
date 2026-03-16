@@ -16,7 +16,7 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 #startScreen{text-align:center;padding:40px 20px}
 .logo-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(24,82,240,0.1);border:1px solid rgba(24,82,240,0.3);color:#1852f0;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:7px 18px;border-radius:100px;margin-bottom:20px}
 .game-title{font-size:clamp(32px,7vw,60px);font-weight:800;letter-spacing:-.03em;line-height:1.05;margin-bottom:10px;color:#0a1e50}
-.blue{color:#1852f0}.amber{color:#f5a623}
+.blue{color:#1852f0}.amber{color:#b30000}
 .game-sub{font-size:15px;font-weight:300;color:rgba(10,30,80,0.55);margin-bottom:8px}
 .q-count-badge{display:inline-block;background:rgba(24,82,240,0.08);border:1px solid rgba(24,82,240,0.2);color:#1852f0;font-size:12px;font-weight:600;padding:5px 14px;border-radius:100px;margin-bottom:28px}
 .start-btn{height:54px;padding:0 48px;background:#1852f0;border:none;border-radius:14px;font-size:17px;font-weight:700;color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .2s,transform .15s;box-shadow:0 4px 28px rgba(24,82,240,0.3)}
@@ -47,20 +47,20 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .q-text{font-size:clamp(15px,3vw,18px);font-weight:600;line-height:1.6;color:#0a1e50}
 
 .jokers{display:flex;gap:8px;justify-content:center;margin-bottom:14px;flex-wrap:wrap}
-.joker-btn{height:36px;padding:0 18px;background:#ffffff;border:1.5px solid rgba(24,82,240,0.25);border-radius:100px;font-size:12px;font-weight:600;color:#1852f0;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;box-shadow:0 1px 6px rgba(24,82,240,0.08)}
-.joker-btn:hover:not([disabled]){background:#1852f0;color:#fff;border-color:#1852f0}
+.joker-btn{height:36px;padding:0 18px;background:#ffffff;border:1.5px solid rgba(179,0,0,0.3);border-radius:100px;font-size:12px;font-weight:600;color:#b30000;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;box-shadow:0 1px 6px rgba(179,0,0,0.1)}
+.joker-btn:hover:not([disabled]){background:#b30000;color:#fff;border-color:#b30000}
 .joker-btn[disabled]{opacity:.3;cursor:not-allowed}
 
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
 .ans-btn{background:#ffffff;border:1.5px solid rgba(24,82,240,0.15);border-radius:12px;padding:14px 14px;font-size:clamp(13px,2.5vw,15px);font-weight:500;color:#0a1e50;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;text-align:left;line-height:1.45;display:flex;align-items:flex-start;gap:8px;box-shadow:0 1px 6px rgba(24,82,240,0.06)}
 .ans-btn:hover:not([disabled]):not(.hidden){background:#e8f0ff;border-color:#1852f0;transform:translateY(-1px)}
 .ans-btn.correct{background:rgba(22,163,74,0.12)!important;border-color:#16a34a!important;color:#15803d!important}
-.ans-btn.wrong{background:rgba(220,38,38,0.08)!important;border-color:#dc2626!important;color:#b91c1c!important}
+.ans-btn.wrong{background:rgba(179,0,0,0.08)!important;border-color:#b30000!important;color:#b30000!important}
 .ans-btn.hidden{opacity:.15;pointer-events:none}
 .ans-btn[disabled]{cursor:default}
 .ans-letter{font-size:11px;font-weight:800;color:#1852f0;flex-shrink:0;margin-top:2px;min-width:14px}
 .ans-btn.correct .ans-letter{color:#16a34a}
-.ans-btn.wrong .ans-letter{color:#dc2626}
+.ans-btn.wrong .ans-letter{color:#b30000}
 
 /* END */
 #endScreen{display:none;text-align:center;padding:40px 20px}
@@ -71,8 +71,8 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .end-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .wa-btn{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 26px;background:#25d366;border:none;border-radius:12px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;text-decoration:none;transition:transform .15s}
 .wa-btn:hover{transform:translateY(-2px)}
-.again-btn{height:48px;padding:0 26px;background:#ffffff;border:1.5px solid rgba(24,82,240,0.25);border-radius:12px;font-size:14px;font-weight:600;color:#1852f0;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s}
-.again-btn:hover{background:#1852f0;color:#fff}
+.again-btn{height:48px;padding:0 26px;background:#ffffff;border:1.5px solid rgba(179,0,0,0.3);border-radius:12px;font-size:14px;font-weight:600;color:#b30000;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s}
+.again-btn:hover{background:#b30000;color:#fff}
 </style>
 </head>
 <body>
