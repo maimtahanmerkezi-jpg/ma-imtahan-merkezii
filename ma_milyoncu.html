@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="az">
 <head>
@@ -64,6 +63,7 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .wa-btn:hover{transform:translateY(-2px)}
 .again-btn{height:48px;padding:0 26px;background:#ffffff;border:1.5px solid rgba(24,82,240,0.25);border-radius:12px;font-size:14px;font-weight:600;color:#1852f0;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s}
 .again-btn:hover{background:#1852f0;color:#fff}
+.pool-info{font-size:11px;color:rgba(10,30,80,0.3);margin-top:10px}
 </style>
 </head>
 <body>
@@ -82,6 +82,7 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
       <span class="chip">Sual ötür</span>
       <span class="chip">Tamaşaçı joker</span>
     </div>
+    <div class="pool-info" id="poolInfo"></div>
   </div>
   <div id="gameScreen">
     <div class="top-bar">
@@ -329,7 +330,6 @@ var ALL_QUESTIONS=[
 {q:'Dünyada ən böyük ada hansıdır?',a:['Qrenlandiya','Papua Yeni Qvineya','Borneo','Madagaskar'],c:0},
 {q:'İnsanlığın ən qədim yazı sistemi hansıdır?',a:['Misir heroqlifi','Çin yazısı','Şumer kuneyazısı','Hind yazısı'],c:2},
 {q:'Nüvə silahını ilk istifadə edən ölkə hansıdır?',a:['Rusiya','ABŞ','Fransa','Böyük Britaniya'],c:1},
-// ===== ƏLAVƏ 1000 ÜÇÜN YENİ SUALLAR =====
 {q:'Hansı ölkə dünyada ən böyük yarımadasına malikdir?',a:['Ərəbistan','Hindistan','Skandinaviya','Kola'],c:0},
 {q:'Dünya əhalisinin neçə faizi Asiyada yaşayır?',a:['40%','55%','60%','70%'],c:2},
 {q:'Hansı şəhər Avstraliyanın paytaxtıdır?',a:['Sidney','Melburn','Kanberra','Brisben'],c:2},
@@ -580,11 +580,41 @@ var ALL_QUESTIONS=[
 ];
 
 var LETTERS=['A','B','C','D'];
+var STORAGE_KEY='bmq_seen_v1';
 var gameQuestions=[];
 var cur=0,used50=false,usedSkip=false,usedAud=false,answered=false;
 
 function shuffle(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
-function pickQuestions(){return shuffle(ALL_QUESTIONS).slice(0,12);}
+
+// ===== YENİLƏNMİŞ pickQuestions — eyni sual 1000-ə qədər təkrarlanmaz =====
+function pickQuestions(){
+  var totalCount=ALL_QUESTIONS.length;
+  var seen=[];
+  try{var raw=localStorage.getItem(STORAGE_KEY);if(raw)seen=JSON.parse(raw);}catch(e){seen=[];}
+  var available=[];
+  for(var i=0;i<totalCount;i++){if(seen.indexOf(i)===-1)available.push(i);}
+  // Bütün suallar görülübsə — havuzu sıfırla
+  if(available.length<12){
+    seen=[];available=[];
+    for(var i=0;i<totalCount;i++)available.push(i);
+    try{localStorage.removeItem(STORAGE_KEY);}catch(e){}
+  }
+  var shuffled=shuffle(available);
+  var chosen=shuffled.slice(0,12);
+  var newSeen=seen.concat(chosen);
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(newSeen));}catch(e){}
+  var result=[];
+  for(var k=0;k<chosen.length;k++)result.push(ALL_QUESTIONS[chosen[k]]);
+  return result;
+}
+
+function getPoolStatus(){
+  var total=ALL_QUESTIONS.length;
+  var seen=[];
+  try{var raw=localStorage.getItem(STORAGE_KEY);if(raw)seen=JSON.parse(raw);}catch(e){}
+  var remaining=total-seen.length;
+  return {seen:seen.length,remaining:remaining,total:total};
+}
 
 function buildLadder(){
   var el=document.getElementById('ladder');el.innerHTML='';
@@ -647,67 +677,20 @@ function showEnd(win){
   else{playWrongSound();document.getElementById('endEmoji').textContent='😔';document.getElementById('endTitle').textContent=(cur+1)+'-ci sualda dayandınız';document.getElementById('endScore').textContent=cur+' sualdan düzgün cavab verdiniz';document.getElementById('endMsg').textContent='Narahat olmayın! Yenidən cəhd edin — hər oyunda tamamilə fərqli suallar çıxır!';}
 }
 
-// ===== SƏS SİSTEMİ =====
-var audioCtx = null;
+var audioCtx=null;
+function getAudioCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function playTone(freq,duration,type,vol){try{var ctx=getAudioCtx();var osc=ctx.createOscillator();var gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.type=type||'sine';osc.frequency.setValueAtTime(freq,ctx.currentTime);gain.gain.setValueAtTime(vol||0.3,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+duration);osc.start(ctx.currentTime);osc.stop(ctx.currentTime+duration);}catch(e){}}
+function playStartSound(){var notes=[[523,0.12],[659,0.12],[784,0.12],[1047,0.25],[880,0.1],[1047,0.35]];var t=0;notes.forEach(function(n){setTimeout(function(){playTone(n[0],n[1]+0.15,'triangle',0.35);},t);t+=n[1]*1000*0.85;});}
+function playCorrectSound(){playTone(523,0.1,'sine',0.3);setTimeout(function(){playTone(659,0.1,'sine',0.3);},80);setTimeout(function(){playTone(784,0.1,'sine',0.3);},160);setTimeout(function(){playTone(1047,0.25,'sine',0.35);},240);}
+function playWrongSound(){playTone(300,0.15,'sawtooth',0.3);setTimeout(function(){playTone(200,0.3,'sawtooth',0.25);},150);}
+function playWinSound(){var melody=[523,659,784,1047,784,880,1047,1319];melody.forEach(function(f,i){setTimeout(function(){playTone(f,0.2,'triangle',0.3);},i*120);});}
 
-function getAudioCtx(){
-  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
+function updatePoolInfo(){
+  var s=getPoolStatus();
+  var el=document.getElementById('poolInfo');
+  if(el)el.textContent='Görülən: '+s.seen+' / '+s.total+' sual · Qalan: '+s.remaining;
 }
 
-function playTone(freq, duration, type, vol){
-  try {
-    var ctx = getAudioCtx();
-    var osc = ctx.createOscillator();
-    var gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.type = type || 'sine';
-    osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    gain.gain.setValueAtTime(vol || 0.3, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + duration);
-  } catch(e){}
-}
-
-function playStartSound(){
-  // Dramatik giriş melodiyası
-  var notes = [
-    [523, 0.12], [659, 0.12], [784, 0.12], [1047, 0.25],
-    [880, 0.1], [1047, 0.35]
-  ];
-  var t = 0;
-  notes.forEach(function(n){
-    setTimeout(function(){ playTone(n[0], n[1]+0.15, 'triangle', 0.35); }, t);
-    t += n[1] * 1000 * 0.85;
-  });
-}
-
-function playCorrectSound(){
-  playTone(523, 0.1, 'sine', 0.3);
-  setTimeout(function(){ playTone(659, 0.1, 'sine', 0.3); }, 80);
-  setTimeout(function(){ playTone(784, 0.1, 'sine', 0.3); }, 160);
-  setTimeout(function(){ playTone(1047, 0.25, 'sine', 0.35); }, 240);
-}
-
-function playWrongSound(){
-  playTone(300, 0.15, 'sawtooth', 0.3);
-  setTimeout(function(){ playTone(200, 0.3, 'sawtooth', 0.25); }, 150);
-}
-
-function playWinSound(){
-  var melody = [523,659,784,1047,784,880,1047,1319];
-  melody.forEach(function(f, i){
-    setTimeout(function(){ playTone(f, 0.2, 'triangle', 0.3); }, i * 120);
-  });
-}
-
-function playTickSound(){
-  playTone(800, 0.05, 'square', 0.1);
-}
-
-// ===== OYUN FUNKSİYALARI =====
 function startGame(){
   cur=0;used50=false;usedSkip=false;usedAud=false;answered=false;
   gameQuestions=pickQuestions();
@@ -717,7 +700,14 @@ function startGame(){
   document.getElementById('gameScreen').style.display='block';
   buildLadder();renderQ();
 }
-function restartGame(){document.getElementById('endScreen').style.display='none';startGame();}
+function restartGame(){
+  document.getElementById('endScreen').style.display='none';
+  document.getElementById('startScreen').style.display='block';
+  updatePoolInfo();
+}
+
+// Başlangıcda pool məlumatını göstər
+updatePoolInfo();
 </script>
 </body>
 </html>
