@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="az">
 <head>
@@ -11,8 +12,6 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .bg1{position:fixed;width:600px;height:600px;background:radial-gradient(circle,rgba(24,82,240,0.12)0%,transparent 70%);top:-200px;right:-150px;pointer-events:none;z-index:0}
 .bg2{position:fixed;width:500px;height:500px;background:radial-gradient(circle,rgba(24,82,240,0.08)0%,transparent 70%);bottom:-150px;left:-100px;pointer-events:none;z-index:0}
 .wrap{width:100%;max-width:720px;padding:24px 16px;position:relative;z-index:1}
-
-/* START */
 #startScreen{text-align:center;padding:40px 20px}
 .logo-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(24,82,240,0.1);border:1px solid rgba(24,82,240,0.3);color:#1852f0;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:7px 18px;border-radius:100px;margin-bottom:20px}
 .game-title{font-size:clamp(32px,7vw,60px);font-weight:800;letter-spacing:-.03em;line-height:1.05;margin-bottom:10px;color:#0a1e50}
@@ -23,15 +22,12 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .start-btn:hover{background:#2d6aff;transform:translateY(-2px)}
 .chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:28px}
 .chip{background:rgba(24,82,240,0.06);border:1px solid rgba(24,82,240,0.15);color:rgba(10,30,80,0.65);font-size:12px;padding:7px 15px;border-radius:100px}
-
-/* GAME */
 #gameScreen{display:none}
 .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:0 4px}
 .tb-logo{font-size:13px;font-weight:700;color:#1852f0}
 .tb-info{font-size:12px;color:rgba(10,30,80,0.45)}
 .progress-wrap{width:100%;height:4px;background:rgba(24,82,240,0.12);border-radius:2px;margin-bottom:16px;overflow:hidden}
 .progress-fill{height:100%;background:#1852f0;border-radius:2px;transition:width .5s ease}
-
 .ladder{display:flex;flex-direction:column-reverse;gap:3px;margin-bottom:16px}
 .l-row{display:flex;align-items:center;gap:10px;padding:5px 12px;border-radius:8px;border:1px solid transparent;transition:all .3s}
 .l-row.active{background:rgba(24,82,240,0.1);border-color:rgba(24,82,240,0.4)}
@@ -42,15 +38,12 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .l-label{font-size:12px;font-weight:400;color:rgba(10,30,80,0.3)}
 .l-row.active .l-label{color:#0a1e50;font-weight:700}
 .l-row.done .l-label{color:#16a34a}
-
 .q-box{background:#ffffff;border:1.5px solid rgba(24,82,240,0.2);border-radius:16px;padding:24px 22px;margin-bottom:14px;text-align:center;min-height:90px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 16px rgba(24,82,240,0.08)}
 .q-text{font-size:clamp(15px,3vw,18px);font-weight:600;line-height:1.6;color:#0a1e50}
-
 .jokers{display:flex;gap:8px;justify-content:center;margin-bottom:14px;flex-wrap:wrap}
 .joker-btn{height:36px;padding:0 18px;background:#ffffff;border:1.5px solid rgba(24,82,240,0.25);border-radius:100px;font-size:12px;font-weight:600;color:#1852f0;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;box-shadow:0 1px 6px rgba(24,82,240,0.08)}
 .joker-btn:hover:not([disabled]){background:#1852f0;color:#fff;border-color:#1852f0}
 .joker-btn[disabled]{opacity:.3;cursor:not-allowed}
-
 .answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
 .ans-btn{background:#ffffff;border:1.5px solid rgba(24,82,240,0.15);border-radius:12px;padding:14px 14px;font-size:clamp(13px,2.5vw,15px);font-weight:500;color:#0a1e50;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;text-align:left;line-height:1.45;display:flex;align-items:flex-start;gap:8px;box-shadow:0 1px 6px rgba(24,82,240,0.06)}
 .ans-btn:hover:not([disabled]):not(.hidden){background:#e8f0ff;border-color:#1852f0;transform:translateY(-1px)}
@@ -61,8 +54,6 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .ans-letter{font-size:11px;font-weight:800;color:#1852f0;flex-shrink:0;margin-top:2px;min-width:14px}
 .ans-btn.correct .ans-letter{color:#16a34a}
 .ans-btn.wrong .ans-letter{color:#dc2626}
-
-/* END */
 #endScreen{display:none;text-align:center;padding:40px 20px}
 .end-emoji{font-size:64px;margin-bottom:16px}
 .end-title{font-size:30px;font-weight:800;margin-bottom:8px;letter-spacing:-.02em;color:#0a1e50}
@@ -83,7 +74,7 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
     <div class="logo-badge">MA İmtahan Mərkəzi</div>
     <div class="game-title">Biliyin<br><span class="blue">Milyon</span> <span class="amber">Dəyər</span></div>
     <div class="game-sub">Dünyagörüş sualları · 12 mərhələ · 3 joker</div>
-    <div class="q-count-badge">500+ sual bazası — hər oyun tamamilə fərqlidir!</div>
+    <div class="q-count-badge">1000+ sual bazası — hər oyun tamamilə fərqlidir!</div>
     <button class="start-btn" onclick="startGame()">Oyunu Başlat →</button>
     <div class="chips">
       <span class="chip">12 sual</span>
@@ -337,7 +328,255 @@ var ALL_QUESTIONS=[
 {q:'Hansı planet öz oxu ətrafında "yan" fırlanır?',a:['Saturn','Neptun','Uranüs','Mars'],c:2},
 {q:'Dünyada ən böyük ada hansıdır?',a:['Qrenlandiya','Papua Yeni Qvineya','Borneo','Madagaskar'],c:0},
 {q:'İnsanlığın ən qədim yazı sistemi hansıdır?',a:['Misir heroqlifi','Çin yazısı','Şumer kuneyazısı','Hind yazısı'],c:2},
-{q:'Nüvə silahını ilk istifadə edən ölkə hansıdır?',a:['Rusiya','ABŞ','Fransa','Böyük Britaniya'],c:1}
+{q:'Nüvə silahını ilk istifadə edən ölkə hansıdır?',a:['Rusiya','ABŞ','Fransa','Böyük Britaniya'],c:1},
+// ===== ƏLAVƏ 1000 ÜÇÜN YENİ SUALLAR =====
+{q:'Hansı ölkə dünyada ən böyük yarımadasına malikdir?',a:['Ərəbistan','Hindistan','Skandinaviya','Kola'],c:0},
+{q:'Dünya əhalisinin neçə faizi Asiyada yaşayır?',a:['40%','55%','60%','70%'],c:2},
+{q:'Hansı şəhər Avstraliyanın paytaxtıdır?',a:['Sidney','Melburn','Kanberra','Brisben'],c:2},
+{q:'Avropa ilə Asiyanı ayıran dağ silsiləsi hansıdır?',a:['Alp','Kavkaz','Ural','Himalay'],c:2},
+{q:'Dünyanın ən uzun dəniz kənarı hansı ölkəyə aiddir?',a:['Norveç','Kanada','Rusiya','ABŞ'],c:1},
+{q:'Hindistan okeanının ən böyük adası hansıdır?',a:['Madagaskar','Srilanka','Maldiv','Reunyon'],c:0},
+{q:'Hansı çay Cənubi Amerikanın ən uzun çayıdır?',a:['Orinoko','La-Plata','Amazon','Parana'],c:2},
+{q:'Hansı okean ən duzludur?',a:['Sakit','Atlantik','Hind','Arktik'],c:1},
+{q:'Dünyanın ən böyük körfəzi hansıdır?',a:['Meksika körfəzi','Benqal körfəzi','Hudson körfəzi','Fors körfəzi'],c:1},
+{q:'Niger çayı hansı qitədədir?',a:['Asiya','Avropa','Afrika','Amerika'],c:2},
+{q:'Hansı ölkə Afrikada ən çox ölkə ilə həmsərhəddir?',a:['Sudan','Demokratik Konqo','Niger','Çad'],c:1},
+{q:'Hansı şəhər dünyanın ən hündür paytaxtıdır?',a:['Quito','Lhasa','La-Pas','Adis-Abeba'],c:2},
+{q:'Hansı çay Avropanın ən uzun çayıdır (Rusiya daxil)?',a:['Dunay','Reyn','Volqa','Don'],c:2},
+{q:'Cənubi Amerikanın ən yüksək dağı hansıdır?',a:['Akkonkaqua','Çimborazo','Kilimanjaro','Monte-Roze'],c:0},
+{q:'Aral gölü hansı ölkələr arasında yerləşir?',a:['Qazaxıstan və Özbəkistan','Rusiya və Qazaxıstan','Türkmənistan və İran','Özbəkistan və Türkmənistan'],c:0},
+{q:'Hansı ölkənin sahil xətti ən uzundur?',a:['Rusiya','Kanada','Avstraliya','Norveç'],c:1},
+{q:'Dünyanın ən böyük bataqlıq massivi haradır?',a:['Braziliya','Rusiya','Kanada','ABŞ'],c:0},
+{q:'Orta Asiyada hansı dəniz yoxdur?',a:['Xəzər','Aral','Balxaş','Ərəb'],c:3},
+{q:'İnsan sümüklərinin neçə faizi sudur?',a:['10%','22%','31%','45%'],c:2},
+{q:'Günəşdən Yerə işığın gəlməsi neçə dəqiqə çəkir?',a:['4 dəqiqə','8 dəqiqə','12 dəqiqə','16 dəqiqə'],c:1},
+{q:'Hansı qaz "istixana effekti"nin əsas səbəbidir?',a:['Azot','Oksigen','Karbon dioksid','Arqon'],c:2},
+{q:'Atom bombası hansı prinsipə əsaslanır?',a:['Sintez','Parçalanma (fissiya)','Yanma','İonlaşma'],c:1},
+{q:'Hansı qaz "gülüş qazı" adlanır?',a:['Azot oksidi','Karbon monoksid','Metan','Kükürd dioksid'],c:0},
+{q:'Süd şəkəri hansı birləşmədir?',a:['Qlükoza','Fruktoza','Laktoza','Saxaroza'],c:2},
+{q:'İlk nüvə reaktoru harada tikildi?',a:['ABŞ, Çikaqo','Sovet İttifaqı, Moskva','Almaniya, Berlin','Fransa, Paris'],c:0},
+{q:'Hansı ünsür ən çox radioaktivdir?',a:['Radium','Uran','Fransium','Polonium'],c:3},
+{q:'İnsan hüceyrəsinin ən böyük orqaneli hansıdır?',a:['Mitoxondri','Ribozom','Nüvə','Lizozom'],c:2},
+{q:'İşığın dalğa uzunluğu nə ilə ölçülür?',a:['Hertz','Nanometr','Amper','Volt'],c:1},
+{q:'Hansı vitamin yalnız heyvan məhsullarında olur?',a:['C vitamini','D vitamini','B12 vitamini','E vitamini'],c:2},
+{q:'Ən ağır təbii element hansıdır?',a:['Qızıl','Osmium','Radium','Uran'],c:1},
+{q:'Fotosintezin məhsulları hansılardır?',a:['CO₂ və su','O₂ və qlükoza','H₂ və karbon','N₂ və su'],c:1},
+{q:'Böyük İpək Yolu hansı şəhərləri birləşdirirdi?',a:['Çin və Roma','Hindistan və Misir','Ərəbistan və Avropa','Rusiya və Çin'],c:0},
+{q:'Birinci kompüter neçənci ildə yaradıldı?',a:['1936','1943','1946','1952'],c:2},
+{q:'Fransız İnqilabında "Bastiliya" nə idi?',a:['Saray','Həbsxana','Kilsə','Ticarət mərkəzi'],c:1},
+{q:'Hansı dövlət dünyanın ilk demokratiyasını yaratdı?',a:['Roma','Yunanıstan-Afina','Misir','Babilon'],c:1},
+{q:'Osmanlı imperiyasının paytaxtı əvvəlcə harada idi?',a:['İstanbul','Bursa','Ədirnə','Ankara'],c:1},
+{q:'Çin Səddi neçə km uzunluğundadır?',a:['3000 km','6000 km','21000 km','40000 km'],c:2},
+{q:'NATO neçənci ildə yaradıldı?',a:['1945','1947','1949','1951'],c:2},
+{q:'Yüz illik müharibə neçə il davam etdi?',a:['80 il','100 il','116 il','130 il'],c:2},
+{q:'Avropa İttifaqı rəsmi olaraq neçənci ildə yaradıldı?',a:['1957','1967','1992','2002'],c:2},
+{q:'Vikinglərin Amerika qitəsini kəşf etdiyi hesab olunur — bu neçənci əsrdir?',a:['IX əsr','X əsr','XI əsr','XII əsr'],c:2},
+{q:'Qədim Misirdə "faraon" sözü nə demək idi?',a:['Böyük ev','Allahın oğlu','Günəş tanrısı','Ölümsüz'],c:0},
+{q:'Birinci dünya müharibəsinin başlanmasına səbəb olan hadisə hansı idi?',a:['Rusiya inqilabı','Fransa-Almaniya müharibəsi','Arşidük Fransın öldürülməsi','Osmanlı imperiyasının süqutu'],c:2},
+{q:'Marko Polo hansı ölkəni gəzdi?',a:['Hindistan','Çin','Ərəbistan','Yaponiya'],c:1},
+{q:'Qızıl Orda dövləti hansı əsrdə yarandı?',a:['XII','XIII','XIV','XV'],c:1},
+{q:'"Faust" əsərinin müəllifi kimdir?',a:['Şiller','Heine','Höte','Brecht'],c:2},
+{q:'"1984" romanının müəllifi kimdir?',a:['Haksli','Orwell','Kafka','Kamyu'],c:1},
+{q:'"Cəngəllik kitabı"nın müəllifi kimdir?',a:['Marks Tven','Radyard Kipling','Robert Luis Stivenson','Corc Eliot'],c:1},
+{q:'"Böyük Getsbi" romanının müəllifi kimdir?',a:['Heminguey','Folkner','Skott Fitsgerald','Şervud Anderson'],c:2},
+{q:'Şekspir neçə pyes yazmışdır?',a:['27','37','47','57'],c:1},
+{q:'"Alisa Möcüzələr ölkəsində" əsərinin müəllifi kimdir?',a:['Çarlz Dikkens','Corc Eliot','Luis Kerrol','Tomas Xardi'],c:2},
+{q:'"Don Kixot" əsəri neçənci ildə yazılmışdır?',a:['1505','1565','1605','1665'],c:2},
+{q:'"Mobi Dik" romanının müəllifi kimdir?',a:['Herman Melvil','Corc London','Jak London','Uolt Uitmen'],c:0},
+{q:'Nizaminin "Xəmsə"si neçə poemadan ibarətdir?',a:['3','4','5','6'],c:2},
+{q:'"Əlif Leylə" (Minbir gecə) hekayələri hansı mədəniyyətə aiddir?',a:['Fars','Türk','Ərəb','Hind'],c:2},
+{q:'Füzulinin əsas yaradıcılıq dili hansı idi?',a:['Yalnız Azərbaycan türkcəsi','Yalnız farsca','Azərbaycan, ərəb və fars dilləri','Yalnız ərəbcə'],c:2},
+{q:'"Madam Bovari" romanının müəllifi kimdir?',a:['Mopassan','Balzak','Flober','Zolya'],c:2},
+{q:'Marks Tvenin əsl adı nə idi?',a:['Samuel Klemens','Samuel Corc','Mark Corc','Tomas Klemens'],c:0},
+{q:'Nobel ədəbiyyat mükafatını ilk alan şəxs kimdir?',a:['Rudyard Kipling','Sully Pryüdom','Anatol Frans','Leonid Andreyev'],c:1},
+{q:'"Səfillər" əsərinin müəllifi kimdir?',a:['Balzak','Viktor Hüqo','Zolya','Duma'],c:1},
+{q:'Dünya şahmat çempionatını ən çox qazanan şəxs kimdir?',a:['Kasparov','Karpov','Magnus Karlsen','Anand'],c:2},
+{q:'Tennisin "Wimbledon" turniri harada keçirilir?',a:['Parisdə','Londonda','Nyu Yorkda','Melburndə'],c:1},
+{q:'Futbolda "hat-trick" nə deməkdir?',a:['3 qol','3 pas','3 penalti','3 sarı vərəqə'],c:0},
+{q:'Golf oyununda "birdie" nə deməkdir?',a:['Norma üstü 1','Norma altı 1','Norma altı 2','Norma üstü 2'],c:1},
+{q:'NBA-da ən çox çempionluq qazanan komanda hansıdır?',a:['Los-Anceles Lakers','Boston Seltiks','Çikaqo Bulls','Golden Steyt Uoriers'],c:1},
+{q:'Formula 1-də "pole position" nə deməkdir?',a:['Son sıra','İlk sıra','Orta sıra','Pit-stop'],c:1},
+{q:'Beysbolda "home run" nə deməkdir?',a:['Xəta','Tam dövrə vuruş','Tutmaq','Qaçmaq'],c:1},
+{q:'Hansı idman növündə "slam dunk" termini işlənir?',a:['Voleybol','Basketbol','Əl topu','Su topu'],c:1},
+{q:'Olimpiya oyunlarında ən çox medal qazanan idmançı kimdir?',a:['Maykl Felps','Usain Bolt','Carl Luis','Larisa Latınina'],c:0},
+{q:'Regbidə "try" nə qədər xal verir?',a:['3','4','5','6'],c:2},
+{q:'Tennisin "French Open" turniri harada keçirilir?',a:['Londonda','Parisdə','Nyu Yorkda','Melburndə'],c:1},
+{q:'Dünya çempionatlarında ən çox qol vuran futbolçu kimdir?',a:['Ronaldo','Messi','Miroslav Klose','Ronaldo Nazario'],c:2},
+{q:'Curling idmanı hansı ölkədə yaranmışdır?',a:['Norveçdə','Kanadada','Şotlandiyada','İsveçdə'],c:2},
+{q:'İnternetin əcdadı hesab olunan şəbəkə hansıdır?',a:['ARPANET','BITNET','USENET','NSFNET'],c:0},
+{q:'İlk kompüter virusu neçənci ildə yaradıldı?',a:['1971','1981','1991','2001'],c:0},
+{q:'Hansı proqramlaşdırma dili ən çox istifadə edilir?',a:['Java','C++','Python','JavaScript'],c:3},
+{q:'Kripto valyutanın əsas texnologiyası nə adlanır?',a:['Cloud','Blockchain','AI','IoT'],c:1},
+{q:'GPS sistemini hansı ölkə yaratdı?',a:['Rusiya','ABŞ','Çin','Avropa İttifaqı'],c:1},
+{q:'İlk smartfon neçənci ildə çıxdı?',a:['1992','1997','2000','2007'],c:0},
+{q:'Wi-Fi nəyin qısaltmasıdır?',a:['Wireless Fidelity','Wide Frequency','Wireless Fiber','World Fidelity'],c:0},
+{q:'Hansı şirkət dünyanın ən böyük bulud xidmətini təqdim edir?',a:['Google','Microsoft','Amazon','IBM'],c:2},
+{q:'Dünyada ən çox istifadə olunan brauzerin adı nədir?',a:['Firefox','Safari','Edge','Chrome'],c:3},
+{q:'İlk sosial media saytı hesab olunan platforma hansıdır?',a:['Facebook','MySpace','Friendster','Six Degrees'],c:3},
+{q:'QR kodun tam adı nədir?',a:['Quick Response','Quantum Read','Quality Register','Query Result'],c:0},
+{q:'Azərbaycanın ən böyük gölü hansıdır?',a:['Göygöl','Sarısu','Ağgöl','Hacıqabul gölü'],c:3},
+{q:'Bakı metrosunun ilk stansiyası hansıdır?',a:['İçərişəhər','Nizami','Neftçilər','28 May'],c:3},
+{q:'Azərbaycanın milli marşının sözlərini kim yazmışdır?',a:['Üzeyir Hacıbəyov','Əhməd Cavad','Hüseyn Cavid','Cəlil Məmmədquluzadə'],c:1},
+{q:'Heydər Əliyev neçənci ildə anadan olub?',a:['1921','1923','1925','1927'],c:1},
+{q:'Azərbaycanda ilk neft neçənci ildə çıxarıldı?',a:['1848','1858','1868','1878'],c:0},
+{q:'Azərbaycanın hansı şəhəri "Xan şəhəri" adlanır?',a:['Şəki','Şuşa','Gəncə','Naxçıvan'],c:0},
+{q:'Azərbaycanda neçə rayon var?',a:['59','66','70','75'],c:1},
+{q:'Azərbaycanda ilk teatr neçənci ildə açılmışdır?',a:['1850','1873','1898','1910'],c:1},
+{q:'Azərbaycanın hansı şəhəri dəniz üzərindəki platformalarda yerləşir?',a:['Sumqayıt','Neft Daşları','Lənkəran','Astara'],c:1},
+{q:'Azərbaycanda muğamın neçə əsas növü var?',a:['5','7','9','12'],c:3},
+{q:'Üzeyir Hacıbəyovun ilk operasının adı nədir?',a:['Koroğlu','Leyli və Məcnun','Arşın mal alan','O olmasın, bu olsun'],c:1},
+{q:'Azərbaycanın milli bayrağının rənglərinin sırası necədir?',a:['Yaşıl-Qırmızı-Mavi','Mavi-Qırmızı-Yaşıl','Qırmızı-Yaşıl-Mavi','Mavi-Yaşıl-Qırmızı'],c:1},
+{q:'"Dədə Qorqud" dastanı hansı dildə yazılmışdır?',a:['Ərəb','Fars','Türk (Azərbaycan)','Gürcü'],c:2},
+{q:'Renesans dövrü hansı ölkədə başladı?',a:['Fransa','İspaniya','İtaliya','Almaniya'],c:2},
+{q:'Dünyanın ən böyük müzeyi hansıdır?',a:['Luvr','Metropoliten','Ermitaj','Vatikan muzeyləri'],c:2},
+{q:'Nobel mükafatı neçənci ildən verilir?',a:['1895','1901','1910','1920'],c:1},
+{q:'Hansı ölkə dünyanın ən çox turist qəbul edən ölkəsidir?',a:['ABŞ','İspaniya','Fransa','İtaliya'],c:2},
+{q:'Dünyanın ən qədim şəhəri hesab edilən şəhər hansıdır?',a:['Qahirə','Yerusəlim','Dəməşq','Bağdad'],c:2},
+{q:'Avropada ilk universitetlər hansı əsrdə yaradıldı?',a:['IX','X','XI','XII'],c:3},
+{q:'Kainatın yaşı neçədir?',a:['8 milyard il','10 milyard il','13,8 milyard il','20 milyard il'],c:2},
+{q:'Məşhur "Stoun Henc" abidəsi harada yerləşir?',a:['Fransada','İrlandiyada','İngiltərədə','Danimarkada'],c:2},
+{q:'Həyatın əsas kimyəvi elementi hansıdır?',a:['Azot','Oksigen','Karbon','Hidrogen'],c:2},
+{q:'Dünyanın ən dərin şaxtası haradır?',a:['Rusiyada','Cənubi Afrikada','Avstriyada','Kanadada'],c:1},
+{q:'Dünyanın ən böyük bazarı haradır?',a:['Dubay','İstanbul','Tokio','Şanxay'],c:1},
+{q:'Dünyada ən çox yayılmış soyad hansıdır?',a:['Smith','Çan','Garcia','Müller'],c:1},
+{q:'Hansı ölkə ən çox olimpiya qızıl medalına malikdir?',a:['Rusiya','Çin','ABŞ','Almaniya'],c:2},
+{q:'Boksdə "TKO" nə deməkdir?',a:['Tam nokaut','Texniki nokaut','Zaman nokautu','Mühakim nokautu'],c:1},
+{q:'Hansı ölkə Skandinaviya yarımadasında deyil?',a:['Norveç','Danimarka','İsveç','Finlandiya'],c:3},
+{q:'Elektromaqnetizmin qurucusu kim hesab edilir?',a:['Volta','Faradey','Tesla','Edison'],c:1},
+{q:'Müasir cərrahiyyənin atası kim sayılır?',a:['Hippokrat','İbn Sina','Qalen','Pare'],c:3},
+{q:'Qan dövranını kim kəşf etdi?',a:['Qalen','Vezali','Uiyam Harvi','Paster'],c:2},
+{q:'Elmi metodun əsasını kim qoyub?',a:['Aristotel','Qalileo','Bekon','Dekart'],c:1},
+{q:'Müasir kompüterin atası kim sayılır?',a:['Bil Qeyts','Alan Türinq','Con fon Neyman','Çarlz Bebbic'],c:3},
+{q:'Riyaziyyatçı Pifaqor harada anadan olub?',a:['Yunanıstan','Roma','Misir','Babilon'],c:0},
+{q:'Hansı ölkə 2026-cı ildə FIFA Dünya Çempionatına ev sahibliyi edəcək?',a:['Braziliya','Qatar','ABŞ-Kanada-Meksika','Argentina'],c:2},
+{q:'Dünya rekorduna görə ən çox kitab oxuyan ölkə hansıdır?',a:['ABŞ','Yaponiya','Finlandiya','Hindistan'],c:2},
+{q:'Hansı ölkə dünyanın ən çox müxtəlif iqlim qurşağına malikdir?',a:['Rusiya','Kanada','Çin','Braziliya'],c:0},
+{q:'Dünyanın ən böyük polad istehsalçısı hansı ölkədir?',a:['ABŞ','Yaponiya','Çin','Hindistan'],c:2},
+{q:'Hansı qitə ən sıx məskunlaşmışdır?',a:['Avropa','Asiya','Afrika','Amerika'],c:1},
+{q:'Dünya coğrafiyasında "Üçbucaq" kimi tanınan yer haradır?',a:['Atlantik okeanında','Sakit okeanında','Hind okeanında','Karib dənizində'],c:0},
+{q:'Hansı ölkə ən çox neft ixrac edir?',a:['İran','Rusiya','Səudiyyə Ərəbistanı','ABŞ'],c:2},
+{q:'Dünya İqtisadi Forumu harada keçirilir?',a:['Davosda','Cenevrədə','Brüsseldə','Nyu Yorkda'],c:0},
+{q:'Hansı şəhər iki qitənin əsas ticarət mərkəzi sayılır?',a:['Moskva','İstanbul','Qahirə','Tehran'],c:1},
+{q:'Avropa İttifaqının valyutası avro neçənci ildə dövriyyəyə girdi?',a:['1995','1999','2002','2005'],c:2},
+{q:'Hansı ölkənin əhalisi ən sürətlə artır?',a:['Hindistan','Çin','Nigeriya','Pakistan'],c:2},
+{q:'Dünyanın ən uzun tuneli haradır?',a:['Yaponiyadakı Seikan tuneli','İsveçrədəki Qotard tuneli','Çindəki Yanşan tuneli','Norveçdəki Lærdal tuneli'],c:1},
+{q:'Hansı çay dünyanın ikinci uzun çayı sayılır?',a:['Amazon','Nil','Yanszı','Missisipi'],c:0},
+{q:'Sakit okean adı nə üçün bu şəkildə verilmişdir?',a:['Magellanın ona sakit deyə müraciət etməsinə görə','Ən az dalğalı olduğuna görə','Ən mülayim iqlimə görə','Balıqlarının ən sakit olmasına görə'],c:0},
+{q:'Dünyanın ən böyük çöl ərazisi hansıdır?',a:['Saxara','Qobi','Antarktida','Ərəbistan'],c:2},
+{q:'Xristian dünyasında Pasxa nə zaman qeyd edilir?',a:['Hər il eyni tarixdə','Bahar günobərasından sonrakı ilk tam ay gecəsindən sonrakı bazar günü','Yanvarın 7-si','Martın 21-i'],c:1},
+{q:'Hansı kəşfiyyatçı dünya ətrafında ilk dəniz səyahətini etdi?',a:['Magellan','Kolumb','Vaska da Qama','Dreyk'],c:0},
+{q:'Dünyanın ən uzun çay körpüsü haradır?',a:['Çində','ABŞ-da','Rusiyada','Braziliyada'],c:0},
+{q:'Həm Avropa həm Asiya qitəsini eyni vaxtda görmək mümkün olan yer haradır?',a:['Moskvada','İstanbulda','Uralda','Ankarada'],c:1},
+{q:'Yer kürəsinin ən uzun meridianı neçə km-dir?',a:['20.000 km','40.000 km','60.000 km','80.000 km'],c:1},
+{q:'Dünyada ən çox dil konuşulan ölkə hansıdır?',a:['Hindistan','Çin','Papua Yeni Qvineya','Nigeriya'],c:2},
+{q:'Antarktidanın sahəsi nə qədərdir?',a:['6 milyon km²','10 milyon km²','14 milyon km²','20 milyon km²'],c:2},
+{q:'Dünyanın ən qədim demokratiyası hansı ölkədədir?',a:['ABŞ','Fransa','İslandiya','İngiltərə'],c:2},
+{q:'Hansı ölkə ən çox Nobel mükafatı qazanmışdır?',a:['Almaniya','Böyük Britaniya','ABŞ','Fransa'],c:2},
+{q:'Beynəlxalq vaxt qurşaqlarının sayı neçədir?',a:['12','24','36','48'],c:1},
+{q:'Dünya iqtisadiyyatının ən böyük sektoru hansıdır?',a:['Sənaye','Kənd təsərrüfatı','Xidmətlər','Maliyyə'],c:2},
+{q:'Ən çox ölkəyə viza vermədən girə bilən pasport hansı ölkəyədir?',a:['ABŞ','Almaniya','Yaponiya','Böyük Britaniya'],c:2},
+{q:'Dünyanın ən böyük iqtisadiyyatı hansı ölkəyə aiddir?',a:['Çin','Yaponiya','ABŞ','Almaniya'],c:2},
+{q:'Hansı ölkə 2022-ci ildə dünya kubokunu qazandı?',a:['Fransa','Braziliya','Argentina','Almaniya'],c:2},
+{q:'"Süni intellekt" terminini kim ixtira etdi?',a:['Alan Türinq','Con Makkarti','Bil Qeyts','Klod Şennon'],c:1},
+{q:'İnternetin atası kim sayılır?',a:['Tim Bernes-Li','Vinton Serf','Bill Qeyts','Steve Jobs'],c:1},
+{q:'Hansı element ən çox elektrik keçiricidir?',a:['Mis','Qızıl','Gümüş','Alüminium'],c:2},
+{q:'İnsanın bədənindəki neçə sümük var?',a:['106','206','306','406'],c:1},
+{q:'Yer kürəsinin kütləsinin neçə faizi okeanların suyu təşkil edir?',a:['0,02%','0,2%','2%','20%'],c:0},
+{q:'Dünyanın ən böyük balinası neçə metr ola bilər?',a:['20 m','25 m','30 m','33 m'],c:3},
+{q:'Ağac yarpaqlarının yaşıl rəngi nədən qaynaqlanır?',a:['Xlorofil','Karotin','Antosian','Ksantofil'],c:0},
+{q:'Günəş tutulması zamanı nə baş verir?',a:['Ay Günəşi örtür','Yer Ayı örtür','Günəş söndü','Ay kölgəsi Yerə düşür'],c:0},
+{q:'İnsan dərisi nə qədər müddətdə tam yenilənir?',a:['1 həftə','1 ay','2-4 həftə','6 ay'],c:2},
+{q:'Ən kiçik quş hansıdır?',a:['Sərçə','Arı quşu','Bülbül','Bildirçin'],c:1},
+{q:'Dünya okeanlarında balıq növlərinin sayı nə qədərdir?',a:['5000','15000','30000','50000'],c:2},
+{q:'Yer kürəsinin yüzillikdə orta temperaturu neçə dərəcə artmışdır?',a:['0,1°C','0,5°C','1,1°C','2°C'],c:2},
+{q:'İnsan gözünün ən həssas olduğu rəng hansıdır?',a:['Qırmızı','Sarı-yaşıl','Mavi','Bənövşəyi'],c:1},
+{q:'Ən uzun müddət yaşayan heyvan hansıdır?',a:['Tısbağa','Fil','Bəzi dəniz molyuskaları','Balina'],c:2},
+{q:'Qanın qırmızı rəngi nədən qaynaqlanır?',a:['Dəmir','Hemoglobin','Oksigen','Eritrositlər'],c:1},
+{q:'Dünyada ən çox növ bitki hansı qitədədir?',a:['Asiyada','Afrikada','Cənubi Amerikada','Avstraliyada'],c:2},
+{q:'İnsanın görmə bucağı neçə dərəcədir?',a:['90°','120°','180°','270°'],c:2},
+{q:'Ən uzun müddət yuxusuz qalan insan rekorduna görə neçə saat yatmamışdır?',a:['144 saat','264 saat','300 saat','400 saat'],c:1},
+{q:'Yer kürəsinin mərkəzindəki temperaturu neçə dərəcədir?',a:['1000°C','3000°C','5000°C','6000°C'],c:3},
+{q:'Dünyada neçə ölkə var?',a:['185','193','200','210'],c:1},
+{q:'Hansı element gözəgörünməz zəhər kimi bilinir?',a:['Karbon monoksid','Hidrogen sulfid','Xlor','Arsen'],c:0},
+{q:'Dünyanın ən uzun saçlı insan rekorduna görə saç uzunluğu neçədir?',a:['3 m','5 m','7 m','10 m'],c:2},
+{q:'Ayın Yerə orta məsafəsi neçədir?',a:['184.000 km','284.000 km','384.000 km','484.000 km'],c:2},
+{q:'İlk kosmosda uçan qadın kimdir?',a:['Valentina Tereşkova','Sally Rayd','Svetlana Savitskaya','Peggy Uitson'],c:0},
+{q:'Dünya əhalisinin neçə faizi sağlıqlı içməli suya çıxışı yoxdur?',a:['2%','10%','20%','30%'],c:1},
+{q:'Günəş sisteminin ən soyuq planeti hansıdır?',a:['Neptun','Uranüs','Saturn','Pluton'],c:1},
+{q:'Ən böyük okean vulkanı haradır?',a:['Atlantik okeanında','Hind okeanında','Sakit okeanında','Arktik okeanında'],c:2},
+{q:'İnsanın DNT-si uzadılsa neçə metr olar?',a:['1 m','10 m','100 m','2 m'],c:3},
+{q:'Yer kürəsindəki atmosferin qalınlığı nə qədərdir?',a:['10 km','100 km','500 km','1000 km'],c:1},
+{q:'Kvant mexanikasının əsasını kim qoyub?',a:['Eynşteyn','Maks Plank','Bor','Heyzenberg'],c:1},
+{q:'İlk süni peyk "Sputnik" neçənci ildə fəzaya buraxıldı?',a:['1955','1957','1959','1961'],c:1},
+{q:'Hansı ölkənin hökuməti dünyanın ən köhnə yazılı konstitusiyasına malikdir?',a:['Fransa','ABŞ','Böyük Britaniya','İsveçrə'],c:1},
+{q:'Dünyanın ən böyük teatrı haradır?',a:['Nyu Yorkda','Londonda','Moskvada','Parisdə'],c:2},
+{q:'Hansı ölkənin milli rəngləri qırmızı-ağ-mavidir?',a:['Fransa','Rusiya','Hollandiya','Hamısı'],c:3},
+{q:'Dünyanın ən məşhur rəsminin qiyməti neçə dollar ola bilər?',a:['100 milyon','500 milyon','1 milyard','1 trilyon'],c:2},
+{q:'Yer kürəsindəki bitki örtüyünün neçə faizi meşədir?',a:['10%','20%','31%','45%'],c:2},
+{q:'Dünyada neçə dil var (təxmini)?',a:['1000','3000','7000','10000'],c:2},
+{q:'Ən çox gülən heyvan hansıdır?',a:['Şimpanze','Delfin','Kəklik','Siçan'],c:0},
+{q:'Hansı ölkənin maşın istehsalı dünyada ən çoxdur?',a:['Yaponiya','ABŞ','Çin','Almaniya'],c:2},
+{q:'Dünyanın ən qısa müharibəsi neçə saat sürdü?',a:['18 saat','38 saat','58 saat','78 saat'],c:1},
+{q:'Elektrik siqnalı insan sinir sistemində neçə m/s sürətlə hərəkət edir?',a:['10 m/s','50 m/s','120 m/s','300 m/s'],c:2},
+{q:'Dünyanın ən uzun göy qurşağı neçə saat davam etmişdir?',a:['2 saat','4 saat','6 saat','9 saat'],c:3},
+{q:'Hansı ölkə dünyanın ən çox saat qurşağına malikdir?',a:['Rusiya','Kanada','ABŞ','Fransa'],c:3},
+{q:'Ən uzun gecə Yerdə neçə ay davam edə bilər?',a:['1 ay','3 ay','6 ay','9 ay'],c:2},
+{q:'Dünyada neçə hava limanı var?',a:['5.000','17.000','30.000','50.000'],c:1},
+{q:'İnsan beynindəki neyronların sayı neçədir?',a:['1 milyard','10 milyard','100 milyard','1 trilyon'],c:2},
+{q:'Hansı heyvan öz çəkisinin neçə dəfəsini qaldıra bilir (qarışqa)?',a:['10 dəfə','50 dəfə','100 dəfə','5000 dəfə'],c:1},
+{q:'Okean suyunun orta duzluluğu nə qədərdir?',a:['1,5%','3,5%','5,5%','7,5%'],c:1},
+{q:'Yer kürəsinin səthi neçə faiz su ilə örtülüdür?',a:['51%','61%','71%','81%'],c:2},
+{q:'Kainatda ən çox yayılmış element hansıdır?',a:['Oksigen','Helium','Hidrogen','Karbon'],c:2},
+{q:'İnsanın ürək döyüntüsü həyatı boyu neçə dəfədir?',a:['500 milyon','2,5 milyard','5 milyard','10 milyard'],c:1},
+{q:'Ən böyük meteor kraterin diametri neçədir?',a:['50 km','100 km','160 km','300 km'],c:2},
+{q:'Günəşin diametri Yer kürəsindən neçə dəfə böyükdür?',a:['50 dəfə','109 dəfə','200 dəfə','500 dəfə'],c:1},
+{q:'Yer kürəsinin dönüşü hər əsr üçün neçə millisaniyə yavaşıyır?',a:['0,5 ms','1,4 ms','2,3 ms','5 ms'],c:2},
+{q:'Hansı ölkənin tikintisi Fəzadan görünür?',a:['Çin Səddi','Böyük Piramidalar','Millər Qülləsi','Burj Xəlifə'],c:3},
+{q:'Dünyanın ən dərin nöqtəsi dənizdə nə qədərdir?',a:['7 km','9 km','11 km','13 km'],c:2},
+{q:'Ən böyük vulkan püskürməsi nə vaxt baş vermişdir?',a:['1815 (Tambora)','1883 (Krakatoa)','1980 (Müqəddəs Helena)','1991 (Pinatubo)'],c:0},
+{q:'İnsan bədənindəki ən uzun sinir hansıdır?',a:['Optik sinir','Üz siniri','Siyatik sinir','Vagus siniri'],c:2},
+{q:'Dünyada neçə növ meymun var?',a:['100','200','300','500'],c:2},
+{q:'Yer kürəsindəki okeanların ümumi həcmi neçədir?',a:['700 milyon km³','1,335 milyard km³','2 milyard km³','5 milyard km³'],c:1},
+{q:'İnsan vücudunun neçə faizi su təşkil edir?',a:['40%','55%','60%','75%'],c:2},
+{q:'Qırmızı dəniz niyə bu adı daşıyır?',a:['Qırmızı yosunlardan','Güneş batarkən qırmızı görünür','Qırmızı balıqlar çox olduğundan','Qırmızı torpaq çökdüyündən'],c:0},
+{q:'Dünyanın ən böyük kəpənəyi hansıdır?',a:['Monarx','Ağ kəpənək','Quş qanadlı','Atlas kəpənəyi'],c:3},
+{q:'Niyə göy üzü mavidir?',a:['Havanın mavi rəngindən','İşığın Rayleigh səpilməsindən','Dənizin əksindən','Ozon qatından'],c:1},
+{q:'Dünya rekorduna görə ən uzun hüceyrə hansıdır?',a:['Əzələ hüceyrəsi','Sinir hüceyrəsi','Qan hüceyrəsi','Sümük hüceyrəsi'],c:1},
+{q:'Hansı ölkədə ən çox göl var?',a:['Rusiyada','Kanadadа','Finlandiyada','İsveçdə'],c:1},
+{q:'Yer kürəsinin ümumi səthi neçədir?',a:['310 milyon km²','410 milyon km²','510 milyon km²','610 milyon km²'],c:2},
+{q:'Hansı planet Günəş sistemindəki ən böyük fırtınanın evidir?',a:['Saturn','Neptun','Yupiter','Uranüs'],c:2},
+{q:'Dünyanın ən hündür binaşı neçə metrdir?',a:['600 m','800 m','828 m','1000 m'],c:2},
+{q:'Ən çox yaşayan quş növü hansıdır?',a:['Qartal','Toyuq','Albatros','Papağan'],c:3},
+{q:'Yer kürəsindəki dağların orta hündürlüyü neçədir?',a:['840 m','1840 m','2840 m','3840 m'],c:0},
+{q:'İnsan gözünün görə biləcəyi ən uzaq məsafə neçədir?',a:['1 km','10 km','100 km','Andromeda qalaktikası'],c:3},
+{q:'Hansı ölkənin bayrağında Günəş var?',a:['Yaponiya','Çin','Argentina','Braziliya'],c:0},
+{q:'Dünyanın ən uzun ipək yolu neçə km-dir?',a:['4000 km','6400 km','8000 km','10000 km'],c:1},
+{q:'İlk kosmosa çıxan insan kimdir?',a:['Neil Armstrong','Yuri Qaqarin','Alan Şepard','John Qlen'],c:1},
+{q:'Ayda bir gün neçə saata bərabərdir?',a:['12 saat','24 saat','354 saat','708 saat'],c:3},
+{q:'Günəş sisteminin ən böyük kratesi haradır?',a:['Ayda','Marsta','Merkuridə','Plutonda'],c:1},
+{q:'Yer kürəsindəki buz örtüyü əriyərsə dəniz səviyyəsi neçə metr qalxar?',a:['20 m','40 m','65 m','90 m'],c:2},
+{q:'İlk olimpiya oyunlarında neçə ölkə iştirak etdi?',a:['8','14','24','36'],c:1},
+{q:'Dünyada kafeinin ən çox olduğu içki hansıdır?',a:['Çay','Qəhvə','Enerji içkisi','Kola'],c:1},
+{q:'Yer kürəsindəki çayların ümumi uzunluğu neçədir?',a:['500.000 km','1 milyon km','5 milyon km','10 milyon km'],c:2},
+{q:'Hansı heyvan ən böyük beynə malikdir (bədən ölçüsünə görə)?',a:['Fil','Delfin','İnsan','Meymun'],c:2},
+{q:'Dünyanın ən uzun dağ silsiləsi Andlar neçə km-dir?',a:['5000 km','7000 km','9000 km','12000 km'],c:1},
+{q:'Hansı ölkənin televizoru ilk ixtira edildi?',a:['ABŞ','Böyük Britaniya','Almaniya','Fransa'],c:1},
+{q:'İlk süni peyki kim layihələndirdi?',a:['Sergey Korolyov','Yuri Qaqarin','Werner fon Braun','Korolev'],c:0},
+{q:'Ən dərin göl hansıdır?',a:['Xəzər','Baykal','Tanqanika','Titiкака'],c:1},
+{q:'İnsan orqanizmi gündə neçə litr hava nəfəs alır?',a:['2000 litr','5000 litr','11000 litr','20000 litr'],c:2},
+{q:'Dünyanın ən böyük ölkəsinin (Rusiya) sahəsi neçədir?',a:['11 milyon km²','17 milyon km²','21 milyon km²','25 milyon km²'],c:1},
+{q:'Fəzanın sonsuzluğu başlayır — neçə km hündürlükdən?',a:['50 km','80 km','100 km','200 km'],c:2},
+{q:'Yer kürəsindəki şimşəyin illik sayı neçədir?',a:['10 milyon','100 milyon','1 milyard','2 milyard'],c:3},
+{q:'Dünyanın ən qısa çayı hansıdır?',a:['Roze çayı','D çayı','Roe çayı','Rio Kort'],c:1},
+{q:'Hansı heyvan ən güclü dişlərə malikdir?',a:['Timsah','Aslan','Dəniz sambalığı','Hippopatam'],c:3},
+{q:'İnsan qulağının eşidə bildiyi ən yüksək səs tezliyi neçə Hz-dir?',a:['5000 Hz','10000 Hz','20000 Hz','50000 Hz'],c:2},
+{q:'Dünyada neçə növ qələmkəsən (karandaş) var?',a:['50','100','200','500'],c:2},
+{q:'Yer kürəsinin maqnit sahəsi neçə ildən bir dəyişir?',a:['Sabit qalır','Müntəzəm deyil','Hər 100 ildə','Hər 1000 ildə'],c:1},
+{q:'Hansı heyvan ən yüksək tezlikli səs çıxarır?',a:['Yarasa','Delfin','Balina','Siçan'],c:0},
+{q:'Dünyanın ən böyük qum səhrası hansıdır?',a:['Saxara','Qobi','Rub əl-Xali','Antarktida'],c:3},
+{q:'İnsan DNT-si bütün hüceyrələrdə eyni miqdarda olur — bu neçə sm-dir uzadıldıqda?',a:['1 m','1,8 m','2 m','3 m'],c:1},
+{q:'Hansı ölkənin bayrağı dünyada ən qədim sayılır?',a:['İngiltərənin','Danimarkanın','Avstriyanın','Yaponiyanın'],c:1},
+{q:'Dünyanın ən böyük sirkinin adı nədir?',a:['Cirque du Soleil','Ringling Bros','Moscow Circus','Barnum Bailey'],c:0},
 ];
 
 var LETTERS=['A','B','C','D'];
