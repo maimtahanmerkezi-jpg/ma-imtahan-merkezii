@@ -331,7 +331,127 @@ footer{background:#0a1e50;border-top:1px solid rgba(255,255,255,0.1);padding:36p
   <span class="ticker-item">1–7-ci Siniflər · Hədiyyəli Sınaq</span><span class="ticker-item">8–11-ci Siniflər · Buraxılış Sınağı</span><span class="ticker-item">RFM Qəbul Sınaq İmtahanı</span><span class="ticker-item">Lütfi Zadə Olimpiadası</span><span class="ticker-item">Lisey · Gimnaziya Qəbul Sınaq imtahanı</span><span class="ticker-item">MQM / OTK Rəsmi Əməkdaşı</span><span class="ticker-item">4 000+ İştirakçı Şagird</span><span class="ticker-item">Bakı · Sumqayıt · 3 Filial</span>
   <span class="ticker-item">1–7-ci Siniflər · Hədiyyəli Sınaq</span><span class="ticker-item">8–11-ci Siniflər · Buraxılış Sınağı</span><span class="ticker-item">RFM Qəbul İmtahanı</span><span class="ticker-item">Lütfi Zadə Olimpiadası</span><span class="ticker-item">Lisey · Gimnaziya Qəbulu</span><span class="ticker-item">MQM / OTK Rəsmi Əməkdaşı</span><span class="ticker-item">4 000+ İştirakçı Şagird</span><span class="ticker-item">Bakı · Sumqayıt · 3 Filial</span>
 </div></div>
-
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sayac</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.cw{padding:2.8rem 1.5rem 2.2rem;font-family:'Outfit',sans-serif;text-align:center;background:linear-gradient(135deg,#e8f0ff 0%,#f0f5ff 50%,#dceeff 100%);border-radius:24px;position:relative;overflow:hidden}
+canvas.bg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.5}
+.cw-inner{position:relative;z-index:2}
+.live{display:inline-flex;align-items:center;gap:7px;margin-bottom:1.2rem;padding:5px 14px;border-radius:100px;border:1px solid rgba(24,82,240,0.25);background:rgba(24,82,240,0.08)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#1852f0;box-shadow:0 0 6px rgba(24,82,240,0.6);animation:ldot 1.2s infinite}
+@keyframes ldot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.live-txt{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#1852f0;font-family:'Outfit',sans-serif}
+.title{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(10,30,80,.4);margin-bottom:.4rem;font-family:'Outfit',sans-serif}
+.subtitle{font-size:24px;font-weight:900;color:#0a1e50;letter-spacing:-.03em;margin-bottom:2rem;font-family:'Montserrat',sans-serif;line-height:1.2}
+.subtitle em{font-style:normal;color:#1852f0}
+.cards{display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:2rem}
+.unit{display:flex;flex-direction:column;align-items:center;gap:9px}
+.card{width:78px;height:90px;perspective:600px;cursor:default}
+.card-in{width:100%;height:100%;transform-style:preserve-3d;position:relative}
+.card-face{position:absolute;inset:0;border-radius:14px;display:flex;align-items:center;justify-content:center}
+.card-body{background:#0a1e50;border:1px solid rgba(24,82,240,0.4);box-shadow:0 16px 40px rgba(10,30,80,.2),inset 0 1px 0 rgba(255,255,255,0.1)}
+.card-body::before{content:'';position:absolute;inset:0;border-radius:14px;background:linear-gradient(170deg,rgba(255,255,255,0.1) 0%,transparent 55%);pointer-events:none}
+.card-body::after{content:'';position:absolute;left:10px;right:10px;top:50%;height:1px;background:rgba(0,0,0,.4);box-shadow:0 1px 0 rgba(255,255,255,.05)}
+.num{font-size:44px;font-weight:900;color:#fff;line-height:1;letter-spacing:-.02em;position:relative;z-index:1;font-family:'Montserrat',sans-serif;text-shadow:0 0 24px rgba(100,150,255,0.5),0 2px 4px rgba(0,0,0,.4)}
+.lbl{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(10,30,80,.4);font-family:'Outfit',sans-serif}
+.sep{font-size:36px;font-weight:900;color:rgba(24,82,240,.35);margin-bottom:22px;font-family:'Montserrat',sans-serif;text-shadow:0 0 12px rgba(24,82,240,.3);animation:blink 1s step-end infinite}
+@keyframes blink{50%{opacity:.15}}
+.flip-anim .card-in{animation:fa .45s cubic-bezier(.4,0,.2,1)}
+@keyframes fa{0%{transform:rotateX(0) scale(1)}40%{transform:rotateX(-80deg) scale(.95)}100%{transform:rotateX(0) scale(1)}}
+.bar-wrap{max-width:340px;margin:0 auto 1.8rem}
+.bar-track{height:4px;background:rgba(24,82,240,.1);border-radius:100px;overflow:visible;position:relative}
+.bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,#0a1e50,#2d6aff,#91b5ff);transition:width 1s linear;position:relative}
+.bar-dot{position:absolute;right:-5px;top:-4px;width:12px;height:12px;border-radius:50%;background:#91b5ff;box-shadow:0 0 10px rgba(100,150,255,.8),0 0 20px rgba(45,106,255,.4)}
+.bar-meta{display:flex;justify-content:space-between;margin-top:8px}
+.bar-txt{font-size:10px;color:rgba(10,30,80,.3);font-weight:500;font-family:'Outfit',sans-serif}
+.bar-pct{font-size:10px;color:#1852f0;font-weight:700;font-family:'Outfit',sans-serif}
+.divider{width:48px;height:2px;background:rgba(24,82,240,.15);border-radius:100px;margin:0 auto 1.4rem}
+.reg-label{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(10,30,80,.35);margin-bottom:.8rem;font-family:'Outfit',sans-serif}
+.btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn-main{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:100px;text-decoration:none;font-size:13px;font-weight:800;letter-spacing:.05em;color:#fff;font-family:'Outfit',sans-serif;background:#1852f0;box-shadow:0 4px 20px rgba(24,82,240,.35);transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
+.btn-main::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);border-radius:inherit}
+.btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(24,82,240,.5)}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:100px;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.05em;color:#1852f0;font-family:'Outfit',sans-serif;background:rgba(24,82,240,.08);border:1.5px solid rgba(24,82,240,.2);transition:transform .2s,background .2s}
+.btn-ghost:hover{transform:translateY(-2px);background:rgba(24,82,240,.14)}
+</style>
+</head>
+<body style="background:transparent;margin:0;padding:16px">
+<div class="cw">
+  <canvas class="bg" id="bgc"></canvas>
+  <div class="cw-inner">
+    <div class="live"><div class="live-dot"></div><span class="live-txt">Qeydiyyat davam edir</span></div>
+    <div class="title">MA İmtahan Mərkəzi · 28 Mart 2026 · 17:00</div>
+    <div class="subtitle">Qeydiyyat üçün<br><em>son şans!</em></div>
+    <div class="cards">
+      <div class="unit">
+        <div class="card" id="cd"><div class="card-in"><div class="card-face card-body"><span class="num" id="d">--</span></div></div></div>
+        <div class="lbl">Gün</div>
+      </div>
+      <div class="sep">:</div>
+      <div class="unit">
+        <div class="card" id="ch"><div class="card-in"><div class="card-face card-body"><span class="num" id="h">--</span></div></div></div>
+        <div class="lbl">Saat</div>
+      </div>
+      <div class="sep">:</div>
+      <div class="unit">
+        <div class="card" id="cm"><div class="card-in"><div class="card-face card-body"><span class="num" id="m">--</span></div></div></div>
+        <div class="lbl">Dəqiqə</div>
+      </div>
+      <div class="sep">:</div>
+      <div class="unit">
+        <div class="card" id="cs"><div class="card-in"><div class="card-face card-body"><span class="num" id="s">--</span></div></div></div>
+        <div class="lbl">Saniyə</div>
+      </div>
+    </div>
+    <div class="bar-wrap">
+      <div class="bar-track"><div class="bar-fill" id="fill" style="width:0%"><div class="bar-dot"></div></div></div>
+      <div class="bar-meta"><span class="bar-txt">1 Mart</span><span class="bar-pct" id="pct">—</span><span class="bar-txt">28 Mart</span></div>
+    </div>
+    <div class="divider"></div>
+    <div class="reg-label">Qeydiyyat üçün bizimlə əlaqə</div>
+    <div class="btns">
+      <a href="https://wa.me/994704945094" class="btn-main">
+        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp · 070 494 50 94
+      </a>
+      <a href="https://wa.me/994504050809" class="btn-ghost">
+        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        050 405 08 09
+      </a>
+    </div>
+  </div>
+</div>
+<script>
+var cv=document.getElementById('bgc'),ctx=cv.getContext('2d'),pts=[];
+function init(){cv.width=cv.offsetWidth;cv.height=cv.offsetHeight;pts=[];for(var i=0;i<50;i++)pts.push({x:Math.random()*cv.width,y:Math.random()*cv.height,r:Math.random()*.8+.2,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,o:Math.random()*.3+.05});}
+init();
+function draw(){cv.width=cv.offsetWidth;cv.height=cv.offsetHeight;ctx.clearRect(0,0,cv.width,cv.height);pts.forEach(function(p){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>cv.width)p.vx*=-1;if(p.y<0||p.y>cv.height)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='hsla(220,80%,55%,'+p.o+')';ctx.fill();});requestAnimationFrame(draw);}
+draw();
+var end=new Date('2026-03-28T17:00:00'),start=new Date('2026-03-01T00:00:00');
+var prev={d:-1,h:-1,m:-1,s:-1};
+function p(n){return n<10?'0'+n:''+n;}
+function flip(id){var el=document.getElementById(id);el.classList.remove('flip-anim');void el.offsetWidth;el.classList.add('flip-anim');}
+function tick(){
+  var now=new Date(),diff=Math.max(0,end-now);
+  var d=Math.floor(diff/86400000),h=Math.floor(diff%86400000/3600000),m=Math.floor(diff%3600000/60000),s=Math.floor(diff%60000/1000);
+  if(d!==prev.d){document.getElementById('d').textContent=p(d);if(prev.d>=0)flip('cd');prev.d=d;}
+  if(h!==prev.h){document.getElementById('h').textContent=p(h);if(prev.h>=0)flip('ch');prev.h=h;}
+  if(m!==prev.m){document.getElementById('m').textContent=p(m);if(prev.m>=0)flip('cm');prev.m=m;}
+  if(s!==prev.s){document.getElementById('s').textContent=p(s);if(prev.s>=0)flip('cs');prev.s=s;}
+  var pct=Math.max(0,Math.min(100,(1-diff/(end-start))*100));
+  document.getElementById('fill').style.width=pct.toFixed(1)+'%';
+  document.getElementById('pct').textContent=diff>0?pct.toFixed(0)+'% vaxt keçdi':'Başa çatdı!';
+}
+tick();setInterval(tick,1000);
+</script>
+</body>
+</html>
 <!-- ===== ELANLAR ===== -->
 <section class="section elanlar-section" id="elanlar">
   <div class="section-header r">
