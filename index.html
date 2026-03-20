@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="az">
 <head>
-<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GF9C8J9FHX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -19,14 +18,10 @@ html, body {
   overflow-x: hidden;
   max-width: 100%;
 }
+.hero { overflow: hidden; }
+.ticker { overflow: hidden; }
 
-.hero {
-  overflow: hidden;
-}
-
-.ticker {
-  overflow: hidden;
-}:root{--ink:#f0f5ff;--ink-2:#e4eeff;--ink-3:#ccdaff;--blue:#1852f0;--blue-mid:#2d6aff;--blue-glow:rgba(24,82,240,0.22);--amber:#b30000;--rose:#e83b3b;--white:#ffffff;--ghost:#f5f8ff;--border:rgba(24,82,240,0.12);--border-lt:#c8d9ff;--text-dim:rgba(10,30,80,0.5);--text-mid:rgba(10,30,80,0.75);--r-sm:10px;--r-md:16px;--r-lg:24px;--r-xl:36px}
+:root{--ink:#f0f5ff;--ink-2:#e4eeff;--ink-3:#ccdaff;--blue:#1852f0;--blue-mid:#2d6aff;--blue-glow:rgba(24,82,240,0.22);--amber:#b30000;--rose:#e83b3b;--white:#ffffff;--ghost:#f5f8ff;--border:rgba(24,82,240,0.12);--border-lt:#c8d9ff;--text-dim:rgba(10,30,80,0.5);--text-mid:rgba(10,30,80,0.75);--r-sm:10px;--r-md:16px;--r-lg:24px;--r-xl:36px}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;overflow-x:hidden;-webkit-font-smoothing:antialiased}
@@ -45,7 +40,7 @@ a{text-decoration:none;color:inherit}
 .nav-cta:hover{background:var(--blue-mid);box-shadow:0 0 24px var(--blue-glow);transform:translateY(-1px)}
 .nav-game{height:38px;padding:0 18px;background:rgba(179,0,0,0.15);border:1px solid rgba(179,0,0,0.4);border-radius:var(--r-sm);font-size:13px;font-weight:600;color:var(--amber)!important;display:inline-flex;align-items:center;gap:6px;transition:background .2s,transform .15s}
 .nav-game:hover{background:rgba(179,0,0,0.25);transform:translateY(-1px)}
-.hero{min-height:100svh;display:flex;align-items:center;padding:100px 56px 80px;position:relative;overflow:hidden;background:linear-gradient(135deg,#e8f0ff 0%,#f0f5ff 50%,#dceeff 100%)}
+.hero{min-height:100svh;display:flex;align-items:center;padding:100px 56px 80px;position:relative;background:linear-gradient(135deg,#e8f0ff 0%,#f0f5ff 50%,#dceeff 100%)}
 .hero-spot{position:absolute;border-radius:50%;pointer-events:none;filter:blur(80px);z-index:0}
 .hero-spot-1{width:700px;height:700px;background:radial-gradient(circle,rgba(24,82,240,0.35) 0%,transparent 70%);top:-200px;right:-100px;animation:driftA 14s ease-in-out infinite alternate}
 .hero-spot-2{width:500px;height:500px;background:radial-gradient(circle,rgba(232,59,59,0.18) 0%,transparent 70%);bottom:-100px;left:5%;animation:driftB 18s ease-in-out infinite alternate}
@@ -57,7 +52,6 @@ a{text-decoration:none;color:inherit}
 .hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(24,82,240,0.45);background:rgba(24,82,240,0.1);color:#91b5ff;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:7px 16px;border-radius:100px;margin-bottom:28px;animation:slideIn .6s ease both}
 .hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:#91b5ff;animation:blink 2s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-/* ===== MONTSERRAT: Yalnız Hero H1 ===== */
 .hero-h1{font-family:'Montserrat',sans-serif;font-size:clamp(44px,5.5vw,82px);font-weight:800;line-height:1.0;letter-spacing:-.03em;color:#0a1e50;margin-bottom:24px;animation:slideIn .7s .1s ease both;opacity:0}
 .hero-h1 .c-blue{color:var(--blue-mid)}.hero-h1 .c-amber{color:var(--amber)}
 .hero-lead{font-size:17px;font-weight:300;color:rgba(10,30,80,0.7);line-height:1.8;max-width:500px;margin-bottom:40px;animation:slideIn .7s .2s ease both;opacity:0}
@@ -230,17 +224,6 @@ footer{background:#0a1e50;border-top:1px solid rgba(255,255,255,0.1);padding:36p
 .qalib-sinif{font-size:12px;font-weight:300;color:rgba(10,30,80,0.5);margin-bottom:10px}
 .qalib-hediyye{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:var(--r-sm);padding:8px 10px;font-size:12px;font-weight:400;color:var(--text-mid)}
 .qalib-hediyye-icon{font-size:15px;flex-shrink:0}
-@media(max-width:1024px){
-  .hero-inner{grid-template-columns:1fr}.hero-panel{display:none}
-  .format-grid{grid-template-columns:1fr}
-  .bento{grid-template-columns:1fr 1fr}.bento-item.span2{grid-column:span 2}
-  .branch{grid-template-columns:1fr}.branch-video{min-height:220px}
-  .reviews-grid{grid-template-columns:1fr}
-  .elan-card{grid-template-columns:1fr}
-  .elan-img-wrap{min-height:280px}
-  .elan-img-overlay{background:linear-gradient(0deg,rgba(6,8,15,0.5) 0%,transparent 60%)}
-  .qalib-grid{grid-template-columns:repeat(3,1fr)}
-}
 .nav-game-fixed{display:none;position:fixed;bottom:96px;right:28px;z-index:400;height:52px;padding:0 20px;background:#ffffff;border-radius:100px;font-size:14px;font-weight:700;color:var(--blue)!important;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(24,82,240,0.35);transition:transform .2s}
 .nav-game-fixed:hover{transform:scale(1.05)}
 .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;background:none;border:none;z-index:600}
@@ -255,6 +238,7 @@ footer{background:#0a1e50;border-top:1px solid rgba(255,255,255,0.1);padding:36p
 .mobile-menu a:hover{color:#0a1e50}
 .mobile-menu .nav-cta{margin-top:8px;justify-content:center;height:46px;border-radius:var(--r-sm)}
 .mobile-menu .nav-game{margin-top:4px;justify-content:center;height:46px;border-radius:var(--r-sm)}
+
 @media(max-width:1024px){
   .hero-inner{grid-template-columns:1fr}
   .hero-panel{display:none}
@@ -266,18 +250,16 @@ footer{background:#0a1e50;border-top:1px solid rgba(255,255,255,0.1);padding:36p
   .reviews-grid{grid-template-columns:1fr}
   .elan-card{grid-template-columns:1fr}
   .elan-img-wrap{min-height:280px}
-  .elan-img-overlay{background:linear-gradient(0deg,rgba(6,8,15,.5) 0%,transparent 60%)}
+  .elan-img-overlay{background:linear-gradient(0deg,rgba(6,8,15,0.5) 0%,transparent 60%)}
   .qalib-grid{grid-template-columns:repeat(3,1fr)}
 }
 
 @media(max-width:768px){
-  /* NAV */
   .nav{padding:0 16px}
   .nav-menu{display:none}
   .hamburger{display:flex}
   .nav-game-fixed{display:inline-flex}
 
-  /* HERO */
   .hero{padding:80px 14px 48px;min-height:auto}
   .hero-h1{font-size:clamp(30px,7.5vw,50px);letter-spacing:-.02em}
   .hero-lead{font-size:14px;line-height:1.7}
@@ -286,31 +268,25 @@ footer{background:#0a1e50;border-top:1px solid rgba(255,255,255,0.1);padding:36p
   .hero-chips{gap:7px}
   .chip{font-size:11px;padding:5px 10px}
 
-  /* SECTIONS */
   .section{padding:52px 14px}
   .section-header{margin-bottom:36px}
   .section-h2{font-size:clamp(26px,6vw,38px)}
   .section-lead{font-size:15px}
 
-  /* BENTO */
   .bento{grid-template-columns:1fr}
   .bento-item.span2{grid-column:auto}
   .bento-big-num{font-size:52px}
 
-  /* FORMAT */
   .format-grid{grid-template-columns:1fr}
   .fc{padding:24px 20px}
 
-  /* BRANCHES */
   .branch{border-radius:16px}
   .branch-info{padding:22px 14px}
   .branch-name{font-size:20px}
   .branch-video{min-height:200px}
 
-  /* REVIEWS */
   .reviews-grid{grid-template-columns:1fr}
 
-  /* ELAN */
   .elan-card{grid-template-columns:1fr;border-radius:16px}
   .elan-img-wrap{min-height:240px}
   .elan-body{padding:20px 14px}
@@ -320,28 +296,22 @@ footer{background:#0a1e50;border-top:1px solid rgba(255,255,255,0.1);padding:36p
   .elan-actions{flex-direction:column}
   .elan-btn-main,.elan-btn-ghost{width:100%;justify-content:center}
 
-  /* QALİBLƏR */
   .qalib-grid{grid-template-columns:repeat(2,1fr)}
   .qalib-body{padding:10px 12px 14px}
   .qalib-name{font-size:13px}
 
-  /* CTA */
   .cta-section{padding:60px 14px}
   .cta-grid{flex-direction:column;align-items:stretch}
   .btn-cta{justify-content:center;width:100%}
 
-  /* FOOTER */
   footer{padding:24px 14px;flex-direction:column;text-align:center}
   .footer-links{justify-content:center;flex-wrap:wrap;gap:14px}
 
-  /* TICKER */
   .ticker{height:44px}
   .ticker-item{font-size:11px;padding:0 24px}
 
-  /* GLASS CARDS */
   .glass-card{padding:18px}
   .gc-val{font-size:28px}
-}
 }
 </style>
 </head>
@@ -410,26 +380,23 @@ footer{background:#0a1e50;border-top:1px solid rgba(255,255,255,0.1);padding:36p
   <span class="ticker-item">1–7-ci Siniflər · Hədiyyəli Sınaq</span><span class="ticker-item">8–11-ci Siniflər · Buraxılış Sınağı</span><span class="ticker-item">RFM Qəbul Sınaq İmtahanı</span><span class="ticker-item">Lütfi Zadə Olimpiadası</span><span class="ticker-item">Lisey · Gimnaziya Qəbul Sınaq imtahanı</span><span class="ticker-item">MQM / OTK Rəsmi Əməkdaşı</span><span class="ticker-item">4 000+ İştirakçı Şagird</span><span class="ticker-item">Bakı · Sumqayıt · 3 Filial</span>
   <span class="ticker-item">1–7-ci Siniflər · Hədiyyəli Sınaq</span><span class="ticker-item">8–11-ci Siniflər · Buraxılış Sınağı</span><span class="ticker-item">RFM Qəbul İmtahanı</span><span class="ticker-item">Lütfi Zadə Olimpiadası</span><span class="ticker-item">Lisey · Gimnaziya Qəbulu</span><span class="ticker-item">MQM / OTK Rəsmi Əməkdaşı</span><span class="ticker-item">4 000+ İştirakçı Şagird</span><span class="ticker-item">Bakı · Sumqayıt · 3 Filial</span>
 </div></div>
-<!DOCTYPE html>
-<html lang="az">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sayac</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<!-- SAYAC -->
+<div style="padding:24px 16px;background:#dceeff">
+<div style="max-width:680px;margin:0 auto">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box}
 .cw{padding:2.8rem 1.5rem 2.2rem;font-family:'Outfit',sans-serif;text-align:center;background:linear-gradient(135deg,#e8f0ff 0%,#f0f5ff 50%,#dceeff 100%);border-radius:24px;position:relative;overflow:hidden}
 canvas.bg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.5}
 .cw-inner{position:relative;z-index:2}
 .live{display:inline-flex;align-items:center;gap:7px;margin-bottom:1.2rem;padding:5px 14px;border-radius:100px;border:1px solid rgba(24,82,240,0.25);background:rgba(24,82,240,0.08)}
 .live-dot{width:7px;height:7px;border-radius:50%;background:#1852f0;box-shadow:0 0 6px rgba(24,82,240,0.6);animation:ldot 1.2s infinite}
 @keyframes ldot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
-.live-txt{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#1852f0;font-family:'Outfit',sans-serif}
-.title{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(10,30,80,.4);margin-bottom:.4rem;font-family:'Outfit',sans-serif}
-.subtitle{font-size:24px;font-weight:900;color:#0a1e50;letter-spacing:-.03em;margin-bottom:2rem;font-family:'Montserrat',sans-serif;line-height:1.2}
-.subtitle em{font-style:normal;color:#1852f0}
-.cards{display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:2rem}
+.live-txt{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#1852f0}
+.cw-title{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(10,30,80,.4);margin-bottom:.4rem}
+.cw-subtitle{font-size:24px;font-weight:900;color:#0a1e50;letter-spacing:-.03em;margin-bottom:2rem;font-family:'Montserrat',sans-serif;line-height:1.2}
+.cw-subtitle em{font-style:normal;color:#1852f0}
+.cards{display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:2rem;flex-wrap:wrap}
 .unit{display:flex;flex-direction:column;align-items:center;gap:9px}
 .card{width:78px;height:90px;perspective:600px;cursor:default}
 .card-in{width:100%;height:100%;transform-style:preserve-3d;position:relative}
@@ -438,9 +405,9 @@ canvas.bg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;o
 .card-body::before{content:'';position:absolute;inset:0;border-radius:14px;background:linear-gradient(170deg,rgba(255,255,255,0.1) 0%,transparent 55%);pointer-events:none}
 .card-body::after{content:'';position:absolute;left:10px;right:10px;top:50%;height:1px;background:rgba(0,0,0,.4);box-shadow:0 1px 0 rgba(255,255,255,.05)}
 .num{font-size:44px;font-weight:900;color:#fff;line-height:1;letter-spacing:-.02em;position:relative;z-index:1;font-family:'Montserrat',sans-serif;text-shadow:0 0 24px rgba(100,150,255,0.5),0 2px 4px rgba(0,0,0,.4)}
-.lbl{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(10,30,80,.4);font-family:'Outfit',sans-serif}
-.sep{font-size:36px;font-weight:900;color:rgba(24,82,240,.35);margin-bottom:22px;font-family:'Montserrat',sans-serif;text-shadow:0 0 12px rgba(24,82,240,.3);animation:blink 1s step-end infinite}
-@keyframes blink{50%{opacity:.15}}
+.lbl{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(10,30,80,.4)}
+.sep{font-size:36px;font-weight:900;color:rgba(24,82,240,.35);margin-bottom:22px;font-family:'Montserrat',sans-serif;animation:blnk 1s step-end infinite}
+@keyframes blnk{50%{opacity:.15}}
 .flip-anim .card-in{animation:fa .45s cubic-bezier(.4,0,.2,1)}
 @keyframes fa{0%{transform:rotateX(0) scale(1)}40%{transform:rotateX(-80deg) scale(.95)}100%{transform:rotateX(0) scale(1)}}
 .bar-wrap{max-width:340px;margin:0 auto 1.8rem}
@@ -448,25 +415,23 @@ canvas.bg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;o
 .bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,#0a1e50,#2d6aff,#91b5ff);transition:width 1s linear;position:relative}
 .bar-dot{position:absolute;right:-5px;top:-4px;width:12px;height:12px;border-radius:50%;background:#91b5ff;box-shadow:0 0 10px rgba(100,150,255,.8),0 0 20px rgba(45,106,255,.4)}
 .bar-meta{display:flex;justify-content:space-between;margin-top:8px}
-.bar-txt{font-size:10px;color:rgba(10,30,80,.3);font-weight:500;font-family:'Outfit',sans-serif}
-.bar-pct{font-size:10px;color:#1852f0;font-weight:700;font-family:'Outfit',sans-serif}
+.bar-txt{font-size:10px;color:rgba(10,30,80,.3);font-weight:500}
+.bar-pct{font-size:10px;color:#1852f0;font-weight:700}
 .divider{width:48px;height:2px;background:rgba(24,82,240,.15);border-radius:100px;margin:0 auto 1.4rem}
-.reg-label{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(10,30,80,.35);margin-bottom:.8rem;font-family:'Outfit',sans-serif}
+.reg-label{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:rgba(10,30,80,.35);margin-bottom:.8rem}
 .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.btn-main{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:100px;text-decoration:none;font-size:13px;font-weight:800;letter-spacing:.05em;color:#fff;font-family:'Outfit',sans-serif;background:#1852f0;box-shadow:0 4px 20px rgba(24,82,240,.35);transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
+.btn-main{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:100px;text-decoration:none;font-size:13px;font-weight:800;letter-spacing:.05em;color:#fff;background:#1852f0;box-shadow:0 4px 20px rgba(24,82,240,.35);transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
 .btn-main::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.15),transparent);border-radius:inherit}
 .btn-main:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(24,82,240,.5)}
-.btn-ghost{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:100px;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.05em;color:#1852f0;font-family:'Outfit',sans-serif;background:rgba(24,82,240,.08);border:1.5px solid rgba(24,82,240,.2);transition:transform .2s,background .2s}
-.btn-ghost:hover{transform:translateY(-2px);background:rgba(24,82,240,.14)}
+.btn-ghost2{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:100px;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.05em;color:#1852f0;background:rgba(24,82,240,.08);border:1.5px solid rgba(24,82,240,.2);transition:transform .2s,background .2s}
+.btn-ghost2:hover{transform:translateY(-2px);background:rgba(24,82,240,.14)}
 </style>
-</head>
-<body style="background:transparent;margin:0;padding:16px">
 <div class="cw">
   <canvas class="bg" id="bgc"></canvas>
   <div class="cw-inner">
     <div class="live"><div class="live-dot"></div><span class="live-txt">Qeydiyyat davam edir</span></div>
-    <div class="title">MA İmtahan Mərkəzi · 28 Mart 2026 · 17:00</div>
-    <div class="subtitle">Qeydiyyat üçün<br><em>Bizə yazın</em></div>
+    <div class="cw-title">MA İmtahan Mərkəzi · 28 Mart 2026 · 17:00</div>
+    <div class="cw-subtitle">Qeydiyyat üçün<br><em>Bizə yazın</em></div>
     <div class="cards">
       <div class="unit">
         <div class="card" id="cd"><div class="card-in"><div class="card-face card-body"><span class="num" id="d">--</span></div></div></div>
@@ -499,39 +464,41 @@ canvas.bg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;o
         <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         WhatsApp · 070 494 50 94
       </a>
-      <a href="https://wa.me/994504050809" class="btn-ghost">
+      <a href="https://wa.me/994504050809" class="btn-ghost2">
         <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         050 405 08 09
       </a>
     </div>
   </div>
 </div>
+</div>
+</div>
+
 <script>
 var cv=document.getElementById('bgc'),ctx=cv.getContext('2d'),pts=[];
-function init(){cv.width=cv.offsetWidth;cv.height=cv.offsetHeight;pts=[];for(var i=0;i<50;i++)pts.push({x:Math.random()*cv.width,y:Math.random()*cv.height,r:Math.random()*.8+.2,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,o:Math.random()*.3+.05});}
-init();
-function draw(){cv.width=cv.offsetWidth;cv.height=cv.offsetHeight;ctx.clearRect(0,0,cv.width,cv.height);pts.forEach(function(p){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>cv.width)p.vx*=-1;if(p.y<0||p.y>cv.height)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='hsla(220,80%,55%,'+p.o+')';ctx.fill();});requestAnimationFrame(draw);}
-draw();
+function initBg(){cv.width=cv.offsetWidth;cv.height=cv.offsetHeight;pts=[];for(var i=0;i<50;i++)pts.push({x:Math.random()*cv.width,y:Math.random()*cv.height,r:Math.random()*.8+.2,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,o:Math.random()*.3+.05});}
+initBg();
+function drawBg(){cv.width=cv.offsetWidth;cv.height=cv.offsetHeight;ctx.clearRect(0,0,cv.width,cv.height);pts.forEach(function(p){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>cv.width)p.vx*=-1;if(p.y<0||p.y>cv.height)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='hsla(220,80%,55%,'+p.o+')';ctx.fill();});requestAnimationFrame(drawBg);}
+drawBg();
 var end=new Date('2026-03-28T17:00:00'),start=new Date('2026-03-01T00:00:00');
 var prev={d:-1,h:-1,m:-1,s:-1};
-function p(n){return n<10?'0'+n:''+n;}
+function p2(n){return n<10?'0'+n:''+n;}
 function flip(id){var el=document.getElementById(id);el.classList.remove('flip-anim');void el.offsetWidth;el.classList.add('flip-anim');}
 function tick(){
   var now=new Date(),diff=Math.max(0,end-now);
   var d=Math.floor(diff/86400000),h=Math.floor(diff%86400000/3600000),m=Math.floor(diff%3600000/60000),s=Math.floor(diff%60000/1000);
-  if(d!==prev.d){document.getElementById('d').textContent=p(d);if(prev.d>=0)flip('cd');prev.d=d;}
-  if(h!==prev.h){document.getElementById('h').textContent=p(h);if(prev.h>=0)flip('ch');prev.h=h;}
-  if(m!==prev.m){document.getElementById('m').textContent=p(m);if(prev.m>=0)flip('cm');prev.m=m;}
-  if(s!==prev.s){document.getElementById('s').textContent=p(s);if(prev.s>=0)flip('cs');prev.s=s;}
+  if(d!==prev.d){document.getElementById('d').textContent=p2(d);if(prev.d>=0)flip('cd');prev.d=d;}
+  if(h!==prev.h){document.getElementById('h').textContent=p2(h);if(prev.h>=0)flip('ch');prev.h=h;}
+  if(m!==prev.m){document.getElementById('m').textContent=p2(m);if(prev.m>=0)flip('cm');prev.m=m;}
+  if(s!==prev.s){document.getElementById('s').textContent=p2(s);if(prev.s>=0)flip('cs');prev.s=s;}
   var pct=Math.max(0,Math.min(100,(1-diff/(end-start))*100));
   document.getElementById('fill').style.width=pct.toFixed(1)+'%';
   document.getElementById('pct').textContent=diff>0?pct.toFixed(0)+'% vaxt keçdi':'Başa çatdı!';
 }
 tick();setInterval(tick,1000);
 </script>
-</body>
-</html>
-<!-- ===== ELANLAR ===== -->
+
+<!-- ELANLAR -->
 <section class="section elanlar-section" id="elanlar">
   <div class="section-header r">
     <div class="eyebrow">Cari Elanlar</div>
@@ -579,127 +546,40 @@ tick();setInterval(tick,1000);
     <p class="section-lead">Hədiyyəli Sınaq İmtahanında mükafat qazanan şagirdlərimiz. Sən də növbəti imtahanda bu sırada ola bilərsən!</p>
   </div>
   <div class="qalib-kategori r">
-    <div class="qalib-kat-header">
-      <span class="qalib-kat-icon">🏓</span>
-      <span class="qalib-kat-title">680–689 bal — Tennis Dəsti + Gümüş Sertifikat</span>
-      <span class="qalib-kat-badge silver">🥈 Gümüş</span>
-    </div>
+    <div class="qalib-kat-header"><span class="qalib-kat-icon">🏓</span><span class="qalib-kat-title">680–689 bal — Tennis Dəsti + Gümüş Sertifikat</span><span class="qalib-kat-badge silver">🥈 Gümüş</span></div>
     <div class="qalib-grid">
       <div class="qalib-card r r-d1">
-        <div class="qalib-img-wrap">
-          <img src="fevral_680_1.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="qalib-img-placeholder" style="display:none"><span>🏓</span><p>Şəkil tezliklə</p></div>
-        </div>
-        <div class="qalib-body">
-          <div class="qalib-name">Ad Soyad</div>
-          <div class="qalib-sinif">N-ci sinif · Fevral 2026</div>
-          <div class="qalib-hediyye"><span class="qalib-hediyye-icon">🏓</span>Tennis Dəsti + Gümüş Sertifikat</div>
-        </div>
+        <div class="qalib-img-wrap"><img src="fevral_680_1.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="qalib-img-placeholder" style="display:none"><span>🏓</span><p>Şəkil tezliklə</p></div></div>
+        <div class="qalib-body"><div class="qalib-name">Ad Soyad</div><div class="qalib-sinif">N-ci sinif · Fevral 2026</div><div class="qalib-hediyye"><span class="qalib-hediyye-icon">🏓</span>Tennis Dəsti + Gümüş Sertifikat</div></div>
       </div>
     </div>
   </div>
   <div class="qalib-kategori r">
-    <div class="qalib-kat-header">
-      <span class="qalib-kat-icon">🎧</span>
-      <span class="qalib-kat-title">650–669 bal — Qulaqcıq + Bürünc Sertifikat</span>
-      <span class="qalib-kat-badge bronze">🥉 Bürünc</span>
-    </div>
+    <div class="qalib-kat-header"><span class="qalib-kat-icon">🎧</span><span class="qalib-kat-title">650–669 bal — Qulaqcıq + Bürünc Sertifikat</span><span class="qalib-kat-badge bronze">🥉 Bürünc</span></div>
     <div class="qalib-grid">
       <div class="qalib-card r r-d1">
-        <div class="qalib-img-wrap">
-          <img src="fevral_650_1.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="qalib-img-placeholder" style="display:none"><span>🎧</span><p>Şəkil tezliklə</p></div>
-        </div>
-        <div class="qalib-body">
-          <div class="qalib-name">Qaçayzadə Özal</div>
-          <div class="qalib-sinif">1-ci sinif · Fevral 2026</div>
-          <div class="qalib-hediyye"><span class="qalib-hediyye-icon">🎧</span>Qulaqcıq + Bürünc Sertifikat</div>
-        </div>
+        <div class="qalib-img-wrap"><img src="fevral_650_1.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="qalib-img-placeholder" style="display:none"><span>🎧</span><p>Şəkil tezliklə</p></div></div>
+        <div class="qalib-body"><div class="qalib-name">Qaçayzadə Özal</div><div class="qalib-sinif">1-ci sinif · Fevral 2026</div><div class="qalib-hediyye"><span class="qalib-hediyye-icon">🎧</span>Qulaqcıq + Bürünc Sertifikat</div></div>
       </div>
       <div class="qalib-card r r-d1">
-        <div class="qalib-img-wrap">
-          <img src="fevral_650_2.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="qalib-img-placeholder" style="display:none"><span>🎧</span><p>Şəkil tezliklə</p></div>
-        </div>
-        <div class="qalib-body">
-          <div class="qalib-name">Şirinli Türkay</div>
-          <div class="qalib-sinif">1-ci sinif · Fevral 2026</div>
-          <div class="qalib-hediyye"><span class="qalib-hediyye-icon">🎧</span>Qulaqcıq + Bürünc Sertifikat</div>
-        </div>
+        <div class="qalib-img-wrap"><img src="fevral_650_2.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="qalib-img-placeholder" style="display:none"><span>🎧</span><p>Şəkil tezliklə</p></div></div>
+        <div class="qalib-body"><div class="qalib-name">Şirinli Türkay</div><div class="qalib-sinif">1-ci sinif · Fevral 2026</div><div class="qalib-hediyye"><span class="qalib-hediyye-icon">🎧</span>Qulaqcıq + Bürünc Sertifikat</div></div>
       </div>
     </div>
   </div>
   <div class="qalib-kategori r">
-    <div class="qalib-kat-header">
-      <span class="qalib-kat-icon">⌚</span>
-      <span class="qalib-kat-title">630–649 bal — Qol Saatı + Təltifnamə</span>
-      <span class="qalib-kat-badge blue">Təltif</span>
-    </div>
+    <div class="qalib-kat-header"><span class="qalib-kat-icon">⌚</span><span class="qalib-kat-title">630–649 bal — Qol Saatı + Təltifnamə</span><span class="qalib-kat-badge blue">Təltif</span></div>
     <div class="qalib-grid">
-      <div class="qalib-card r r-d1">
-        <div class="qalib-img-wrap">
-          <img src="fevral_630_1.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="qalib-img-placeholder" style="display:none"><span>⌚</span><p>Şəkil tezliklə</p></div>
-        </div>
-        <div class="qalib-body">
-          <div class="qalib-name">Həsənli Ramal</div>
-          <div class="qalib-sinif">2-ci sinif · Fevral 2026</div>
-          <div class="qalib-hediyye"><span class="qalib-hediyye-icon">⌚</span>Qol Saatı + Təltifnamə</div>
-        </div>
-      </div>
-      <div class="qalib-card r r-d2">
-        <div class="qalib-img-wrap">
-          <img src="fevral_630_2.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="qalib-img-placeholder" style="display:none"><span>⌚</span><p>Şəkil tezliklə</p></div>
-        </div>
-        <div class="qalib-body">
-          <div class="qalib-name">Qəhrəmanlı Leyla</div>
-          <div class="qalib-sinif">1-ci sinif · Fevral 2026</div>
-          <div class="qalib-hediyye"><span class="qalib-hediyye-icon">⌚</span>Qol Saatı + Təltifnamə</div>
-        </div>
-      </div>
-      <div class="qalib-card r r-d2">
-        <div class="qalib-img-wrap">
-          <img src="fevral_630_33.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="qalib-img-placeholder" style="display:none"><span>⌚</span><p>Şəkil tezliklə</p></div>
-        </div>
-        <div class="qalib-body">
-          <div class="qalib-name">Allahverdiyev Əbəlfəz</div>
-          <div class="qalib-sinif">4-ci sinif · Fevral 2026</div>
-          <div class="qalib-hediyye"><span class="qalib-hediyye-icon">⌚</span>Qol Saatı + Təltifnamə</div>
-        </div>
-      </div>
+      <div class="qalib-card r r-d1"><div class="qalib-img-wrap"><img src="fevral_630_1.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="qalib-img-placeholder" style="display:none"><span>⌚</span><p>Şəkil tezliklə</p></div></div><div class="qalib-body"><div class="qalib-name">Həsənli Ramal</div><div class="qalib-sinif">2-ci sinif · Fevral 2026</div><div class="qalib-hediyye"><span class="qalib-hediyye-icon">⌚</span>Qol Saatı + Təltifnamə</div></div></div>
+      <div class="qalib-card r r-d2"><div class="qalib-img-wrap"><img src="fevral_630_2.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="qalib-img-placeholder" style="display:none"><span>⌚</span><p>Şəkil tezliklə</p></div></div><div class="qalib-body"><div class="qalib-name">Qəhrəmanlı Leyla</div><div class="qalib-sinif">1-ci sinif · Fevral 2026</div><div class="qalib-hediyye"><span class="qalib-hediyye-icon">⌚</span>Qol Saatı + Təltifnamə</div></div></div>
+      <div class="qalib-card r r-d2"><div class="qalib-img-wrap"><img src="fevral_630_33.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="qalib-img-placeholder" style="display:none"><span>⌚</span><p>Şəkil tezliklə</p></div></div><div class="qalib-body"><div class="qalib-name">Allahverdiyev Əbəlfəz</div><div class="qalib-sinif">4-ci sinif · Fevral 2026</div><div class="qalib-hediyye"><span class="qalib-hediyye-icon">⌚</span>Qol Saatı + Təltifnamə</div></div></div>
     </div>
   </div>
   <div class="qalib-kategori r">
-    <div class="qalib-kat-header">
-      <span class="qalib-kat-icon">🎖️</span>
-      <span class="qalib-kat-title">600+ bal — Təltifnamə</span>
-      <span class="qalib-kat-badge blue">Təltif</span>
-    </div>
+    <div class="qalib-kat-header"><span class="qalib-kat-icon">🎖️</span><span class="qalib-kat-title">600+ bal — Təltifnamə</span><span class="qalib-kat-badge blue">Təltif</span></div>
     <div class="qalib-grid">
-      <div class="qalib-card r r-d1">
-        <div class="qalib-img-wrap">
-          <img src="fevral_600_1.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="qalib-img-placeholder" style="display:none"><span>🎖️</span><p>Şəkil tezliklə</p></div>
-        </div>
-        <div class="qalib-body">
-          <div class="qalib-name">İbrahimli Məryəm</div>
-          <div class="qalib-sinif">1-ci sinif · Fevral 2026</div>
-          <div class="qalib-hediyye"><span class="qalib-hediyye-icon">🎖️</span>Təltifnamə</div>
-        </div>
-      </div>
-      <div class="qalib-card r r-d2">
-        <div class="qalib-img-wrap">
-          <img src="fevral_600_2.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-          <div class="qalib-img-placeholder" style="display:none"><span>🎖️</span><p>Şəkil tezliklə</p></div>
-        </div>
-        <div class="qalib-body">
-          <div class="qalib-name">Şükürzadə Murad</div>
-          <div class="qalib-sinif">1-ci sinif · Fevral 2026</div>
-          <div class="qalib-hediyye"><span class="qalib-hediyye-icon">🎖️</span>Təltifnamə</div>
-        </div>
-      </div>
+      <div class="qalib-card r r-d1"><div class="qalib-img-wrap"><img src="fevral_600_1.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="qalib-img-placeholder" style="display:none"><span>🎖️</span><p>Şəkil tezliklə</p></div></div><div class="qalib-body"><div class="qalib-name">İbrahimli Məryəm</div><div class="qalib-sinif">1-ci sinif · Fevral 2026</div><div class="qalib-hediyye"><span class="qalib-hediyye-icon">🎖️</span>Təltifnamə</div></div></div>
+      <div class="qalib-card r r-d2"><div class="qalib-img-wrap"><img src="fevral_600_2.jpg" alt="Qalib şagird" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="qalib-img-placeholder" style="display:none"><span>🎖️</span><p>Şəkil tezliklə</p></div></div><div class="qalib-body"><div class="qalib-name">Şükürzadə Murad</div><div class="qalib-sinif">1-ci sinif · Fevral 2026</div><div class="qalib-hediyye"><span class="qalib-hediyye-icon">🎖️</span>Təltifnamə</div></div></div>
     </div>
   </div>
 </section>
@@ -751,8 +631,8 @@ tick();setInterval(tick,1000);
 <section class="cta-section" id="elaqe">
   <div class="cta-glow"></div>
   <div class="eyebrow r">Qeydiyyat & Əlaqə</div>
-  <h2 class="section-h2 r" style="margin:0 auto 16px;max-width:640px">Uşağınızın potensialını<br><span class="c-blue">ölçməyə başlayın</span></h2>
-  <p class="section-lead r" style="margin:0 auto 48px;text-align:center">Qeydiyyat, ətraflı məlumat və növbəti imtahan tarixi üçün bizimlə əlaqə saxlayın. WhatsApp ilə 1 dəqiqədə cavab alırsınız.</p>
+  <h2 class="section-h2 r" style="margin:0 auto 16px;max-width:640px;color:white">Uşağınızın potensialını<br><span class="c-blue">ölçməyə başlayın</span></h2>
+  <p class="section-lead r" style="margin:0 auto 48px;text-align:center;color:rgba(255,255,255,0.75)">Qeydiyyat, ətraflı məlumat və növbəti imtahan tarixi üçün bizimlə əlaqə saxlayın. WhatsApp ilə 1 dəqiqədə cavab alırsınız.</p>
   <div class="cta-grid r r-d1">
     <a href="https://wa.me/994704945094" target="_blank" class="btn-cta btn-cta-solid"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>070 494 50 94</a>
     <a href="mailto:info@maimtahan.az" class="btn-cta btn-cta-outline"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>E-poçt Göndər</a>
