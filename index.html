@@ -244,25 +244,93 @@ footer{background:#0a1e50;border-top:1px solid rgba(255,255,255,0.1);padding:36p
 .mobile-menu a:hover{color:#0a1e50}
 .mobile-menu .nav-cta{margin-top:8px;justify-content:center;height:46px;border-radius:var(--r-sm)}
 .mobile-menu .nav-game{margin-top:4px;justify-content:center;height:46px;border-radius:var(--r-sm)}
-@media(max-width:768px){
-  .nav{padding:0 16px}.nav-menu{display:none}.hamburger{display:flex}.nav-game-fixed{display:inline-flex}
-  .section{padding:60px 16px}
-  .hero{padding:80px 16px 48px;min-height:auto}
-  .hero-h1{font-size:clamp(32px,8vw,52px)}
-  .hero-lead{font-size:15px}
-  .hero-actions{flex-direction:column}
-  .btn-primary,.btn-ghost{width:100%;justify-content:center}
-  .cta-section{padding:64px 16px}
-  footer{padding:24px 16px;flex-direction:column;text-align:center}.footer-links{justify-content:center;flex-wrap:wrap;gap:16px}
-  .bento{grid-template-columns:1fr}.bento-item.span2{grid-column:auto}
-  .elan-body{padding:24px 16px}
-  .elan-prizes{grid-template-columns:repeat(2,1fr)}
-  .qalib-grid{grid-template-columns:repeat(2,1fr)}
-  .branch-info{padding:24px 16px}
+@media(max-width:1024px){
+  .hero-inner{grid-template-columns:1fr}
+  .hero-panel{display:none}
   .format-grid{grid-template-columns:1fr}
+  .bento{grid-template-columns:1fr 1fr}
+  .bento-item.span2{grid-column:span 2}
+  .branch{grid-template-columns:1fr}
+  .branch-video{min-height:220px}
   .reviews-grid{grid-template-columns:1fr}
-  .hero-chips{gap:8px}
-  .chip{font-size:12px;padding:6px 10px}
+  .elan-card{grid-template-columns:1fr}
+  .elan-img-wrap{min-height:280px}
+  .elan-img-overlay{background:linear-gradient(0deg,rgba(6,8,15,.5) 0%,transparent 60%)}
+  .qalib-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+@media(max-width:768px){
+  /* NAV */
+  .nav{padding:0 16px}
+  .nav-menu{display:none}
+  .hamburger{display:flex}
+  .nav-game-fixed{display:inline-flex}
+
+  /* HERO */
+  .hero{padding:80px 14px 48px;min-height:auto}
+  .hero-h1{font-size:clamp(30px,7.5vw,50px);letter-spacing:-.02em}
+  .hero-lead{font-size:14px;line-height:1.7}
+  .hero-actions{flex-direction:column}
+  .btn-primary,.btn-ghost{width:100%;justify-content:center;height:48px;font-size:14px}
+  .hero-chips{gap:7px}
+  .chip{font-size:11px;padding:5px 10px}
+
+  /* SECTIONS */
+  .section{padding:52px 14px}
+  .section-header{margin-bottom:36px}
+  .section-h2{font-size:clamp(26px,6vw,38px)}
+  .section-lead{font-size:15px}
+
+  /* BENTO */
+  .bento{grid-template-columns:1fr}
+  .bento-item.span2{grid-column:auto}
+  .bento-big-num{font-size:52px}
+
+  /* FORMAT */
+  .format-grid{grid-template-columns:1fr}
+  .fc{padding:24px 20px}
+
+  /* BRANCHES */
+  .branch{border-radius:16px}
+  .branch-info{padding:22px 14px}
+  .branch-name{font-size:20px}
+  .branch-video{min-height:200px}
+
+  /* REVIEWS */
+  .reviews-grid{grid-template-columns:1fr}
+
+  /* ELAN */
+  .elan-card{grid-template-columns:1fr;border-radius:16px}
+  .elan-img-wrap{min-height:240px}
+  .elan-body{padding:20px 14px}
+  .elan-title{font-size:clamp(18px,5vw,26px)}
+  .elan-prizes{grid-template-columns:repeat(2,1fr);gap:8px}
+  .elan-prize{padding:10px 8px}
+  .elan-actions{flex-direction:column}
+  .elan-btn-main,.elan-btn-ghost{width:100%;justify-content:center}
+
+  /* QALİBLƏR */
+  .qalib-grid{grid-template-columns:repeat(2,1fr)}
+  .qalib-body{padding:10px 12px 14px}
+  .qalib-name{font-size:13px}
+
+  /* CTA */
+  .cta-section{padding:60px 14px}
+  .cta-grid{flex-direction:column;align-items:stretch}
+  .btn-cta{justify-content:center;width:100%}
+
+  /* FOOTER */
+  footer{padding:24px 14px;flex-direction:column;text-align:center}
+  .footer-links{justify-content:center;flex-wrap:wrap;gap:14px}
+
+  /* TICKER */
+  .ticker{height:44px}
+  .ticker-item{font-size:11px;padding:0 24px}
+
+  /* GLASS CARDS */
+  .glass-card{padding:18px}
+  .gc-val{font-size:28px}
+}
 }
 </style>
 </head>
