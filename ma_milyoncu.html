@@ -7,6 +7,31 @@
 <title>Biliyin Milyon Dəyər — MA İmtahan Mərkəzi</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
+.lb-section{margin-top:28px;text-align:left}
+.lb-title{font-size:13px;font-weight:700;color:#1852f0;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.lb-table{width:100%;border-collapse:collapse;font-size:13px}
+.lb-table th{font-size:11px;font-weight:600;color:rgba(10,30,80,0.4);padding:4px 8px;text-align:left;border-bottom:1px solid rgba(24,82,240,0.1)}
+.lb-table td{padding:7px 8px;border-bottom:1px solid rgba(24,82,240,0.06)}
+.lb-table tr:hover td{background:rgba(24,82,240,0.03)}
+.lb-rank{font-weight:800;color:#1852f0;min-width:24px}
+.lb-name{font-weight:600;color:#0a1e50}
+.lb-score{font-weight:700;color:#16a34a}
+.lb-xal{font-size:11px;color:rgba(10,30,80,0.4)}
+.lb-date{font-size:11px;color:rgba(10,30,80,0.35)}
+.rank-1 .lb-rank{color:#f5a623;font-size:15px}
+.rank-2 .lb-rank{color:#94a3b8}
+.rank-3 .lb-rank{color:#cd7c2e}
+.lb-empty{text-align:center;color:rgba(10,30,80,0.3);font-size:13px;padding:20px 0}
+.lb-loading{text-align:center;color:rgba(10,30,80,0.3);font-size:13px;padding:16px 0}
+.end-points-badge{display:inline-block;background:rgba(24,82,240,0.1);border:1.5px solid rgba(24,82,240,0.3);color:#1852f0;font-size:18px;font-weight:800;padding:8px 24px;border-radius:100px;margin-bottom:14px}
+.end-lb{background:#fff;border:1.5px solid rgba(24,82,240,0.15);border-radius:16px;padding:20px;text-align:left;max-width:480px;margin:0 auto}
+.end-lb-title{font-size:13px;font-weight:700;color:#1852f0;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.saving-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:rgba(10,30,80,0.4);padding:6px 14px;background:rgba(10,30,80,0.04);border-radius:100px;margin-bottom:16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:12px;height:12px;border:2px solid rgba(24,82,240,0.2);border-top-color:#1852f0;border-radius:50%;animation:spin .8s linear infinite}
+.name-row{display:flex;gap:10px;max-width:380px;margin:0 auto 20px}
+.name-input{flex:1;height:48px;padding:0 16px;border:1.5px solid rgba(24,82,240,0.25);border-radius:12px;font-size:15px;font-family:'Outfit',sans-serif;background:#fff;color:#0a1e50;outline:none;transition:border .2s}
+.name-input:focus{border-color:#1852f0}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow-x:hidden}
 .bg1{position:fixed;width:600px;height:600px;background:radial-gradient(circle,rgba(24,82,240,0.12)0%,transparent 70%);top:-200px;right:-150px;pointer-events:none;z-index:0}
@@ -20,7 +45,15 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .q-count-badge{display:inline-block;background:rgba(24,82,240,0.08);border:1px solid rgba(24,82,240,0.2);color:#1852f0;font-size:12px;font-weight:600;padding:5px 14px;border-radius:100px;margin-bottom:28px}
 .start-btn{height:54px;padding:0 48px;background:#1852f0;border:none;border-radius:14px;font-size:17px;font-weight:700;color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .2s,transform .15s;box-shadow:0 4px 28px rgba(24,82,240,0.3)}
 .start-btn:hover{background:#2d6aff;transform:translateY(-2px)}
-.chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:28px}
+.chips<div class="lb-section">
+  <div class="lb-title"><span>🏆</span> Ən Yaxşı Nəticələr</div>
+  <div id="lbLoading" class="lb-loading">Yüklənir...</div>
+  <table class="lb-table" id="lbTable" style="display:none">
+    <thead><tr><th>#</th><th>Ad</th><th>Düzgün</th><th>Xal</th><th>Tarix</th></tr></thead>
+    <tbody id="lbBody"></tbody>
+  </table>
+  <div id="lbEmpty" class="lb-empty" style="display:none">Hələ heç kim oynamayıb. İlk siz olun! 🎯</div>
+</div>{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:28px}
 .chip{background:rgba(24,82,240,0.06);border:1px solid rgba(24,82,240,0.15);color:rgba(10,30,80,0.65);font-size:12px;padding:7px 15px;border-radius:100px}
 .pool-info{font-size:11px;color:rgba(10,30,80,0.3);margin-top:10px}
 #gameScreen{display:none}
@@ -81,9 +114,19 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 #endScreen{display:none;text-align:center;padding:40px 20px}
 .end-emoji{font-size:64px;margin-bottom:16px}
 .end-title{font-size:30px;font-weight:800;margin-bottom:8px;letter-spacing:-.02em;color:#0a1e50}
-.end-score{font-size:16px;color:rgba(10,30,80,0.5);margin-bottom:12px;font-weight:300}
+.end-score<div class="end-points-badge" id="endPoints"></div>
+<div id="savingState" class="saving-badge" style="display:none"><div class="spinner"></div>Nəticə saxlanılır...</div>
+{font-size:16px;color:rgba(10,30,80,0.5);margin-bottom:12px;font-weight:300}
 .end-msg{font-size:14px;color:rgba(10,30,80,0.45);margin-bottom:32px;line-height:1.7;max-width:360px;margin-left:auto;margin-right:auto}
-.end-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.end-btns<div class="end-lb">
+  <div class="end-lb-title"><span>🏆</span> Ən Yaxşı Nəticələr</div>
+  <div id="endLbLoading" class="lb-loading">Yüklənir...</div>
+  <table class="lb-table" id="endLbTable" style="display:none">
+    <thead><tr><th>#</th><th>Ad</th><th>Düzgün</th><th>Xal</th><th>Tarix</th></tr></thead>
+    <tbody id="endLbBody"></tbody>
+  </table>
+</div>
+  {display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .wa-btn{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 26px;background:#25d366;border:none;border-radius:12px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;text-decoration:none;transition:transform .15s}
 .wa-btn:hover{transform:translateY(-2px)}
 .again-btn{height:48px;padding:0 26px;background:#fff;border:1.5px solid rgba(24,82,240,0.25);border-radius:12px;font-size:14px;font-weight:600;color:#1852f0;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s}
@@ -97,8 +140,11 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
   <div class="logo-badge">MA İmtahan Mərkəzi</div>
   <div class="game-title">Biliyin<br><span class="blue">Milyon</span> <span class="amber">Dəyəri</span></div>
   <div class="game-sub">Dünyagörüş sualları · 12 mərhələ · 3 joker</div>
+  <div class="name-row">
+  <input class="name-input" id="playerName" type="text" placeholder="Adınızı daxil edin..." maxlength="24" oninput="checkName()">
+</div>
  
-  <button class="start-btn" onclick="startGame()">Oyunu Başlat →</button>
+  <button class="disabled" onclick="startGame()">Oyunu Başlat →</button>
   <div class="chips">
     <span class="chip">12 sual</span><span class="chip">50/50 joker</span>
     <span class="chip">Sual ötür</span><span class="chip">Tamaşaçı joker</span>
@@ -107,7 +153,7 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
   <div class="pool-info" id="poolInfo"></div>
 </div>
 <div id="gameScreen">
-  <div class="top-bar"><div class="tb-logo">MA · Biliyin Milyon Dəyəri</div><div class="tb-info" id="levelLabel">Sual 1/12</div></div>
+  <div class="top-bar"><div class="tb-logo">MA · Biliyin Milyon Dəyəri</div><span style="font-size:12px;color:rgba(10,30,80,0.5);font-weight:600" id="playerBadge"></span><div class="tb-info" id="levelLabel">Sual 1/12</div></div>
   <div class="progress-wrap"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
   <div class="timer-row">
     <span class="timer-label">Vaxt:</span>
@@ -155,6 +201,61 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
   </div>
 </div>
 <script>
+  var XAL_SXEMI=[500,1000,2000,4000,8000,16000,32000,64000,125000,250000,500000,1000000];
+var currentPlayer='';
+
+function checkName(){
+  var v=document.getElementById('playerName').value.trim();
+  document.getElementById('startBtn').disabled=v.length<2;
+}
+
+function formatXal(x){return x.toLocaleString();}
+
+function hesablaXal(n){var x=0;for(var i=0;i<n;i++)x+=XAL_SXEMI[i];return x;}
+
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+async function getLeaderboard(){
+  try{var r=await window.storage.get('ma_lb_v1',true);return r?JSON.parse(r.value):[];}
+  catch(e){return[];}
+}
+
+async function saveScore(name,correct,xal){
+  try{
+    var lb=await getLeaderboard();
+    lb.push({name:name,correct:correct,xal:xal,date:new Date().toLocaleDateString('az-AZ',{day:'2-digit',month:'2-digit',year:'2-digit'})});
+    lb.sort(function(a,b){return b.xal-a.xal||b.correct-a.correct;});
+    lb=lb.slice(0,50);
+    await window.storage.set('ma_lb_v1',JSON.stringify(lb),true);
+    return lb;
+  }catch(e){return[];}
+}
+
+function renderLb(lb,tbodyId,tableId,loadingId,emptyId){
+  var tbody=document.getElementById(tbodyId);
+  var table=document.getElementById(tableId);
+  var loading=document.getElementById(loadingId);
+  var empty=emptyId?document.getElementById(emptyId):null;
+  if(loading)loading.style.display='none';
+  if(!lb||lb.length===0){if(empty)empty.style.display='block';if(table)table.style.display='none';return;}
+  if(empty)empty.style.display='none';
+  if(table)table.style.display='table';
+  tbody.innerHTML='';
+  lb.forEach(function(e,i){
+    var tr=document.createElement('tr');
+    if(i<3)tr.className='rank-'+(i+1);
+    var ri=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+    tr.innerHTML='<td class="lb-rank">'+ri+'</td><td class="lb-name">'+escHtml(e.name)+'</td><td class="lb-score">'+e.correct+'/12</td><td style="font-weight:700;color:#1852f0;font-size:12px">'+formatXal(e.xal)+'<span class="lb-xal"> xal</span></td><td class="lb-date">'+e.date+'</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+async function loadStartLb(){
+  var lb=await getLeaderboard();
+  renderLb(lb,'lbBody','lbTable','lbLoading','lbEmpty');
+}
+
+loadStartLb();
 var ALL_QUESTIONS=[
 // ── COĞRAFİYA ──
 {q:'Yer kürəsinin ən böyük okeanı hansıdır?',a:['Atlantik','Sakit okean','Hind','Şimal Buz'],c:1,
@@ -1250,6 +1351,8 @@ function shuffle(arr){
 }
 
 function startGame(){
+  currentPlayer = document.getElementById('playerName').value.trim();
+document.getElementById('playerBadge').textContent = '👤 ' + currentPlayer;
   pool=shuffle(ALL_QUESTIONS);
   gameQ=pool.slice(0,12);
   cur=0; score=0;
@@ -1416,6 +1519,17 @@ function endGame(finished){
     'Bütün suallara düzgün cavab verdin! Sən həqiqətən biliyini göstərdin! MA İmtahan Mərkəzinə qeydiyyat üçün bizimlə əlaqə sax!'
   ];
   document.getElementById('endMsg').textContent=msgs[ei];
+  // Xal hesabla
+var xal = hesablaXal(score);
+document.getElementById('endPoints').textContent = formatXal(xal) + ' xal';
+
+// Saxla və reytinqi göstər
+var sav = document.getElementById('savingState');
+sav.style.display='inline-flex';
+saveScore(currentPlayer, score, xal).then(function(lb){
+  sav.style.display='none';
+  renderLb(lb,'endLbBody','endLbTable','endLbLoading',null);
+});
 }
 
 function restartGame(){
