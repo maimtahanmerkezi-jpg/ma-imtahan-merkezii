@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="az">
 <head>
@@ -7,55 +6,54 @@
 <title>Biliyin Milyon Dəyər — MA İmtahan Mərkəzi</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
-.lb-section{margin-top:28px;text-align:left}
-.lb-title{font-size:13px;font-weight:700;color:#1852f0;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.lb-table{width:100%;border-collapse:collapse;font-size:13px}
-.lb-table th{font-size:11px;font-weight:600;color:rgba(10,30,80,0.4);padding:4px 8px;text-align:left;border-bottom:1px solid rgba(24,82,240,0.1)}
-.lb-table td{padding:7px 8px;border-bottom:1px solid rgba(24,82,240,0.06)}
-.lb-table tr:hover td{background:rgba(24,82,240,0.03)}
-.lb-rank{font-weight:800;color:#1852f0;min-width:24px}
-.lb-name{font-weight:600;color:#0a1e50}
-.lb-score{font-weight:700;color:#16a34a}
-.lb-xal{font-size:11px;color:rgba(10,30,80,0.4)}
-.lb-date{font-size:11px;color:rgba(10,30,80,0.35)}
-.rank-1 .lb-rank{color:#f5a623;font-size:15px}
-.rank-2 .lb-rank{color:#94a3b8}
-.rank-3 .lb-rank{color:#cd7c2e}
-.lb-empty{text-align:center;color:rgba(10,30,80,0.3);font-size:13px;padding:20px 0}
-.lb-loading{text-align:center;color:rgba(10,30,80,0.3);font-size:13px;padding:16px 0}
-.end-points-badge{display:inline-block;background:rgba(24,82,240,0.1);border:1.5px solid rgba(24,82,240,0.3);color:#1852f0;font-size:18px;font-weight:800;padding:8px 24px;border-radius:100px;margin-bottom:14px}
-.end-lb{background:#fff;border:1.5px solid rgba(24,82,240,0.15);border-radius:16px;padding:20px;text-align:left;max-width:480px;margin:0 auto}
-.end-lb-title{font-size:13px;font-weight:700;color:#1852f0;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.saving-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:rgba(10,30,80,0.4);padding:6px 14px;background:rgba(10,30,80,0.04);border-radius:100px;margin-bottom:16px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spinner{width:12px;height:12px;border:2px solid rgba(24,82,240,0.2);border-top-color:#1852f0;border-radius:50%;animation:spin .8s linear infinite}
-.name-row{display:flex;gap:10px;max-width:380px;margin:0 auto 20px}
-.name-input{flex:1;height:48px;padding:0 16px;border:1.5px solid rgba(24,82,240,0.25);border-radius:12px;font-size:15px;font-family:'Outfit',sans-serif;background:#fff;color:#0a1e50;outline:none;transition:border .2s}
-.name-input:focus{border-color:#1852f0}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow-x:hidden}
 .bg1{position:fixed;width:600px;height:600px;background:radial-gradient(circle,rgba(24,82,240,0.12)0%,transparent 70%);top:-200px;right:-150px;pointer-events:none;z-index:0}
 .bg2{position:fixed;width:500px;height:500px;background:radial-gradient(circle,rgba(24,82,240,0.08)0%,transparent 70%);bottom:-150px;left:-100px;pointer-events:none;z-index:0}
 .wrap{width:100%;max-width:720px;padding:24px 16px;position:relative;z-index:1}
+
+/* ── START SCREEN ── */
 #startScreen{text-align:center;padding:40px 20px}
 .logo-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(24,82,240,0.1);border:1px solid rgba(24,82,240,0.3);color:#1852f0;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:7px 18px;border-radius:100px;margin-bottom:20px}
 .game-title{font-size:clamp(32px,7vw,60px);font-weight:800;letter-spacing:-.03em;line-height:1.05;margin-bottom:10px;color:#0a1e50}
 .blue{color:#1852f0}.amber{color:#f5a623}
 .game-sub{font-size:15px;font-weight:300;color:rgba(10,30,80,0.55);margin-bottom:8px}
-.q-count-badge{display:inline-block;background:rgba(24,82,240,0.08);border:1px solid rgba(24,82,240,0.2);color:#1852f0;font-size:12px;font-weight:600;padding:5px 14px;border-radius:100px;margin-bottom:28px}
-.start-btn{height:54px;padding:0 48px;background:#1852f0;border:none;border-radius:14px;font-size:17px;font-weight:700;color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .2s,transform .15s;box-shadow:0 4px 28px rgba(24,82,240,0.3)}
-.start-btn:hover{background:#2d6aff;transform:translateY(-2px)}
-.chips<div class="lb-section">
-  <div class="lb-title"><span>🏆</span> Ən Yaxşı Nəticələr</div>
-  <div id="lbLoading" class="lb-loading">Yüklənir...</div>
-  <table class="lb-table" id="lbTable" style="display:none">
-    <thead><tr><th>#</th><th>Ad</th><th>Düzgün</th><th>Xal</th><th>Tarix</th></tr></thead>
-    <tbody id="lbBody"></tbody>
-  </table>
-  <div id="lbEmpty" class="lb-empty" style="display:none">Hələ heç kim oynamayıb. İlk siz olun! 🎯</div>
-</div>{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:28px}
+.name-row{display:flex;gap:10px;max-width:380px;margin:0 auto 20px}
+.name-input{flex:1;height:48px;padding:0 16px;border:1.5px solid rgba(24,82,240,0.25);border-radius:12px;font-size:15px;font-family:'Outfit',sans-serif;background:#fff;color:#0a1e50;outline:none;transition:border .2s}
+.name-input:focus{border-color:#1852f0}
+.start-btn{height:54px;padding:0 48px;background:#1852f0;border:none;border-radius:14px;font-size:17px;font-weight:700;color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .2s,transform .15s,opacity .2s;box-shadow:0 4px 28px rgba(24,82,240,0.3);opacity:.4;pointer-events:none}
+.start-btn.active{opacity:1;pointer-events:all}
+.start-btn.active:hover{background:#2d6aff;transform:translateY(-2px)}
+.chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:28px}
 .chip{background:rgba(24,82,240,0.06);border:1px solid rgba(24,82,240,0.15);color:rgba(10,30,80,0.65);font-size:12px;padding:7px 15px;border-radius:100px}
 .pool-info{font-size:11px;color:rgba(10,30,80,0.3);margin-top:10px}
+
+/* ── LEADERBOARD (start screen) ── */
+.lb-section{margin-top:28px;text-align:left;background:#fff;border:1.5px solid rgba(24,82,240,0.12);border-radius:16px;padding:20px}
+.lb-title{font-size:13px;font-weight:700;color:#1852f0;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.lb-table{width:100%;border-collapse:collapse;font-size:13px}
+.lb-table th{font-size:11px;font-weight:600;color:rgba(10,30,80,0.4);padding:4px 8px;text-align:left;border-bottom:1px solid rgba(24,82,240,0.1)}
+.lb-table td{padding:7px 8px;border-bottom:1px solid rgba(24,82,240,0.06)}
+.lb-table tr:last-child td{border-bottom:none}
+.lb-table tr:hover td{background:rgba(24,82,240,0.03)}
+.lb-rank{font-weight:800;color:#1852f0;min-width:28px}
+.lb-name{font-weight:600;color:#0a1e50}
+.lb-score-cell{font-weight:700;color:#16a34a}
+.lb-xal-cell{font-weight:700;color:#1852f0;font-size:12px}
+.lb-xal-sub{font-size:10px;color:rgba(10,30,80,0.35);font-weight:400}
+.lb-date{font-size:11px;color:rgba(10,30,80,0.35)}
+.rank-1 .lb-rank{color:#f5a623;font-size:15px}
+.rank-2 .lb-rank{color:#94a3b8}
+.rank-3 .lb-rank{color:#cd7c2e}
+.lb-empty{text-align:center;color:rgba(10,30,80,0.3);font-size:13px;padding:24px 0}
+.lb-loading{text-align:center;color:rgba(10,30,80,0.3);font-size:13px;padding:16px 0;display:flex;align-items:center;justify-content:center;gap:8px}
+.lb-refresh{display:flex;justify-content:flex-end;margin-top:8px}
+.lb-refresh-btn{font-size:11px;color:#1852f0;background:none;border:none;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;padding:4px 0;opacity:.7}
+.lb-refresh-btn:hover{opacity:1}
+.lb-me{background:rgba(24,82,240,0.06)!important}
+.lb-me td{font-weight:700!important}
+
+/* ── GAME SCREEN ── */
 #gameScreen{display:none}
 .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:0 4px}
 .tb-logo{font-size:13px;font-weight:700;color:#1852f0}
@@ -68,6 +66,10 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .timer-bar-fill{height:100%;border-radius:4px;transition:width .95s linear,background .3s}
 .timer-count{font-size:15px;font-weight:800;min-width:32px;text-align:right;color:#1852f0;flex-shrink:0;transition:color .3s}
 .timer-count.warning{color:#f5a623}.timer-count.danger{color:#e53e3e}
+
+/* live score badge */
+.live-score-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(24,82,240,0.08);border:1px solid rgba(24,82,240,0.2);color:#1852f0;font-size:12px;font-weight:700;padding:4px 12px;border-radius:100px}
+
 .ladder{display:flex;flex-direction:column-reverse;gap:3px;margin-bottom:16px}
 .l-row{display:flex;align-items:center;gap:10px;padding:5px 12px;border-radius:8px;border:1px solid transparent;transition:all .3s}
 .l-row.active{background:rgba(24,82,240,0.1);border-color:rgba(24,82,240,0.4)}
@@ -92,6 +94,8 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .ans-btn[disabled]{cursor:default}
 .ans-letter{font-size:11px;font-weight:800;color:#1852f0;flex-shrink:0;margin-top:2px;min-width:14px}
 .ans-btn.correct .ans-letter{color:#16a34a}.ans-btn.wrong .ans-letter{color:#dc2626}
+
+/* ── FACT OVERLAY ── */
 .fo{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(4,10,36,0.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .38s ease}
 .fo.on{opacity:1;pointer-events:all}
 .fc{width:100%;max-width:500px;border-radius:22px;overflow:hidden;box-shadow:0 40px 100px rgba(4,10,36,0.6);transform:scale(0.9) translateY(24px);transition:transform .44s cubic-bezier(.34,1.45,.64,1)}
@@ -111,49 +115,73 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .fc-btn{width:100%;height:48px;background:#1852f0;border:none;border-radius:13px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .18s,transform .15s}
 .fc-btn:hover{background:#2d6aff;transform:translateY(-2px)}
 .fc-btn svg{transition:transform .2s}.fc-btn:hover svg{transform:translateX(4px)}
+
+/* ── END SCREEN ── */
 #endScreen{display:none;text-align:center;padding:40px 20px}
 .end-emoji{font-size:64px;margin-bottom:16px}
 .end-title{font-size:30px;font-weight:800;margin-bottom:8px;letter-spacing:-.02em;color:#0a1e50}
-.end-score<div class="end-points-badge" id="endPoints"></div>
-<div id="savingState" class="saving-badge" style="display:none"><div class="spinner"></div>Nəticə saxlanılır...</div>
-{font-size:16px;color:rgba(10,30,80,0.5);margin-bottom:12px;font-weight:300}
-.end-msg{font-size:14px;color:rgba(10,30,80,0.45);margin-bottom:32px;line-height:1.7;max-width:360px;margin-left:auto;margin-right:auto}
-.end-btns<div class="end-lb">
-  <div class="end-lb-title"><span>🏆</span> Ən Yaxşı Nəticələr</div>
-  <div id="endLbLoading" class="lb-loading">Yüklənir...</div>
-  <table class="lb-table" id="endLbTable" style="display:none">
-    <thead><tr><th>#</th><th>Ad</th><th>Düzgün</th><th>Xal</th><th>Tarix</th></tr></thead>
-    <tbody id="endLbBody"></tbody>
-  </table>
-</div>
-  {display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.end-score{font-size:16px;color:rgba(10,30,80,0.5);margin-bottom:12px;font-weight:300}
+.end-points-badge{display:inline-block;background:rgba(24,82,240,0.1);border:1.5px solid rgba(24,82,240,0.3);color:#1852f0;font-size:22px;font-weight:800;padding:10px 28px;border-radius:100px;margin-bottom:16px}
+.end-msg{font-size:14px;color:rgba(10,30,80,0.45);margin-bottom:24px;line-height:1.7;max-width:360px;margin-left:auto;margin-right:auto}
+.end-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
 .wa-btn{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 26px;background:#25d366;border:none;border-radius:12px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;text-decoration:none;transition:transform .15s}
 .wa-btn:hover{transform:translateY(-2px)}
 .again-btn{height:48px;padding:0 26px;background:#fff;border:1.5px solid rgba(24,82,240,0.25);border-radius:12px;font-size:14px;font-weight:600;color:#1852f0;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s}
 .again-btn:hover{background:#1852f0;color:#fff}
+
+/* end leaderboard */
+.end-lb{background:#fff;border:1.5px solid rgba(24,82,240,0.15);border-radius:16px;padding:20px;text-align:left;max-width:520px;margin:0 auto 8px}
+.end-lb-title{font-size:13px;font-weight:700;color:#1852f0;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.saving-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:rgba(10,30,80,0.4);padding:6px 14px;background:rgba(10,30,80,0.04);border-radius:100px;margin-bottom:16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:12px;height:12px;border:2px solid rgba(24,82,240,0.2);border-top-color:#1852f0;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+
+/* highlight current player row */
+.lb-me-row{background:rgba(24,82,240,0.07)!important}
+.lb-me-row td{font-weight:700!important}
+.lb-you-tag{display:inline-block;background:#1852f0;color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:100px;margin-left:4px;vertical-align:middle}
 </style>
 </head>
 <body>
 <div class="bg1"></div><div class="bg2"></div>
 <div class="wrap">
+
+<!-- ════════ START ════════ -->
 <div id="startScreen">
   <div class="logo-badge">MA İmtahan Mərkəzi</div>
   <div class="game-title">Biliyin<br><span class="blue">Milyon</span> <span class="amber">Dəyəri</span></div>
   <div class="game-sub">Dünyagörüş sualları · 12 mərhələ · 3 joker</div>
   <div class="name-row">
-  <input class="name-input" id="playerName" type="text" placeholder="Adınızı daxil edin..." maxlength="24" oninput="checkName()">
-</div>
- 
-  <button class="disabled" onclick="startGame()">Oyunu Başlat →</button>
+    <input class="name-input" id="playerName" type="text" placeholder="Adınızı daxil edin..." maxlength="24" oninput="checkName()">
+  </div>
+  <button class="start-btn" id="startBtn" onclick="startGame()">Oyunu Başlat →</button>
   <div class="chips">
     <span class="chip">12 sual</span><span class="chip">50/50 joker</span>
     <span class="chip">Sual ötür</span><span class="chip">Tamaşaçı joker</span>
     <span class="chip">⏱ Vaxt sayğacı</span><span class="chip">💡 Maraqlı faktlar</span>
   </div>
   <div class="pool-info" id="poolInfo"></div>
+
+  <!-- Live Leaderboard on start screen -->
+  <div class="lb-section">
+    <div class="lb-title">🏆 Canlı Reytinq</div>
+    <div id="lbLoading" class="lb-loading"><div class="spinner"></div> Yüklənir...</div>
+    <table class="lb-table" id="lbTable" style="display:none">
+      <thead><tr><th>#</th><th>Ad</th><th>Düzgün</th><th>Xal</th><th>Tarix</th></tr></thead>
+      <tbody id="lbBody"></tbody>
+    </table>
+    <div id="lbEmpty" class="lb-empty" style="display:none">Hələ heç kim oynamayıb. İlk siz olun! 🎯</div>
+    <div class="lb-refresh"><button class="lb-refresh-btn" onclick="loadStartLb()">↻ Yenilə</button></div>
+  </div>
 </div>
+
+<!-- ════════ GAME ════════ -->
 <div id="gameScreen">
-  <div class="top-bar"><div class="tb-logo">MA · Biliyin Milyon Dəyəri</div><span style="font-size:12px;color:rgba(10,30,80,0.5);font-weight:600" id="playerBadge"></span><div class="tb-info" id="levelLabel">Sual 1/12</div></div>
+  <div class="top-bar">
+    <div class="tb-logo">MA · Biliyin Milyon Dəyəri</div>
+    <span class="live-score-badge" id="playerBadge"></span>
+    <div class="tb-info" id="levelLabel">Sual 1/12</div>
+  </div>
   <div class="progress-wrap"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
   <div class="timer-row">
     <span class="timer-label">Vaxt:</span>
@@ -169,10 +197,14 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
   </div>
   <div class="answers" id="answers"></div>
 </div>
+
+<!-- ════════ END ════════ -->
 <div id="endScreen">
   <div class="end-emoji" id="endEmoji"></div>
   <div class="end-title" id="endTitle"></div>
   <div class="end-score" id="endScore"></div>
+  <div class="end-points-badge" id="endPoints"></div>
+  <div id="savingState" class="saving-badge" style="display:none"><div class="spinner"></div> Nəticə saxlanılır...</div>
   <div class="end-msg" id="endMsg"></div>
   <div class="end-btns">
     <a href="https://wa.me/994704945094" target="_blank" class="wa-btn">
@@ -181,8 +213,22 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
     </a>
     <button class="again-btn" onclick="restartGame()">Yenidən Oyna</button>
   </div>
+
+  <!-- End leaderboard -->
+  <div class="end-lb">
+    <div class="end-lb-title">🏆 Canlı Reytinq — Bütün Oyunçular</div>
+    <div id="endLbLoading" class="lb-loading"><div class="spinner"></div> Yüklənir...</div>
+    <table class="lb-table" id="endLbTable" style="display:none">
+      <thead><tr><th>#</th><th>Ad</th><th>Düzgün</th><th>Xal</th><th>Tarix</th></tr></thead>
+      <tbody id="endLbBody"></tbody>
+    </table>
+    <div class="lb-refresh"><button class="lb-refresh-btn" onclick="refreshEndLb()">↻ Yenilə</button></div>
+  </div>
 </div>
-</div>
+
+</div><!-- /wrap -->
+
+<!-- ════════ FACT OVERLAY ════════ -->
 <div class="fo" id="fo">
   <div class="fc">
     <div class="fc-img">
@@ -200,67 +246,144 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
     </div>
   </div>
 </div>
+
 <script>
-  var XAL_SXEMI=[500,1000,2000,4000,8000,16000,32000,64000,125000,250000,500000,1000000];
+// ══════════════════════════════════════════
+//  CONSTANTS
+// ══════════════════════════════════════════
+var XAL_SXEMI=[500,1000,2000,4000,8000,16000,32000,64000,125000,250000,500000,1000000];
+var LADDER_LABELS=['Başlanğıc','500 xal','1.000 xal','2.000 xal','4.000 xal','8.000 xal','16.000 xal','32.000 xal','64.000 xal','125.000 xal','250.000 xal','500.000 xal','1.000.000 xal'];
+var TIMES=[15,15,15,15,25,25,25,25,15,15,15,15];
+var LB_KEY='ma_lb_v2';
+
 var currentPlayer='';
+var pool=[], gameQ=[], cur=0, score=0;
+var j50used=false, jSkipused=false, jAudused=false;
+var timerInterval=null, timeLeft=0;
+var pendingNext=false;
+var lastAnswerCorrect=false;
 
-function checkName(){
-  var v=document.getElementById('playerName').value.trim();
-  document.getElementById('startBtn').disabled=v.length<2;
-}
-
-function formatXal(x){return x.toLocaleString();}
-
+// ══════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════
+function formatXal(x){return x.toLocaleString('az-AZ');}
 function hesablaXal(n){var x=0;for(var i=0;i<n;i++)x+=XAL_SXEMI[i];return x;}
-
 function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function shuffle(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
 
+// ══════════════════════════════════════════
+//  STORAGE  — shared leaderboard
+// ══════════════════════════════════════════
 async function getLeaderboard(){
-  try{var r=await window.storage.get('ma_lb_v1',true);return r?JSON.parse(r.value):[];}
-  catch(e){return[];}
-}
-
-async function saveScore(name,correct,xal){
   try{
-    var lb=await getLeaderboard();
-    lb.push({name:name,correct:correct,xal:xal,date:new Date().toLocaleDateString('az-AZ',{day:'2-digit',month:'2-digit',year:'2-digit'})});
-    lb.sort(function(a,b){return b.xal-a.xal||b.correct-a.correct;});
-    lb=lb.slice(0,50);
-    await window.storage.set('ma_lb_v1',JSON.stringify(lb),true);
-    return lb;
+    var r=await window.storage.get(LB_KEY,true);
+    return r?JSON.parse(r.value):[];
   }catch(e){return[];}
 }
 
-function renderLb(lb,tbodyId,tableId,loadingId,emptyId){
+async function saveScore(name,correct,xal){
+  // retry loop to handle concurrent writes
+  for(var attempt=0;attempt<3;attempt++){
+    try{
+      var lb=await getLeaderboard();
+      lb.push({
+        name:name,
+        correct:correct,
+        xal:xal,
+        date:new Date().toLocaleDateString('az-AZ',{day:'2-digit',month:'2-digit',year:'2-digit'})
+      });
+      lb.sort(function(a,b){return b.xal-a.xal||b.correct-a.correct;});
+      lb=lb.slice(0,100); // keep top 100
+      await window.storage.set(LB_KEY,JSON.stringify(lb),true);
+      return lb;
+    }catch(e){
+      if(attempt===2)return[];
+      await new Promise(function(r){setTimeout(r,200);});
+    }
+  }
+  return[];
+}
+
+// ══════════════════════════════════════════
+//  RENDER LEADERBOARD
+// ══════════════════════════════════════════
+function renderLb(lb,tbodyId,tableId,loadingId,emptyId,highlightName){
   var tbody=document.getElementById(tbodyId);
   var table=document.getElementById(tableId);
   var loading=document.getElementById(loadingId);
   var empty=emptyId?document.getElementById(emptyId):null;
   if(loading)loading.style.display='none';
-  if(!lb||lb.length===0){if(empty)empty.style.display='block';if(table)table.style.display='none';return;}
+  if(!lb||lb.length===0){
+    if(empty)empty.style.display='block';
+    if(table)table.style.display='none';
+    return;
+  }
   if(empty)empty.style.display='none';
   if(table)table.style.display='table';
   tbody.innerHTML='';
   lb.forEach(function(e,i){
     var tr=document.createElement('tr');
-    if(i<3)tr.className='rank-'+(i+1);
+    var isMe=(highlightName&&e.name===highlightName);
+    if(isMe)tr.className='lb-me-row';
+    else if(i===0)tr.className='rank-1';
+    else if(i===1)tr.className='rank-2';
+    else if(i===2)tr.className='rank-3';
     var ri=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
-    tr.innerHTML='<td class="lb-rank">'+ri+'</td><td class="lb-name">'+escHtml(e.name)+'</td><td class="lb-score">'+e.correct+'/12</td><td style="font-weight:700;color:#1852f0;font-size:12px">'+formatXal(e.xal)+'<span class="lb-xal"> xal</span></td><td class="lb-date">'+e.date+'</td>';
+    var youTag=isMe?'<span class="lb-you-tag">SİZ</span>':'';
+    tr.innerHTML=
+      '<td class="lb-rank">'+ri+'</td>'+
+      '<td class="lb-name">'+escHtml(e.name)+youTag+'</td>'+
+      '<td class="lb-score-cell">'+e.correct+'/12</td>'+
+      '<td class="lb-xal-cell">'+formatXal(e.xal)+'<span class="lb-xal-sub"> xal</span></td>'+
+      '<td class="lb-date">'+e.date+'</td>';
     tbody.appendChild(tr);
   });
 }
 
 async function loadStartLb(){
+  var loading=document.getElementById('lbLoading');
+  var table=document.getElementById('lbTable');
+  if(loading){loading.style.display='flex';loading.innerHTML='<div class="spinner"></div> Yüklənir...';}
+  if(table)table.style.display='none';
   var lb=await getLeaderboard();
-  renderLb(lb,'lbBody','lbTable','lbLoading','lbEmpty');
+  renderLb(lb,'lbBody','lbTable','lbLoading','lbEmpty','');
 }
 
+async function refreshEndLb(){
+  var loading=document.getElementById('endLbLoading');
+  var table=document.getElementById('endLbTable');
+  if(loading){loading.style.display='flex';loading.innerHTML='<div class="spinner"></div> Yüklənir...';}
+  if(table)table.style.display='none';
+  var lb=await getLeaderboard();
+  renderLb(lb,'endLbBody','endLbTable','endLbLoading',null,currentPlayer);
+}
+
+// auto-refresh leaderboard every 15s on start screen
+setInterval(function(){
+  if(document.getElementById('startScreen').style.display!=='none'){
+    loadStartLb();
+  }
+},15000);
+
 loadStartLb();
+
+// ══════════════════════════════════════════
+//  NAME CHECK
+// ══════════════════════════════════════════
+function checkName(){
+  var v=document.getElementById('playerName').value.trim();
+  var btn=document.getElementById('startBtn');
+  if(v.length>=2){btn.classList.add('active');}
+  else{btn.classList.remove('active');}
+}
+
+// ══════════════════════════════════════════
+//  QUESTIONS
+// ══════════════════════════════════════════
 var ALL_QUESTIONS=[
 // ── COĞRAFİYA ──
 {q:'Yer kürəsinin ən böyük okeanı hansıdır?',a:['Atlantik','Sakit okean','Hind','Şimal Buz'],c:1,
-f:{t:'Sakit okean bütün qurulardan böyükdür',x:'<strong>Sakit okean</strong> 165 milyon km² sahəsi ilə Yerin bütün quru ərazilərini üstələyir. Ən dərin nöqtəsi <strong>Mariana çuxuru</strong> — 10.994 m. Adını isə Magellanın ona sakit dəniz tapması səbəbindən almışdır.',i:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=900&q=80'}},
-
+ f:{t:'Sakit okean bütün qurulardan böyükdür',x:'<strong>Sakit okean</strong> 165 milyon km² sahəsi ilə Yerin bütün quru ərazilərini üstələyir. Ən dərin nöqtəsi <strong>Mariana çuxuru</strong> — 10.994 m dərinliyə malikdir.',i:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=900&q=80'}},
 {q:'Dünyanın ən uzun çayı hansıdır?',a:['Amazon','Nil','Yanszı','Missisipi'],c:1,
 f:{t:'Nil çayı 6.650 km — 11 ölkədən axır',x:'<strong>Nil</strong> 6.650 km ilə dünyanın ən uzun çayıdır. Etiopiya, Sudan, Misir daxil <strong>11 ölkədən</strong> keçir. Qədim Misir sivilizasiyasının bütün inkişafı məhz bu çayın sahillərindən başladı.',i:'https://images.unsplash.com/photo-1609619385002-f40f1df9b7eb?w=900&q=80'}},
 
@@ -1335,28 +1458,21 @@ f:{t:'Bluetooth — Harald Bluetooth — X əsrlik Danimarka kralı',x:'<strong>
 f:{t:'Kanadadakı Acasta qneysi 4 milyard illik',x:'Yer kürəsindəki ən qədim süxurlar <strong>3,8-4 milyard il</strong> yaşındadır. Kanadanın Şimal-Qərb Ərazilərindəki <strong>Acasta qneysi</strong> ~4 milyard illik. Yerin özü 4,5 milyard yaşlıdır.',i:'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=900&q=80'}},
 ];
 
-// ─── GAME STATE ───
-var pool=[], gameQ=[], cur=0, score=0;
-var j50used=false, jSkipused=false, jAudused=false;
-var timerInterval=null, timeLeft=0;
-var pendingNext=false;
 
-var LADDER_LABELS=['Başlanğıc','500 xal','1.000 xal','2.000 xal','4.000 xal','8.000 xal','16.000 xal','32.000 xal','64.000 xal','125.000 xal','250.000 xal','500.000 xal','1.000.000 xal'];
-var TIMES=[15,15,15,15,25,25,25,25,15,15,15,15];
 
-function shuffle(arr){
-  var a=arr.slice();
-  for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
-  return a;
-}
 
+// ══════════════════════════════════════════
+//  GAME FLOW
+// ══════════════════════════════════════════
 function startGame(){
-  currentPlayer = document.getElementById('playerName').value.trim();
-document.getElementById('playerBadge').textContent = '👤 ' + currentPlayer;
+  currentPlayer=document.getElementById('playerName').value.trim();
+  if(currentPlayer.length<2)return;
+  document.getElementById('playerBadge').textContent='👤 '+currentPlayer;
   pool=shuffle(ALL_QUESTIONS);
   gameQ=pool.slice(0,12);
   cur=0; score=0;
   j50used=false; jSkipused=false; jAudused=false;
+  pendingNext=false; lastAnswerCorrect=false;
   document.getElementById('startScreen').style.display='none';
   document.getElementById('endScreen').style.display='none';
   document.getElementById('gameScreen').style.display='block';
@@ -1369,8 +1485,7 @@ document.getElementById('playerBadge').textContent = '👤 ' + currentPlayer;
 }
 
 function buildLadder(){
-  var ld=document.getElementById('ladder');
-  ld.innerHTML='';
+  var ld=document.getElementById('ladder');ld.innerHTML='';
   for(var i=0;i<12;i++){
     var row=document.createElement('div');
     row.className='l-row'+(i===0?' active':'');
@@ -1383,45 +1498,36 @@ function buildLadder(){
 function updateLadder(){
   for(var i=0;i<12;i++){
     var row=document.getElementById('lrow'+i);
-    row.className='l-row'+(i<cur?'  done':(i===cur?' active':''));
+    row.className='l-row'+(i<cur?' done':(i===cur?' active':''));
   }
 }
 
 function loadQuestion(){
-  pendingNext=false;
+  pendingNext=false; lastAnswerCorrect=false;
   if(cur>=12){endGame(true);return;}
   var q=gameQ[cur];
   document.getElementById('levelLabel').textContent='Sual '+(cur+1)+'/12';
   document.getElementById('progFill').style.width=((cur/12)*100)+'%';
   document.getElementById('qText').textContent=q.q;
   updateLadder();
-
-  var ans=document.getElementById('answers');
-  ans.innerHTML='';
+  var ans=document.getElementById('answers');ans.innerHTML='';
   var letters=['A','B','C','D'];
   for(var i=0;i<4;i++){
     var btn=document.createElement('button');
-    btn.className='ans-btn';
-    btn.dataset.idx=i;
-    btn.innerHTML='<span class="ans-letter">'+letters[i]+'</span>'+q.a[i];
+    btn.className='ans-btn';btn.dataset.idx=i;
+    btn.innerHTML='<span class="ans-letter">'+letters[i]+'</span>'+escHtml(q.a[i]);
     btn.onclick=handleAnswer;
     ans.appendChild(btn);
   }
-
   startTimer(TIMES[cur]);
 }
 
 function startTimer(sec){
-  clearInterval(timerInterval);
-  timeLeft=sec;
+  clearInterval(timerInterval);timeLeft=sec;
   updateTimerUI(sec,sec);
   timerInterval=setInterval(function(){
-    timeLeft--;
-    updateTimerUI(timeLeft,sec);
-    if(timeLeft<=0){
-      clearInterval(timerInterval);
-      timeoutAnswer();
-    }
+    timeLeft--;updateTimerUI(timeLeft,sec);
+    if(timeLeft<=0){clearInterval(timerInterval);timeoutAnswer();}
   },1000);
 }
 
@@ -1430,25 +1536,20 @@ function updateTimerUI(t,max){
   var cnt=document.getElementById('timerCount');
   var pct=(t/max)*100;
   bar.style.width=pct+'%';
-  if(pct>50){bar.style.background='#1852f0';}
-  else if(pct>25){bar.style.background='#f5a623';}
-  else{bar.style.background='#e53e3e';}
+  bar.style.background=pct>50?'#1852f0':pct>25?'#f5a623':'#e53e3e';
   cnt.textContent=t;
-  cnt.className='timer-count'+(t<=5?' danger':(t<=10?' warning':''));
+  cnt.className='timer-count'+(t<=5?' danger':t<=10?' warning':'');
 }
 
 function timeoutAnswer(){
   var btns=document.getElementById('answers').querySelectorAll('.ans-btn');
   var correct=gameQ[cur].c;
-  btns.forEach(function(b,i){
-    b.disabled=true;
-    if(i===correct) b.classList.add('correct');
-  });
+  btns.forEach(function(b,i){b.disabled=true;if(i===correct)b.classList.add('correct');});
   setTimeout(function(){showFact(false);},900);
 }
 
 function handleAnswer(e){
-  if(pendingNext) return;
+  if(pendingNext)return;
   pendingNext=true;
   clearInterval(timerInterval);
   var btn=e.currentTarget;
@@ -1457,19 +1558,16 @@ function handleAnswer(e){
   var btns=document.getElementById('answers').querySelectorAll('.ans-btn');
   btns.forEach(function(b){b.disabled=true;});
   if(idx===correct){
-    btn.classList.add('correct');
-    score++;
+    btn.classList.add('correct');score++;lastAnswerCorrect=true;
     setTimeout(function(){showFact(true);},700);
   } else {
-    btn.classList.add('wrong');
-    btns[correct].classList.add('correct');
+    btn.classList.add('wrong');btns[correct].classList.add('correct');lastAnswerCorrect=false;
     setTimeout(function(){showFact(false);},900);
   }
 }
 
 function showFact(correct){
   var q=gameQ[cur];
-  var fo=document.getElementById('fo');
   document.getElementById('fcImg').src=q.f.i;
   document.getElementById('fcTitle').textContent=q.f.t;
   document.getElementById('fcText').innerHTML=q.f.x;
@@ -1479,24 +1577,20 @@ function showFact(correct){
     btn.onclick=function(){closeFact();endGame(false);};
   } else if(cur===11){
     btn.innerHTML='🏆 Nəticəni Gör <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
-    btn.onclick=function(){closeFact();endGame(true);};
+    btn.onclick=function(){closeFact();cur++;endGame(true);};
   } else {
     btn.innerHTML='Növbəti suala keç <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
-    btn.onclick=closeFact;
+    btn.onclick=function(){
+      document.getElementById('fo').classList.remove('on');
+      cur++;
+      loadQuestion();
+    };
   }
-  fo.classList.add('on');
+  document.getElementById('fo').classList.add('on');
 }
 
 function closeFact(){
   document.getElementById('fo').classList.remove('on');
-  var q=gameQ[cur];
-  var correct=(parseInt(document.getElementById('answers').querySelector('.correct')?.dataset?.idx)===q.c)||false;
-  cur++;
-  if(cur<12 && document.getElementById('answers').querySelector('.correct')){
-    loadQuestion();
-  } else if(cur>=12){
-    endGame(true);
-  }
 }
 
 function endGame(finished){
@@ -1519,57 +1613,49 @@ function endGame(finished){
     'Bütün suallara düzgün cavab verdin! Sən həqiqətən biliyini göstərdin! MA İmtahan Mərkəzinə qeydiyyat üçün bizimlə əlaqə sax!'
   ];
   document.getElementById('endMsg').textContent=msgs[ei];
-  // Xal hesabla
-var xal = hesablaXal(score);
-document.getElementById('endPoints').textContent = formatXal(xal) + ' xal';
+  var xal=hesablaXal(score);
+  document.getElementById('endPoints').textContent=formatXal(xal)+' xal';
 
-// Saxla və reytinqi göstər
-var sav = document.getElementById('savingState');
-sav.style.display='inline-flex';
-saveScore(currentPlayer, score, xal).then(function(lb){
-  sav.style.display='none';
-  renderLb(lb,'endLbBody','endLbTable','endLbLoading',null);
-});
+  // Save to shared leaderboard
+  var sav=document.getElementById('savingState');
+  sav.style.display='inline-flex';
+  saveScore(currentPlayer,score,xal).then(function(lb){
+    sav.style.display='none';
+    renderLb(lb,'endLbBody','endLbTable','endLbLoading',null,currentPlayer);
+  });
 }
 
 function restartGame(){
   document.getElementById('endScreen').style.display='none';
   document.getElementById('startScreen').style.display='block';
+  loadStartLb();
 }
 
+// ══════════════════════════════════════════
+//  JOKERS
+// ══════════════════════════════════════════
 function use5050(){
-  if(j50used) return;
-  j50used=true;
-  document.getElementById('j50').disabled=true;
+  if(j50used)return;j50used=true;document.getElementById('j50').disabled=true;
   var q=gameQ[cur];
   var btns=Array.from(document.getElementById('answers').querySelectorAll('.ans-btn'));
   var wrong=btns.filter(function(b){return parseInt(b.dataset.idx)!==q.c;});
-  var toHide=shuffle(wrong).slice(0,2);
-  toHide.forEach(function(b){b.classList.add('hidden');});
+  shuffle(wrong).slice(0,2).forEach(function(b){b.classList.add('hidden');});
 }
 
 function useSkip(){
-  if(jSkipused) return;
-  jSkipused=true;
-  document.getElementById('jSkip').disabled=true;
+  if(jSkipused)return;jSkipused=true;document.getElementById('jSkip').disabled=true;
   clearInterval(timerInterval);
-  // replace current question with next unused
   var remaining=pool.filter(function(p){return gameQ.indexOf(p)===-1;});
-  if(remaining.length>0){
-    var replacement=remaining[0];
-    gameQ[cur]=replacement;
-  }
+  if(remaining.length>0)gameQ[cur]=remaining[0];
   loadQuestion();
 }
 
 function useAudience(){
-  if(jAudused) return;
-  jAudused=true;
-  document.getElementById('jAud').disabled=true;
+  if(jAudused)return;jAudused=true;document.getElementById('jAud').disabled=true;
   var q=gameQ[cur];
   var btns=document.getElementById('answers').querySelectorAll('.ans-btn');
   var pcts=[0,0,0,0];
-  var correctPct=Math.floor(Math.random()*20)+55; // 55-74%
+  var correctPct=Math.floor(Math.random()*20)+55;
   pcts[q.c]=correctPct;
   var rem=100-correctPct;
   var others=[0,1,2,3].filter(function(i){return i!==q.c;});
@@ -1578,12 +1664,11 @@ function useAudience(){
     else{var v=Math.floor(Math.random()*(rem-others.length+idx+1));pcts[i]=v;rem-=v;}
   });
   btns.forEach(function(b,i){
-    var orig=b.innerHTML;
-    b.innerHTML=orig+' <span style="font-size:10px;color:#1852f0;font-weight:700;">'+pcts[i]+'%</span>';
+    b.innerHTML+=' <span style="font-size:10px;color:#1852f0;font-weight:700;">'+pcts[i]+'%</span>';
   });
 }
 
-// Show pool count on start
+// Init pool info
 document.getElementById('poolInfo').textContent='Sual bazası: '+ALL_QUESTIONS.length+' sual';
 </script>
 </body>
