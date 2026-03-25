@@ -153,7 +153,9 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
   <div class="game-sub">Dünyagörüş sualları · 12 mərhələ · 3 joker</div>
   <div class="name-row">
     <input class="name-input" id="playerName" type="text" placeholder="Adınızı daxil edin..." maxlength="24" oninput="checkName()">
+    <input class="name-input" id="playerCode" type="text" placeholder="Kodunuz..." maxlength="10" oninput="checkName()" style="max-width:130px">
   </div>
+  <div id="codeError" style="color:#dc2626;font-size:12px;margin-bottom:10px;display:none;font-weight:600;text-align:center"></div>
   <button class="start-btn" id="startBtn" onclick="startGame()">Oyunu Başlat →</button>
   <div class="chips">
     <span class="chip">12 sual</span><span class="chip">50/50 joker</span>
@@ -249,14 +251,19 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 
 <script>
 // ══════════════════════════════════════════
+//  FIREBASE CONFIG
+// ══════════════════════════════════════════
+var FB_URL='https://ma-project-68751-default-rtdb.firebaseio.com';
+
+// ══════════════════════════════════════════
 //  CONSTANTS
 // ══════════════════════════════════════════
 var XAL_SXEMI=[500,1000,2000,4000,8000,16000,32000,64000,125000,250000,500000,1000000];
 var LADDER_LABELS=['Başlanğıc','500 xal','1.000 xal','2.000 xal','4.000 xal','8.000 xal','16.000 xal','32.000 xal','64.000 xal','125.000 xal','250.000 xal','500.000 xal','1.000.000 xal'];
 var TIMES=[15,15,15,15,25,25,25,25,15,15,15,15];
-var LB_KEY='ma_lb_v2';
 
 var currentPlayer='';
+var currentCode='';
 var pool=[], gameQ=[], cur=0, score=0;
 var j50used=false, jSkipused=false, jAudused=false;
 var timerInterval=null, timeLeft=0;
@@ -272,58 +279,64 @@ function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function shuffle(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
 
 // ══════════════════════════════════════════
-//  STORAGE  — shared leaderboard
+//  FIREBASE — REST API (CDN-siz işləyir)
 // ══════════════════════════════════════════
-// Storage: window.storage (Claude artifact) → localStorage fallback
-async function storageGet(key){
-  // Try Claude artifact shared storage first
-  if(typeof window.storage !== 'undefined'){
-    try{
-      var r=await window.storage.get(key,true);
-      return r?r.value:null;
-    }catch(e){}
-  }
-  // Fallback: localStorage (per-device only)
-  try{ return localStorage.getItem(key); }catch(e){ return null; }
+async function fbGet(path){
+  var r=await fetch(FB_URL+path+'.json');
+  if(!r.ok)return null;
+  return await r.json();
+}
+async function fbSet(path,data){
+  var r=await fetch(FB_URL+path+'.json',{method:'PUT',body:JSON.stringify(data),headers:{'Content-Type':'application/json'}});
+  return r.ok;
+}
+async function fbPush(path,data){
+  var r=await fetch(FB_URL+path+'.json',{method:'POST',body:JSON.stringify(data),headers:{'Content-Type':'application/json'}});
+  return r.ok;
 }
 
-async function storageSet(key,val){
-  if(typeof window.storage !== 'undefined'){
-    try{
-      await window.storage.set(key,val,true);
-      return true;
-    }catch(e){}
-  }
-  try{ localStorage.setItem(key,val); return true; }catch(e){ return false; }
+// ══════════════════════════════════════════
+//  ŞİFRƏ SİSTEMİ
+// ══════════════════════════════════════════
+async function validateCode(code){
+  // codes/XXXX → {used: false, name: ""}
+  try{
+    var data=await fbGet('/codes/'+code);
+    if(!data)return{ok:false,msg:'Bu kod mövcud deyil ❌'};
+    if(data.used)return{ok:false,msg:'Bu kod artıq istifadə edilib — '+(data.usedBy||'')};
+    return{ok:true};
+  }catch(e){return{ok:false,msg:'Bağlantı xətası, yenidən cəhd edin'};}
 }
 
+async function markCodeUsed(code,name){
+  try{
+    await fbSet('/codes/'+code,{used:true,usedBy:name,date:new Date().toLocaleDateString('az-AZ',{day:'2-digit',month:'2-digit',year:'2-digit'})});
+  }catch(e){}
+}
+
+// ══════════════════════════════════════════
+//  REYTİNQ — Firebase
+// ══════════════════════════════════════════
 async function getLeaderboard(){
   try{
-    var raw=await storageGet(LB_KEY);
-    if(!raw)return[];
-    var parsed=JSON.parse(raw);
-    return Array.isArray(parsed)?parsed:[];
-  }catch(e){ return[]; }
+    var data=await fbGet('/leaderboard');
+    if(!data)return[];
+    var arr=Object.values(data);
+    arr.sort(function(a,b){return b.xal-a.xal||b.correct-a.correct;});
+    return arr.slice(0,50);
+  }catch(e){return[];}
 }
 
 async function saveScore(name,correct,xal){
-  for(var attempt=0;attempt<3;attempt++){
-    try{
-      var lb=await getLeaderboard();
-      lb.push({
-        name:name,
-        correct:correct,
-        xal:xal,
-        date:new Date().toLocaleDateString('az-AZ',{day:'2-digit',month:'2-digit',year:'2-digit'})
-      });
-      lb.sort(function(a,b){return b.xal-a.xal||b.correct-a.correct;});
-      lb=lb.slice(0,100);
-      var ok=await storageSet(LB_KEY,JSON.stringify(lb));
-      if(ok)return lb;
-    }catch(e){}
-    await new Promise(function(res){setTimeout(res,300);});
-  }
-  return await getLeaderboard();
+  try{
+    await fbPush('/leaderboard',{
+      name:name,
+      correct:correct,
+      xal:xal,
+      date:new Date().toLocaleDateString('az-AZ',{day:'2-digit',month:'2-digit',year:'2-digit'})
+    });
+    return await getLeaderboard();
+  }catch(e){return[];}
 }
 
 // ══════════════════════════════════════════
@@ -396,8 +409,9 @@ loadStartLb();
 // ══════════════════════════════════════════
 function checkName(){
   var v=document.getElementById('playerName').value.trim();
+  var c=document.getElementById('playerCode').value.trim();
   var btn=document.getElementById('startBtn');
-  if(v.length>=2){btn.classList.add('active');}
+  if(v.length>=2&&c.length>=2){btn.classList.add('active');}
   else{btn.classList.remove('active');}
 }
 
@@ -408,1087 +422,81 @@ var ALL_QUESTIONS=[
 // ── COĞRAFİYA ──
 {q:'Yer kürəsinin ən böyük okeanı hansıdır?',a:['Atlantik','Sakit okean','Hind','Şimal Buz'],c:1,
  f:{t:'Sakit okean bütün qurulardan böyükdür',x:'<strong>Sakit okean</strong> 165 milyon km² sahəsi ilə Yerin bütün quru ərazilərini üstələyir. Ən dərin nöqtəsi <strong>Mariana çuxuru</strong> — 10.994 m dərinliyə malikdir.',i:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=900&q=80'}},
-{q:'Dünyanın ən uzun çayı hansıdır?',a:['Amazon','Nil','Yanszı','Missisipi'],c:1,
-f:{t:'Nil çayı 6.650 km — 11 ölkədən axır',x:'<strong>Nil</strong> 6.650 km ilə dünyanın ən uzun çayıdır. Etiopiya, Sudan, Misir daxil <strong>11 ölkədən</strong> keçir. Qədim Misir sivilizasiyasının bütün inkişafı məhz bu çayın sahillərindən başladı.',i:'https://images.unsplash.com/photo-1609619385002-f40f1df9b7eb?w=900&q=80'}},
 
-{q:'Avropanın ən böyük ölkəsi hansıdır?',a:['Fransa','Almaniya','Rusiya','Ukrayna'],c:2,
-f:{t:'Rusiya 11 vaxt qurşağını əhatə edir',x:'Rusiya <strong>17,1 milyon km²</strong> ilə həm Avropanın, həm dünyanın ən böyük ölkəsidir. Şərqdən qərbə qədər <strong>11 vaxt qurşağı</strong> uzanır — bir ucunda sübh olanda digər ucunda gecədir!',i:'https://images.unsplash.com/photo-1513326738677-b964603b136d?w=900&q=80'}},
+{q:'Dünyada ən uzun çay hansıdır?',a:['Amazon','Nil','Yangtze','Misisipi'],c:1,
+ f:{t:'Nil 6.650 km uzunluğu ilə liderdir',x:'<strong>Nil çayı</strong> 6.650 km uzunluğu ilə dünyada ən uzun çay sayılır. Afrika qitəsinin 11 ölkəsindən keçərək Aralıq dənizinə tökülür.',i:'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=900&q=80'}},
 
-{q:'Dünyanın ən böyük ölkəsi (ərazi baxımından) hansıdır?',a:['Kanada','Çin','ABŞ','Rusiya'],c:3,
-f:{t:'Rusiya Pluton planetinin diametrindən böyükdür',x:'Rusiya o qədər böyükdür ki, <strong>Pluton planetinin diametrindən</strong> belə genişdir! Ölkənin şərqindən qərbinə qədər təyyarə ilə <strong>10 saat</strong> uçmaq lazımdır.',i:'https://images.unsplash.com/photo-1513326738677-b964603b136d?w=900&q=80'}},
+{q:'Hansı ölkə ərazicə dünyanın ən böyük dövlətidir?',a:['Çin','ABŞ','Kanada','Rusiya'],c:3,
+ f:{t:'Rusiya 17 milyon km² ilə birincidır',x:'<strong>Rusiya</strong> 17,1 milyon km² ərazisi ilə dünyanın ən böyük dövlətidir — bu, Plütona bərabərdir! 11 saat qurşağını əhatə edir.',i:'https://images.unsplash.com/photo-1513326738677-b964603b136d?w=900&q=80'}},
 
-{q:'Hansı ölkə ən çox əhaliyə malikdir?',a:['Hindistan','Çin','ABŞ','İndoneziya'],c:0,
-f:{t:'2023-dən Hindistan dünya əhali şampionudur',x:'<strong>2023-cü ildən</strong> Hindistan 1,44 milyard nəfərlə Çini geridə qoyaraq dünyanın ən çox əhalili ölkəsi oldu. Maraqlı fakt: Hindistanın əhalisinin <strong>yarıdan çoxu 30 yaşın altındadır!</strong>',i:'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=900&q=80'}},
+{q:'Avropanın ən hündür dağı hansıdır?',a:['Alp','Elbrus','Montblan','Matterhörn'],c:1,
+ f:{t:'Elbrus 5.642 m ilə zirvədir',x:'<strong>Elbrus dağı</strong> Qafqazda yerləşir və 5.642 m yüksəkliyi ilə Avropanın ən hündür nöqtəsidir. İldə minlərlə alpinist onu fəth etməyə çalışır.',i:'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&q=80'}},
 
-{q:'Dünyanın ən böyük səhrası hansıdır?',a:['Saxara','Qobi','Ərəbistan','Antarktida'],c:3,
-f:{t:'Ən böyük səhra Saxara deyil — Antarktidadır!',x:'Şok həqiqət: <strong>ən böyük səhra Antarktidadır!</strong> Səhra tərifi ildə 250 mm-dən az yağıntı düşən yerdir. Antarktidada ildə cəmi <strong>50 mm</strong> yağıntı düşür — 14 milyon km² isti olmayan səhra!',i:'https://images.unsplash.com/photo-1529400971008-f566de0e6dfc?w=900&q=80'}},
+{q:'Sakit okean hövzəsindəki "Atəş Halqası" nədir?',a:['Tropik qurşaq','Vulkanik-seysmik zona','Okean cərəyanı','Maqnit anomaliyası'],c:1,
+ f:{t:'Atəş Halqası yer qabığının aktiv zonasıdır',x:'<strong>Sakit okeanın Atəş Halqası</strong> 40.000 km uzunluğunda vulkan və zəlzələ zonasıdır. Dünyanın 75% vulkanı və 90% zəlzələsi burada baş verir.',i:'https://images.unsplash.com/photo-1562774053-701939374585?w=900&q=80'}},
 
-{q:'Ən uzun dağ silsiləsi hansıdır?',a:['Himalay','And dağları','Alp dağları','Ural dağları'],c:1,
-f:{t:'And dağları 7.200 km — 7 ölkədən keçir',x:'<strong>And dağları</strong> 7.200 km uzunluğu ilə dünyanın ən uzun dağ silsiləsidir. Cənubi Amerikanın <strong>7 ölkəsindən</strong> keçir. Ən hündür zirvəsi Akkonkaqua — <strong>6.961 m</strong>.',i:'https://images.unsplash.com/photo-1526392060635-9d6019884377?w=900&q=80'}},
+// ── ELM VƏ TEXNOLOGİYA ──
+{q:'Işığın boşluqdakı sürəti təxminən neçədir?',a:['100.000 km/s','300.000 km/s','500.000 km/s','150.000 km/s'],c:1,
+ f:{t:'Işıq saniyədə 299.792 km qət edir',x:'<strong>Işığın sürəti</strong> boşluqda 299.792 km/s-dir. Bu, saniyədə Yer kürəsini 7,5 dəfə dolanmağa bərabərdir. Relativlik nəzəriyyəsinə görə heç bir cisim bu sürəti keçə bilməz.',i:'https://images.unsplash.com/photo-1446941611757-91d2c3bd3d45?w=900&q=80'}},
 
-{q:'Atlantik okeanındakı ən böyük ada hansıdır?',a:['İslandiya','İrlandiya','Böyük Britaniya','Qrenlandiya'],c:3,
-f:{t:'Qrenlandiya — dünyanın ən böyük adası',x:'<strong>Qrenlandiya</strong> 2,166 milyon km² ilə dünyanın ən böyük adasıdır. Amma əhalisinin sayı cəmi <strong>56.000 nəfərdir!</strong> Buzları əriyərsə, dünya dəniz səviyyəsi <strong>7 metr qalxar.</strong>',i:'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=900&q=80'}},
+{q:'İnsan orqanizminin hansı orqanı ən çox qan pompalayır?',a:['Qaraciyər','Böyrəklər','Ürək','Ağciyər'],c:2,
+ f:{t:'Ürək gündə 100.000 dəfə döyünür',x:'<strong>Ürək</strong> gündə ortalama 100.000 dəfə döyünür və ömür boyu 2,5 milyard dəfə döyünür. Hər dəfə 70 ml qan pompalayır — bu, gündə 7.000 litrə bərabərdir.',i:'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=900&q=80'}},
 
-{q:'Dünyanın ən dərin gölü hansıdır?',a:['Xəzər','Baykal','Tanqanika','Viktoriya'],c:1,
-f:{t:'Baykal gölü 25 milyon yaşındadır',x:'<strong>Baykal</strong> 1.642 m dərinliyi ilə dünyanın ən dərin gölüdür. Yaşı <strong>25 milyon ildir</strong> — dünyada ən qədim gördür. Dünya şirin suyunun <strong>20%-ni</strong> tək bu göl saxlayır!',i:'https://images.unsplash.com/photo-1551632811-561732d1e306?w=900&q=80'}},
+{q:'Hansı element ən yüngül metaldir?',a:['Alüminium','Litium','Natrium','Berilium'],c:1,
+ f:{t:'Litium suda üzə bilən tək metaldır',x:'<strong>Litium</strong> 0,53 q/cm³ sıxlığı ilə ən yüngül metaldır — suda belə üzür! Müasir akkumulyatorların əsas komponentidir.',i:'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=900&q=80'}},
 
-{q:'Ən çox ölkə ilə həmsərhəd olan ölkə hansıdır?',a:['Rusiya','Çin','Braziliya','Almaniya'],c:0,
-f:{t:'Rusiya VƏ Çin hər ikisi 14 ölkə ilə həmsərhəddir',x:'Maraqlıdır — <strong>Rusiya da, Çin də</strong> hər biri 14 ölkə ilə həmsərhəddir, bərabərlik! Bununla belə, Rusiyanın ümumi həmsərhəd xəttinin uzunluğu <strong>60.000 km</strong>-dən çoxdur.',i:'https://images.unsplash.com/photo-1490077476659-095159692ab5?w=900&q=80'}},
-
-{q:'Azərbaycanın ən böyük şəhəri hansıdır?',a:['Gəncə','Sumqayıt','Bakı','Naxçıvan'],c:2,
-f:{t:'Bakı dəniz səviyyəsindən 28 m aşağıdadır',x:'<strong>Bakı</strong> dünyanın dəniz səviyyəsindən ən aşağıda yerləşən paytaxtlarından biridir — <strong>28 m aşağıda!</strong> XIX əsrdə dünya neftinin 50%-ni istehsal edirdi. İçərişəhərin tarixi <strong>2000 ildən</strong> artıqdır.',i:'https://images.unsplash.com/photo-1538300342682-cf57afb97285?w=900&q=80'}},
-
-{q:'Xəzər dənizi hansı növ su hövzəsidir?',a:['Dəniz','Okean','Göl','Körfəz'],c:2,
-f:{t:'Xəzər — dünyanın ən böyük qapalı su hövzəsi',x:'<strong>Xəzər dənizi</strong> texniki olaraq <strong>dünyanın ən böyük gölüdür!</strong> 371.000 km² sahəsi ilə okana çıxışı olmayan qapalı hövzədir. 5 ölkə — Azərbaycan, Rusiya, Qazaxıstan, Türkmənistan, İran — paylaşır.',i:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&q=80'}},
-
-{q:'Azərbaycanın ən hündür dağı hansıdır?',a:['Babadag','Şahdağ','Bazardüzü','Tufandağ'],c:2,
-f:{t:'Bazardüzü 4.466 m — Azərbaycan-Rusiya sərhədindədir',x:'<strong>Bazardüzü</strong> 4.466 m ilə Azərbaycanın ən hündür zirvəsidir. Həm Azərbaycan, həm Rusiya sərhədindədir. Bu zirvə eyni zamanda <strong>Avropa ilə Asiya sərhədinin</strong> bir nöqtəsi hesab edilir.',i:'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&q=80'}},
-
-{q:'Nil çayı hansı dənizə tökülür?',a:['Hind okeanı','Atlantik okeanı','Aralıq dənizi','Qırmızı dəniz'],c:2,
-f:{t:'Nil deltası 240 km enindədir',x:'Nil <strong>Aralıq dənizinə</strong> tökülür. Delta sahəsi <strong>240 km enindədir</strong> — dünyanın ən böyük deltalarından biri! Qədim Misirdə deyirdilər: "Misir Nilin hədiyyəsidir."',i:'https://images.unsplash.com/photo-1609619385002-f40f1df9b7eb?w=900&q=80'}},
-
-{q:'Hansı qitədə ən çox ölkə var?',a:['Asiya','Avropa','Afrika','Amerika'],c:2,
-f:{t:'Afrikada 54 müstəqil dövlət var',x:'<strong>Afrika</strong> 54 müstəqil ölkəsi ilə ən çox ölkəli qitədir. Ayrıca diqqət çəkən fakt: Afrika əhalisinin yarısından çoxu <strong>25 yaşın altındadır</strong> — dünyanın ən gənc qitəsi.',i:'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=900&q=80'}},
-
-{q:'Amazon çayı hansı ölkədən axır?',a:['Argentina','Kolumbiya','Braziliya','Peru'],c:2,
-f:{t:'Amazon saniyədə okana 209.000 m³ su tökürlür',x:'<strong>Amazon</strong> saniyədə <strong>209.000 m³</strong> su daşıyır — dünyanın bütün çaylarının birlikdə daşıdığı suyun <strong>20%-i!</strong> Braziliyada Amazon meşəsi ölkə ərazisinin 60%-ni örtür.',i:'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=900&q=80'}},
-
-{q:'Dünyanın ən kiçik ölkəsi hansıdır?',a:['Monako','San-Marino','Vatikan','Lixtenşteyn'],c:2,
-f:{t:'Vatikan 0,44 km² — bir futbol meydanından kiçik dövlət',x:'<strong>Vatikan</strong> 0,44 km² ilə dünyanın ən kiçik dövlətidir. Əhalisi cəmi ~800 nəfər. Buna baxmayaraq, <strong>1,3 milyard Katolikin</strong> mənəvi mərkəzidir. Öz poçt markaları, radios, hətta futbol komandası var!',i:'https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=900&q=80'}},
-
-{q:'Himalay dağları hansı qitədədir?',a:['Afrika','Avropa','Asiya','Avstraliya'],c:2,
-f:{t:'Himalay hər il 5 mm böyüyür',x:'<strong>Himalay</strong> Asiyadadır. Hindistan plitəsi Avrasiya plitəsinə çırpılmağa davam etdiyi üçün bu dağlar hər il <strong>5 mm</strong> yüksəlir! 14 zirvəsi 8.000 m-dən hündürdür — başqa heç bir silsilədə bu qədər olmaz.',i:'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&q=80'}},
-
-{q:'Hansı şəhər eyni zamanda iki qitədə yerləşir?',a:['Moskva','İstanbul','Kahirə','Tehran'],c:1,
-f:{t:'İstanbul — 3 imperiyaya paytaxtlıq etmiş şəhər',x:'<strong>İstanbul</strong> Bosfor boğazı ilə Avropa və Asiya arasında yerləşir. Roma, Bizans və Osmanlı imperiyalarına <strong>paytaxtlıq etmiş</strong> yeganə şəhərdir. Hazırda əhalisi <strong>15 milyona</strong> yaxındır.',i:'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=900&q=80'}},
-
-{q:'Dunay çayı hansı dənizə tökülür?',a:['Qara dəniz','Xəzər','Baltik dənizi','Adriatik'],c:0,
-f:{t:'Dunay 10 ölkədən keçən Avropanın ikinci uzun çayı',x:'<strong>Dunay</strong> 2.860 km ilə Avropanın 2-ci uzun çayıdır. <strong>10 ölkəni</strong> birləşdirir — Almaniyadan Qara dənizə qədər. Avropada başqa heç bir çay bu qədər çox ölkədən axmır.',i:'https://images.unsplash.com/photo-1500462918058-0ef8a7b3e550?w=900&q=80'}},
-
-{q:'Sakit okeanın ən dərin nöqtəsi hansıdır?',a:['Mindanao çuxuru','Mariana çuxuru','Puerto-Riko çuxuru','Tonga çuxuru'],c:1,
-f:{t:'Mariana çuxuruna Everest sığar, üstündə 1,6 km su qalar',x:'<strong>Mariana çuxuru</strong> 10.994 m dərinliyindədir. Everesti ora qoysanız, zirvəsi suyun altında <strong>1.600 m dərinlikdə</strong> qalar! 1960-da orada yalnız 2 insan olmuşdur.',i:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=900&q=80'}},
-
-{q:'Volqa çayı hansı dənizə tökülür?',a:['Qara dəniz','Azov dənizi','Xəzər dənizi','Baltik dənizi'],c:2,
-f:{t:'Volqa — Avropanın ən uzun çayı, okeana çatmır',x:'<strong>Volqa</strong> 3.530 km ilə Avropanın ən uzun çayıdır. Maraqlı fakt: Xəzər dənizinə tökülür — yəni <strong>okeana çata bilmir!</strong> Rusiyada "Ana çay" adlandırılır.',i:'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=900&q=80'}},
-
-{q:'Avropanın ən hündür dağı hansıdır?',a:['Monblan','Matterxorn','Elbrüs','Finsteraarxorn'],c:2,
-f:{t:'Elbrüs 5.642 m — sönmüş vulkandır',x:'<strong>Elbrüs</strong> 5.642 m ilə Avropanın ən hündür zirvəsidir. Əslində <strong>sönmüş vulkandır</strong> — son püskürməsi 50 il əvvəl olmuşdur. Hər il 1.500-dən çox alpinist zirvəyə çıxmağa cəhd edir.',i:'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&q=80'}},
-
-{q:'Dünyanın ən böyük gölü hansıdır?',a:['Xəzər','Baykal','Yuxarı göl','Viktoriya'],c:0,
-f:{t:'Xəzər dənizi Almaniyadan böyükdür',x:'<strong>Xəzər dənizi</strong> 371.000 km² ilə dünyanın ən böyük gölüdür. Almaniya ölkəsinin iki dəfə böyüyüdür! Dünyanın başqa heç yerindəki göldə belə nadir balıq növləri — nərə balıqları — yaşamır.',i:'https://images.unsplash.com/photo-1551632811-561732d1e306?w=900&q=80'}},
-
-{q:'Aralıq dənizi hansı okeanla birləşir?',a:['Hind okeanı','Sakit okean','Atlantik okeanı','Şimal Buz okeanı'],c:2,
-f:{t:'Cəbəllütariq boğazı 14 km enindədir',x:'<strong>Aralıq dənizi</strong> Cəbəllütariq boğazı vasitəsilə Atlantikə birləşir. Bu boğaz cəmi <strong>14 km</strong> enindədir. 3.000 il əvvəl fenikilər bu boğazdan keçərək Avropanı, Afrikanı kəşf etdi.',i:'https://images.unsplash.com/photo-1555993539-1732b0258235?w=900&q=80'}},
-
-{q:'Azərbaycanın sahəsi neçə km²-dir?',a:['66.000','76.000','86.600','96.000'],c:2,
-f:{t:'Azərbaycanda 9 iqlim qurşağından 8-i mövcuddur',x:'<strong>Azərbaycan</strong> 86.600 km² sahəsi ilə nisbətən kiçik ölkədir. Lakin coğrafi cəhətdən inanılmaz — dünyadakı <strong>11 iqlim qurşağından 9-u</strong> burada var! Subtropikdən alp çəmənlərə qədər hamısı.',i:'https://images.unsplash.com/photo-1538300342682-cf57afb97285?w=900&q=80'}},
-
-{q:'Ən soyuq qitə hansıdır?',a:['Arktika','Şimali Amerika','Antarktida','Avropa'],c:2,
-f:{t:'Antarktidada qeydə alınan rekord: -89,2°C',x:'<strong>Antarktida</strong> 1983-cü ildə -89,2°C ilə Yerdəki ən soyuq temperatur rekordunu qoymuşdur. Buz qatının orta qalınlığı <strong>2.160 m</strong>-dir. Orada yalnız <strong>alim stansiyaları</strong> mövcuddur.',i:'https://images.unsplash.com/photo-1529400971008-f566de0e6dfc?w=900&q=80'}},
-
-{q:'Hansı çay Avropanın ən uzun çayıdır?',a:['Dunay','Reyn','Volqa','Don'],c:2,
-f:{t:'Volqa Avropa üçün böyük əhəmiyyətlidir',x:'<strong>Volqa</strong> Avropanın ən uzun çayıdır — 3.530 km. Rusiyanın iqtisadi həyatının qanıdır: ölkənin ixracatının böyük hissəsi bu çay boyunca daşınır. Adını qədim <strong>hind-avropa dillərindən</strong> alıb, mənası "parlaqlıq".',i:'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=900&q=80'}},
-
-{q:'Cənubi Amerikanın ən böyük ölkəsi hansıdır?',a:['Argentina','Braziliya','Kolumbiya','Peru'],c:1,
-f:{t:'Braziliya dünya oksigeninin 20%-ni istehsal edir',x:'<strong>Braziliya</strong> 8,5 milyon km² ilə Cənubi Amerikanın ən böyük ölkəsidir. Amazon meşəsi ölkənin 60%-ni örtür və dünya oksigeninin <strong>20%-ni</strong> istehsal edir — buna görə "Yer kürəsinin ağciyəri" deyilir.',i:'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=900&q=80'}},
-
-{q:'Suez kanalı hansı iki dənizi birləşdirir?',a:['Qara dəniz və Xəzər','Aralıq dənizi və Qırmızı dəniz','Qırmızı dəniz və Ərəb dənizi','Aralıq dənizi və Atlantik'],c:1,
-f:{t:'Suez kanalı Avropadan Asiyaya yolu 7.000 km qısaldır',x:'<strong>Suez kanalı</strong> 1869-da açıldı. Açılmadan əvvəl Avropadan Asiyaya getmək üçün Afrika ətrafından dolaşmaq lazım idi — <strong>7.000 km</strong> artıq yol! Kanalın uzunluğu 193 km-dir.',i:'https://images.unsplash.com/photo-1542361345-89e58247f2d5?w=900&q=80'}},
-
-{q:'Hansı şəhər dünyanın ən çox əhalisi olan şəhəridir?',a:['Pekin','Mumbay','Tokio','Şanxay'],c:2,
-f:{t:'Tokio 37 milyon nəfər — Avstraliyanın ümumi əhalisindən çox',x:'<strong>Tokio</strong> aqqlomerasiyası 37 milyon nəfərlə dünyanın ən böyük şəhəridir. Bu rəqəm <strong>bütün Avstraliyanın əhalisindən</strong> artıqdır! Tokio metro sistemi gündə 8,7 milyon nəfər daşıyır.',i:'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=900&q=80'}},
-
-{q:'Azərbaycanın ən uzun çayı hansıdır?',a:['Kür','Araz','Samur','Qanıx'],c:0,
-f:{t:'Kür çayı 1.515 km — Türkiyədən başlayır',x:'<strong>Kür çayı</strong> 1.515 km ilə Azərbaycanın ən uzun çayıdır. Türkiyənin şərqindən başlayır, Gürcüstandan keçir, Azərbaycanda Arazla qovuşub <strong>Xəzərə</strong> tökülür.',i:'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=900&q=80'}},
-
-{q:'Dünyanın ən böyük yarımadasına hansı ölkə malikdir?',a:['Ərəbistan','Hindistan','Skandinaviya','Kola'],c:0,
-f:{t:'Ərəbistan yarımadası 3,2 milyon km²',x:'<strong>Ərəbistan yarımadası</strong> 3,2 milyon km² ilə dünyanın ən böyük yarımadasıdır. Avropanın 1/3 böyüklüyündədir. Dünya neft ehtiyatlarının böyük hissəsi bu yarımadanın altındadır.',i:'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=900&q=80'}},
-
-{q:'Hansı şəhər Avstraliyanın paytaxtıdır?',a:['Sidney','Melburn','Kanberra','Brisben'],c:2,
-f:{t:'Kanberra — Sidney ilə Melburn arasındakı rəqabətin yeni şəhəri',x:'<strong>Kanberra</strong> Avstraliyanın paytaxtıdır — Sidney deyil! 1913-cü ildə Sidney-Melburn rəqabətini bitirmək üçün <strong>xüsusi olaraq planlaşdırılıb</strong> inşa edildi. Avstraliyanın ən planlı şəhəridir.',i:'https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?w=900&q=80'}},
-
-{q:'Avropa ilə Asiyanı ayıran dağ silsiləsi hansıdır?',a:['Alp','Kavkaz','Ural','Himalay'],c:2,
-f:{t:'Ural 300 milyon illik qədim dağlardır',x:'<strong>Ural dağları</strong> Avropa ilə Asiyanı ayırır. 2.500 km uzunluğunda. İnanılmaz qədimdir — <strong>300 milyon ildir</strong> mövcuddur! Himalayın yaranmasından 300 milyon il əvvəl formalaşmışdır.',i:'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&q=80'}},
-
-{q:'Hindistan okeanının ən böyük adası hansıdır?',a:['Madagaskar','Srilanka','Maldiv','Reunyon'],c:0,
-f:{t:'Madagaskarda növlərin 90%-i başqa heç yerdə yoxdur',x:'<strong>Madagaskar</strong> 587.000 km² ilə Hindistan okeanının ən böyük adasıdır. Afrika qitəsindən <strong>90 milyon il əvvəl</strong> ayrıldığı üçün buradakı bitki-heyvan növlərinin <strong>90%-i</strong> başqa heç yerdə mövcud deyil!',i:'https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=900&q=80'}},
-
-{q:'Hansı çay Cənubi Amerikanın ən uzun çayıdır?',a:['Orinoko','La-Plata','Amazon','Parana'],c:2,
-f:{t:'Amazon hövzəsinin meşəsi Qərbi Avropadan böyükdür',x:'<strong>Amazon</strong> 7.062 km ilə Cənubi Amerikanın ən uzun çayıdır. Onun hövzəsindəki tropik meşə <strong>bütün Qərbi Avropadan</strong> böyükdür! 3000-dən çox balıq növü bu çayda yaşayır.',i:'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=900&q=80'}},
-
-{q:'Hansı okean ən duzludur?',a:['Sakit','Atlantik','Hind','Arktik'],c:1,
-f:{t:'Atlantik okeandakı duzluluq Karib dənizindən başlamır',x:'<strong>Atlantik okeanı</strong> ən duzlu okeandır. Bunun səbəbi orada buxarlanmanın daha intensiv olması, lakin çay axımının daha az olmasıdır. Orta duzluluğu <strong>3,7%</strong> — Sakit okeanın <strong>3,5%-indən</strong> yüksək.',i:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=900&q=80'}},
-
-{q:'Dünyanın ən böyük körfəzi hansıdır?',a:['Meksika körfəzi','Benqal körfəzi','Hudson körfəzi','Fors körfəzi'],c:1,
-f:{t:'Benqal körfəzi 2,17 milyon km²',x:'<strong>Benqal körfəzi</strong> 2,17 milyon km² ilə dünyanın ən böyük körfəzidir. Hindistan, Banqladeş, Myanma, Tailand, Şri-Lanka kimi ölkələrin sahilini yuyur. Dünyanın ən güclü delta sistemi — <strong>Ganq-Brahmaputra</strong> — buraya tökülür.',i:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=900&q=80'}},
-
-// ── ELM & TƏBİƏT ──
-{q:'Günəş sisteminin ən böyük planeti hansıdır?',a:['Saturn','Uranüs','Yupiter','Neptun'],c:2,
-f:{t:'Yupiterin içinə 1.300 Yer sığar',x:'<strong>Yupiter</strong> Günəş sisteminin ən böyük planetidir. İçinə <strong>1.300 Yer!</strong> sığar. Üzərindəki böyük qırmızı ləkə əslində <strong>300 ildir davam edən fırtınadır</strong> — ölçüsü Yerdən böyükdür.',i:'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=900&q=80'}},
-
-{q:'Su kimyəvi olaraq nə adlanır?',a:['H₂O₂','CO₂','H₂O','NaCl'],c:2,
-f:{t:'Su dondukda genişlənən nadir maddədir',x:'<strong>H₂O</strong> — 2 hidrogen, 1 oksigen. Suyun ən maraqlı xüsusiyyəti: dondukda <strong>genişlənir</strong>, sıxlığı azalır. Buna görə buz su üzərindədir — əgər əks olsaydı, göllər dibdən donardı və balıqlar yaşaya bilməzdi!',i:'https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=900&q=80'}},
-
-{q:'İnsan bədənindəki ən uzun sümük hansıdır?',a:['Onurğa','Bud sümüyü','Qabırğa','Kürək sümüyü'],c:1,
-f:{t:'Bud sümüyü insan çəkisinin 30 qatını daşıyır',x:'<strong>Bud sümüyü</strong> insan bədəninin ən uzun sümüyüdür. Elə möhkəmdir ki, <strong>insan çəkisinin 30 qatına</strong> tab gətirir. Eyni zamanda bədəndə ən çox qan hüceyrəsinin istehsal olunduğu sümük iliyi burada yerləşir.',i:'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=900&q=80'}},
-
-{q:'İşıq saniyədə təxminən neçə km yol gedir?',a:['100.000 km','300.000 km','500.000 km','150.000 km'],c:1,
-f:{t:'İşıq 1 saniyədə Yeri 7,5 dəfə dövrə vurur',x:'İşıq saniyədə <strong>299.792 km</strong> yol gedir. Bu sürətlə <strong>1 saniyədə Yeri 7,5 dəfə</strong> dövrə vurar. Günəşdən Yerə işıq <strong>8 dəqiqə 20 saniyəyə</strong> çatır.',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'Hansı planet Günəşə ən yaxındır?',a:['Venera','Mars','Merkuri','Yer'],c:2,
-f:{t:'Merkuri ən yaxın, lakin ən isti deyil!',x:'<strong>Merkuri</strong> Günəşə ən yaxındır. Lakin ən isti planet deyil — atmosferi olmadığından istiliyi tuta bilmir. Ən isti planet <strong>Veneradır</strong> (462°C) — qalın CO₂ atmosferi issixana effekti yaradır.',i:'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=900&q=80'}},
-
-{q:'Hansı element Günəşdə ən bol miqdarda vardır?',a:['Oksigen','Helium','Hidrogen','Karbon'],c:2,
-f:{t:'Günəş hər saniyə 600 milyon ton hidrogeni yandırır',x:'Günəşin <strong>73%-i hidrogendən</strong> ibarətdir. Hər saniyə <strong>600 milyon ton</strong> hidrogeni heluma çeviririr — nüvə sintezi! Bu proses daha <strong>5 milyard il</strong> davam edəcək.',i:'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=900&q=80'}},
-
-{q:'İnsan ürəyi gündə təxminən neçə dəfə döyünür?',a:['50.000','100.000','200.000','30.000'],c:1,
-f:{t:'İnsan ürəyi həyatı boyunca 2,5 milyard dəfə döyünür',x:'İnsan ürəyi gündə <strong>100.000 dəfə</strong> döyünür. Ömür boyu bu <strong>2,5 milyard döyüntüdür!</strong> Ürək qanı saniyədə 1,4 litr sürətlə vurur. Həyatı boyunca bir insan ürəyi <strong>40 milyon litr</strong> qan vurur.',i:'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=900&q=80'}},
-
-{q:'Dünyada ən çox istehsal olunan metal hansıdır?',a:['Alüminium','Mis','Dəmir','Sink'],c:2,
-f:{t:'Dəmir Yer kürəsinin mərkəzini əmələ gətirir',x:'<strong>Dəmir</strong> həm ən çox istehsal olunan metal, həm də <strong>Yer kürəsinin mərkəzini</strong> (nüvəsini) əmələ gətirir. Hər il <strong>1,9 milyard ton polad</strong> istehsal edilir. Maqnitlərin işləməsini dəmir sağlayır.',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Səsin sürəti havada təxminən neçə m/s-dir?',a:['150','343','500','700'],c:1,
-f:{t:'İşıq səsdən 880.000 dəfə sürətlidir',x:'Səs havada saniyədə <strong>343 m</strong> sürətlə yayılır. <strong>İşıq isə səsdən 880.000 dəfə sürətlidir!</strong> Buna görə ildırım çaxanda öncə şimşəyi görür, sonra səsi eşidirik.',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'İnsan bədəninin ən böyük orqanı hansıdır?',a:['Qaraciyər','Ağ ciyər','Dəri','Beyin'],c:2,
-f:{t:'Dəri hər 2-4 həftədə tam yenilənir',x:'<strong>Dəri</strong> 1,5-2 m² ilə insan bədəninin ən böyük orqanıdır! Hər <strong>2-4 həftədə</strong> tam yenilənir. İnsan ömrü boyunca orta hesabla <strong>48 kq dəri tökür!</strong> Həmçinin D vitaminini sintez edir.',i:'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=900&q=80'}},
-
-{q:'Ağ işıq neçə rəngdən ibarətdir?',a:['3','5','7','9'],c:2,
-f:{t:'Nyuton 1666-da prizma ilə 7 rəngi kəşf etdi',x:'Ağ işıq <strong>7 rəngdən</strong> ibarətdir. <strong>İsaak Nyuton</strong> 1666-cı ildə prizma ilə gün işığını parçalayaraq bunu kəşf etdi. Maraqlı fakt: həmin il taun xəstəliyi ucbatından evdə gizləndiyindən bu sınağı apardı.',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'Hansı qaz atmosferdə ən çox miqdarda vardır?',a:['Oksigen','Azot','Karbon dioksid','Arqon'],c:1,
-f:{t:'Azot atmosferin 78%-i — nə alışır, nə söndürür',x:'<strong>Azot</strong> atmosferin 78%-ni təşkil edir, oksigen isə 21%-ni. Azot kimyəvi cəhətdən passivdir — <strong>nə alışır, nə başqalarının alışmasına kömək edir.</strong> Onsuz atmosfer yanardı!',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Qanın hansı hissəsi oksigen daşıyır?',a:['Leykositlər','Trombositlər','Eritrositlər','Plazma'],c:2,
-f:{t:'1 damla qanda 5 milyon eritrosit var',x:'<strong>Eritrositlər</strong> (qırmızı qan cisimcikləri) oksigen daşıyır. 1 ml qanda <strong>5 milyon eritrosit</strong> var! Hər eritrositin ömrü 120 gündür — sonra dalaq onu parçalayır.',i:'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=900&q=80'}},
-
-{q:'Hansı vitamin günəş işığından alınır?',a:['A vitamini','B vitamini','C vitamini','D vitamini'],c:3,
-f:{t:'D vitamini çatışmazlığı 1 milyard insanı əhatə edir',x:'<strong>D vitamini</strong> dəridə günəş ultrabənövşəyi şüaları sayəsində sintez edilir. Dünyada <strong>1 milyard nəfər</strong> D vitamini çatışmazlığından əziyyət çəkir. Sümük sağlamlığı, immunitet üçün vacibdir.',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Fotosintez zamanı bitkilər hansı qazı udur?',a:['Oksigen','Azot','Karbon dioksid','Hidrogen'],c:2,
-f:{t:'Fotosintez bütün həyatın əsasıdır',x:'Bitkilər <strong>CO₂ + H₂O + işıq → qlükoza + O₂</strong> reaksiyasını həyata keçirir. Bütün atmosferimizdəki oksigen <strong>milyardlarla ildir davam edən fotosintezidir!</strong> Bu olmadan nə heyvan, nə insan mövcud ola bilərdi.',i:'https://images.unsplash.com/photo-1628595351029-c2bf17511435?w=900&q=80'}},
-
-{q:'İnsan beyninin kütləsi təxminən neçə qramdır?',a:['500','1400','2000','800'],c:1,
-f:{t:'Beyin bədənin 2%-i, enerjinin 20%-ni istehlak edir',x:'İnsan beyni <strong>1.400 qramdır</strong>, lakin bədənin istehlak etdiyi enerjinin <strong>20%-ni</strong> tək başına alar! 100 milyard neyron var. Uykuda da fəal olmaqda davam edir — yuxu zamanı yaddaş formalaşır.',i:'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=900&q=80'}},
-
-{q:'Qan qrupları neçə növdür (ABO sistemi)?',a:['2','3','4','5'],c:2,
-f:{t:'Karl Landşteyner qan qruplarını kəşf edib Nobel aldı',x:'ABO sisteminə görə <strong>4 qan qrupu</strong> var: A, B, AB, O. <strong>Karl Landşteyner</strong> 1901-ci ildə kəşf etdi — 1930-da Nobel aldı. Bundan əvvəl qan köçürmələr çox vaxt ölümlə nəticələnirdi!',i:'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=900&q=80'}},
-
-{q:'Atom nüvəsini kəşf edən kim olmuşdur?',a:['Niels Bor','Ernest Rezerford','Marie Küri','Cozef Tomson'],c:1,
-f:{t:'Rezerford qızıl folqaya alfa şüaları atdı',x:'<strong>Ernest Rezerford</strong> 1911-ci ildə qızıl folqaya alfa hissəcikləri atdı. Bəzilərinin geri qayıtması onu şoka saldı — <strong>atom nüvəsini kəşf etmişdi!</strong> Özü bunu "divan arxasından top atıb divanın üstünə düşməsinə" bənzətdi.',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Elektronu kəşf edən kim olmuşdur?',a:['Albert Eynşteyn','Niels Bor','Cozef Tomson','Ernest Rezerford'],c:2,
-f:{t:'Cozef Tomson 1897-də elektronu kəşf etdi',x:'<strong>Cozef Tomson</strong> 1897-ci ildə katod şüaları sınağı ilə elektronu kəşf etdi. 1906-da Nobel aldı. Maraqlı fakt: onun oğlu Corc Tomson da Nobel aldı — <strong>elektronu dalğa kimi davranması üçün!</strong>',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Hansı element otaq temperaturunda maye halındadır?',a:['Qurğuşun','Civə','Qalay','Sink'],c:1,
-f:{t:'Civə zəhərlidir, amma termometrlər üçün mükəmməldir',x:'<strong>Civə</strong> otaq temperaturunda maye halında olan yeganə metaldır. Donma nöqtəsi <strong>-38,8°C</strong>. Son dərəcə zəhərlidir — bu gün tibb termometrlərindən çıxarılmışdır. Qlükoza sözünün kökü olan <strong>Merkuri</strong> planeti onun adını daşıyır.',i:'https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=900&q=80'}},
-
-{q:'Günəş sistemindəki planetlərin sayı neçədir?',a:['7','8','9','10'],c:1,
-f:{t:'Pluton 2006-dan cırtdan planet sayılır',x:'Günəş sistemindəki planetlərin sayı rəsmi olaraq <strong>8-dir</strong>. Pluton 2006-cı ildə planetlər siyahısından çıxarıldı — indi <strong>"cırtdan planet"</strong> adlanır. Buna görə astronomlar arasında böyük mübahisə yarandı!',i:'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=900&q=80'}},
-
-{q:'Qızıl elementinin kimyəvi simvolu nədir?',a:['Gl','Go','Au','Gd'],c:2,
-f:{t:'Au — Aurum — 1 qramdan 3 km məftil çəkmək olar',x:'Qızılın simvolu <strong>Au</strong> — latınca "aurum". 1 qram qızıldan <strong>3 km uzunluğunda</strong> nazik məftil çəkə bilərsiniz! Qızıl paslanmır, korroziyaya uğramır — buna görə kosmos texnologiyalarında geniş istifadə edilir.',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Hansı element ən yüngüldür?',a:['Helium','Hidrogen','Litium','Bor'],c:1,
-f:{t:'Hidrogen kainatın 75%-ini təşkil edir',x:'<strong>Hidrogen</strong> ən yüngül elementdir — atomik nömrəsi 1. Kainatın <strong>75%-i hidrogendən</strong> ibarətdir. Günəş kimi bütün ulduzlar hidrogeni heluma çevirərək enerji istehsal edir.',i:'https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=900&q=80'}},
-
-{q:'DNA-nın ikiqat spiral quruluşunu kim kəşf etdi?',a:['Darvin','Kriq və Uotson','Mendel','Pastör'],c:1,
-f:{t:'Rozalind Franklinin şəkli olmadan DNA kəşf edilə bilməzdi',x:'<strong>Frensis Kriq və Ceyms Uotson</strong> 1953-cü ildə DNT spiralını kəşf etdi. Lakin həlledici ipucu <strong>Rozalind Franklinin</strong> çəkdiyi X-şüa şəkli idi. O, Nobel mükafatından məhrum qaldı — qadın olduğu üçün adı uzun illər unuduldu.',i:'https://images.unsplash.com/photo-1628595351029-c2bf17511435?w=900&q=80'}},
-
-{q:'İnsan bədənindəki ən kiçik sümük haradır?',a:['Barmaqda','Ayaqda','Qulaqda','Gözün yanında'],c:2,
-f:{t:'Üzəngicik sümüyü cəmi 3 mm — eşitmənin açarı',x:'İnsan bədəninin ən kiçik sümüyü qulaqda yerləşən <strong>üzəngicikdir</strong> — uzunluğu cəmi <strong>3 mm!</strong> Orta qulaqda malleus, inkus, stapes (üzəngicik) adlı üç kiçik sümük var. Bunlar səs titrəyişlərini iç qulağa ötürür.',i:'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=900&q=80'}},
-
-{q:'Yer kürəsi öz oxu ətrafında tam bir dönüşü neçə saata edir?',a:['23 saat','24 saat','23 saat 56 dəqiqə','25 saat'],c:2,
-f:{t:'Günümüz 24 saatdır, amma Yerin tam dönüşü 23:56-dır',x:'Yer öz oxu ətrafında tam dönüşünü <strong>23 saat 56 dəqiqə 4 saniyəyə</strong> edir. "24 saat" isə Günəşə görə ölçülür. Bu <strong>4 dəqiqəlik fərq</strong> ulduzların hər gecə bir az fərqli yerdə görünməsinə səbəb olur.',i:'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=900&q=80'}},
-
-{q:'Hansı vitamin qanın laxtalanmasında iştirak edir?',a:['A vitamini','C vitamini','D vitamini','K vitamini'],c:3,
-f:{t:'K vitamini — adı almanicada "koaqulasiya"dan gəlir',x:'<strong>K vitamini</strong> qanın laxtalanmasını sağlayır. "K" hərfi almanicadan gəlir — <strong>"Koagulation"</strong> (laxtalanma). Yosun, ispanaq, kəvər K vitamini ilə zəngindir. Çatışmazlıqda kiçik kəsilərdən belə qan dayanmır.',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Göy qurşağında neçə rəng var?',a:['5','6','7','8'],c:2,
-f:{t:'İkiqat göy qurşağında rənglər tərsinə düzülür',x:'Göy qurşağında <strong>7 rəng</strong> var. İkili göy qurşağında isə <strong>rənglər tərsinə düzülür</strong> — qırmızı içdə, bənövşəyi kənarda! Göy qurşağı əslində tam dairədir — bizdən ancaq yarısı görünür.',i:'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=900&q=80'}},
-
-{q:'Nisbiyyət nəzəriyyəsini kim irəli sürdü?',a:['Nyuton','Eynşteyn','Bor','Faradey'],c:1,
-f:{t:'Eynşteyn 26 yaşında 4 tarixi məqalə yazdı',x:'<strong>Albert Eynşteyn</strong> 1905-ci ildə — cəmi 26 yaşında — 4 tarixi elmi məqalə yazdı. Bu il "möcüzəli il" adlanır. E=mc² formulası <strong>atom enerjisinin əsasını</strong> qoydu.',i:'https://images.unsplash.com/photo-1614314107768-6018061b5b72?w=900&q=80'}},
-
-{q:'Penisilin antibiotikini kim kəşf etdi?',a:['Lui Paster','Aleksandr Fleminq','Robert Kox','Cozef Lister'],c:1,
-f:{t:'Fleminq tətilə gedib laboratoriyasını unuddu — milyardlar xilas oldu',x:'<strong>Aleksandr Fleminq</strong> 1928-ci ildə tətilə getməmişdən əvvəl petri qabını yığışdırmadı. Qayıdanda gördü ki, küf göbələyi bakteriyaları <strong>məhv etmişdir</strong>. Bu qəza sayəsində <strong>milyardlarla həyat xilas oldu!</strong>',i:'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=900&q=80'}},
-
-{q:'Telefonu kim ixtira etdi?',a:['Tomas Edison','Qram Bell','Nikola Tesla','Marko Poni'],c:1,
-f:{t:'Qraham Bell telefonu 1876-da patentləşdirdi, amma...',x:'<strong>Aleksandr Qraham Bell</strong> 1876-cı ildə patent aldı. Lakin <strong>Antonio Meuçi</strong> daha əvvəl ixtira etmişdi — kasıblıq üzündən patent ödənişini verə bilmirdi. 2002-ci ildə ABŞ Konqresi rəsmi olaraq Meuçinin haqqını tanıdı.',i:'https://images.unsplash.com/photo-1523206489230-c012c64b2b48?w=900&q=80'}},
-
-{q:'Cazibə qüvvəsi qanununu kim kəşf etdi?',a:['Galiley','Kopernik','Nyuton','Eynşteyn'],c:2,
-f:{t:'Nyutonun tərəfi ola bilsin — amma alma əfsanəsi doğrumudur?',x:'<strong>İsaak Nyuton</strong> 1687-ci ildə cazibə qanununu kəşf etdi. Alma ağacı əfsanəsi <strong>qismən doğrudur</strong> — Nyuton özü bu hekayəni dostlarına danışıb. 300 il sonra bu qanun kosmik gəmilərin traektoriyasını hesablamaqda istifadə edilir.',i:'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=900&q=80'}},
-
-{q:'Radium elementini kim kəşf etdi?',a:['Röngen','Küri cütlüyü','Bekkrel','Rezerford'],c:1,
-f:{t:'Mariya Kürinin dəftərləri hələ radioaktivdir',x:'<strong>Mariya və Pyer Küri</strong> 1898-ci ildə Radium elementini kəşf etdi. Mariya Kürinin dəftərləri o qədər radioaktivdir ki, Paris arxivlərində <strong>xüsusi şüşə qutu</strong>da saxlanılır. Onları görmək üçün hələ sənəd lazımdır!',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Elektrik lambasını kim ixtira etdi?',a:['Nikola Tesla','Qram Bell','Tomas Edison','Volta'],c:2,
-f:{t:'Edison 1.000-dən çox sınaqdan sonra uğur qazandı',x:'<strong>Tomas Edison</strong> 1879-cu ildə işlənən elektrik lambasını hazırladı. Deyilənə görə <strong>1.000-dən çox</strong> sınaq apardı. "Mən uğursuz olmadım — sadəcə işləməyən 1.000 üsul tapdım" dedi.',i:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'}},
-
-{q:'Evolyusiya nəzəriyyəsini kim irəli sürdü?',a:['Lamark','Darvin','Mendel','Linn'],c:1,
-f:{t:'Darvin kitabı yazmaq üçün 20 il gözlədi',x:'<strong>Çarlz Darvin</strong> evolyusiya nəzəriyyəsini 1838-ci ildə kəşf etdi, lakin kitabı nəşr etmək üçün <strong>20 il gözlədi</strong> — din adamlarının reaksiyasından qorxurdu. "Növlərin Mənşəyi" 1859-da çıxdı.',i:'https://images.unsplash.com/photo-1591737902471-1bb2dc5dc3c3?w=900&q=80'}},
-
-{q:'Buxar mühərrikini kim ixtira etdi?',a:['Ceyms Uatt','Tomas Edison','Jorj Stefenson','Robert Fulton'],c:0,
-f:{t:'Ceyms Uatt — "Vatt" güc vahidi onun adındandır',x:'<strong>Ceyms Uatt</strong> 1769-cu ildə buxar mühərrikini əhəmiyyətli dərəcədə təkmilləşdirdi. Güc vahidi <strong>"watt"</strong> onun şərəfinə adlandırılıb. Bu ixtira Sənaye İnqilabının başlanğıcını verdi — dünya üzü dəyişdi.',i:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'}},
-
-{q:'Mariya Küri iki Nobel mükafatı hansı elm sahələrindən almışdır?',a:['Fizika və kimya','Kimya və biologiya','Fizika və tibb','Kimya və tibb'],c:0,
-f:{t:'Mariya Küri iki fərqli sahədən Nobel alan yeganə şəxsdir',x:'<strong>Mariya Küri</strong> 1903-də Fizika, 1911-də Kimya Nobelini aldı. <strong>İki fərqli elm sahəsindən Nobel alan yeganə şəxsdir</strong>. Üstəlik o dövrdə qadınlara universitet girişi çox məhdud idi!',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Periodlar cədvəlini kim hazırlamışdır?',a:['Lavoze','Mendeleyev','Berzeli','Dalton'],c:1,
-f:{t:'Mendeleyev hələ kəşf edilməmiş elementləri öncədən proqnozlaşdırdı',x:'<strong>Dmitri Mendeleyev</strong> 1869-cu ildə periodlar cədvəlini yaratdı. Əfsanəyə görə yuxuda gördü! Ən fantastik fakt: hələ kəşf edilməmiş <strong>3 elementin</strong> xassələrini öncədən proqnozlaşdırdı — hamısı sonradan doğru çıxdı.',i:'https://images.unsplash.com/photo-1507413245164-6160d8298b31?w=900&q=80'}},
-
-{q:'Tibb elminin atası kim sayılır?',a:['İbn Sina','Hippokrat','Qalen','Parakels'],c:1,
-f:{t:'Hippokrat andı 2.400 il sonra hələ oxunur',x:'<strong>Hippokrat</strong> (e.ə. 460-370) tibb elminin atasıdır. Müəyyən etdiyi Hippokrat andı bu gün tibb məzunları tərəfindən <strong>hələ oxunur!</strong> "Birinci zərər vermə" (primum non nocere) onun əsas prinsipidir.',i:'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=900&q=80'}},
-
-{q:'Rentgen şüalarını kim kəşf etdi?',a:['Küri','Röngen','Bekkerel','Rezerford'],c:1,
-f:{t:'Röngen ilk Nobel mükafatçısıdır — patentsiz!',x:'<strong>Vilhelm Röngen</strong> 1895-ci ildə rentgen şüalarını kəşf etdi. Birinci Nobel Fizika mükafatını aldı (1901). Ən şərəfli hərəkəti: <strong>patent almadı, puldan imtina etdi</strong> — bu kəşfin bütün bəşəriyyətə aid olduğunu söylədi.',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Hansı qaz "istixana effekti"nin əsas səbəbidir?',a:['Azot','Oksigen','Karbon dioksid','Arqon'],c:2,
-f:{t:'Sənaye inqilabından bəri CO₂ 50% artıb',x:'<strong>Karbon dioksid (CO₂)</strong> istixana effektinin əsas səbəbidir. Sənaye inqilabından bəri atmosferdəki CO₂ miqdarı <strong>50% artmışdır</strong>. Son 100 ildəki temperatur artımı əvvəlki <strong>10.000 ilin artımından</strong> çoxdur.',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Atom bombası hansı prinsipə əsaslanır?',a:['Sintez','Parçalanma (fissiya)','Yanma','İonlaşma'],c:1,
-f:{t:'Atom bombası — 1 kq uraniumdan şəhər məhv edilir',x:'Atom bombası <strong>nüvə fissiyasına</strong> (parçalanmasına) əsaslanır. 1 kq uranium tamamilə parçalananda <strong>Hirosima partlayışı gücündə</strong> enerji ayrılır. Termonüvə bombası isə fissiya + füzyon prinsipinə əsaslanır.',i:'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=900&q=80'}},
-
-{q:'Kainatın yaşı neçədir?',a:['8 milyard il','10 milyard il','13,8 milyard il','20 milyard il'],c:2,
-f:{t:'Kainatda 2 trilyon qalaktika var',x:'Kainatın yaşı <strong>13,8 milyard ildir</strong>. Bu müddəti 1 il kimi düşünsək, bütün insan tarixi <strong>son 10 saniyəyə</strong> sığar. Görünən kainatda <strong>2 trilyon qalaktika</strong> var — hər birinin milyardlarla ulduzu.',i:'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=900&q=80'}},
-
-{q:'İnsan bədənindəki neçə sümük var?',a:['106','206','306','406'],c:1,
-f:{t:'Körpədə 270, böyükdə 206 sümük olur',x:'Yetkin insanda <strong>206 sümük</strong> var. Lakin körpə <strong>270-ə qədər</strong> sümüklə doğulur — böyüdükcə bəziləri birləşir. Ən möhkəm sümük diş minası — Yer üzündəki ən bərk toxumadır.',i:'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=900&q=80'}},
-
-{q:'Günəşin yaşı təxminən neçədir?',a:['1 milyard il','4,6 milyard il','10 milyard il','13,8 milyard il'],c:1,
-f:{t:'Günəş ömrünün yarısını yaşayıb',x:'Günəşin yaşı <strong>4,6 milyard ildir</strong>. Ömrü 10 milyard il olacaq — yəni hələ <strong>5,4 milyard ili</strong> qalır. Ömrünün sonunda <strong>Yeri udacaq qədər</strong> böyüyəcək! Biz burada olmarıq.',i:'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=900&q=80'}},
-
-{q:'İnsan DNT-si neçə cüt xromosom daşıyır?',a:['20','23','25','46'],c:1,
-f:{t:'İnsan DNT-si 2 metrdir — hər hüceyrədə!',x:'İnsan hüceyrəsində <strong>23 cüt (46) xromosom</strong> var. Bir hüceyrədəki DNT uzadılsa <strong>2 metr</strong> olur. Bütün bədəndəki DNT uzadılsa Günəşə gedib qayıdar — <strong>müalicəsiz geri gəlmək üçün!</strong>',i:'https://images.unsplash.com/photo-1628595351029-c2bf17511435?w=900&q=80'}},
+{q:'DNA-nın tam adı nədir?',a:['Dinamik Nuklein Asidi','Dezoksiribonuklein turşusu','Difosfat Nükleotid Asidi','Dayanıqlı Nuklein Asidi'],c:1,
+ f:{t:'DNA həyatın genetik kitabıdır',x:'<strong>Dezoksiribonuklein turşusu</strong> bütün canlıların genetik məlumatını daşıyır. İnsan hüceyrəsindəki DNA uzandıqda 2 metr olur — bütün bədənimizdəkini birləşdirsək Günəşə 67 dəfə çatır!',i:'https://images.unsplash.com/photo-1576319155264-99536e0be1ee?w=900&q=80'}},
 
 // ── TARİX ──
-{q:'Azərbaycan müstəqilliyini neçənci ildə bərpa etdi?',a:['1989','1990','1991','1992'],c:2,
-f:{t:'18 oktyabr 1991 — 73 illik sovet dövrü sona çatdı',x:'<strong>18 oktyabr 1991-ci ildə</strong> Azərbaycan müstəqilliyini bərpa etdi. 73 illik Sovet dövrü sona çatdı. 1918-ci ilki Azərbaycan Xalq Cümhuriyyəti süqutundan sonra <strong>xalqın arzusu yerinə yetdi.</strong>',i:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=900&q=80'}},
+{q:'Böyük Çin Səddi təxminən neçə km uzunluğundadır?',a:['5.000 km','13.000 km','8.000 km','20.000 km'],c:1,
+ f:{t:'Çin Səddi kosmosdan görünmür',x:'<strong>Böyük Çin Səddi</strong> bütün şaxələri ilə birlikdə 21.196 km uzunluğundadır. Kosmosdan çılpaq gözlə görünür deyilən miflə bağlı — əslində bu mümkün deyil, divar çox nazikdir.',i:'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=900&q=80'}},
 
-{q:'İkinci Dünya Müharibəsi neçənci ildə başladı?',a:['1937','1938','1939','1940'],c:2,
-f:{t:'1 sentyabr 1939 — Almaniya Polşanı işğal etdi',x:'İkinci Dünya Müharibəsi <strong>1 sentyabr 1939-cu ildə</strong> Almaniyanın Polşanı işğal etməsi ilə başladı. <strong>70 milyondan</strong> çox insan həlak oldu — tarixin ən dağıdıcı münaqişəsi.',i:'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=900&q=80'}},
+{q:'Hansı il Birinci Dünya Müharibəsi başlamışdır?',a:['1912','1914','1916','1918'],c:1,
+ f:{t:'Saraybosna atəşi dünyanı dəyişdi',x:'<strong>Birinci Dünya Müharibəsi</strong> 1914-cü il iyunun 28-də Saraybosna suiqəsdindən sonra başladı. 4 il davam edən müharibədə 20 milyondan çox insan həyatını itirdi.',i:'https://images.unsplash.com/photo-1569949381669-ecf31ae8e613?w=900&q=80'}},
 
-{q:'Fransız İnqilabı neçənci ildə baş verdi?',a:['1776','1789','1799','1804'],c:1,
-f:{t:'14 iyul 1789 — Bastiliya əldə edildi',x:'Fransız İnqilabı <strong>14 iyul 1789-cu ildə</strong> Bastiliya həbsxanasının ələ keçirilməsi ilə başladı. "Azadlıq, Bərabərlik, Qardaşlıq" şüarı doğuldu. Bu gün <strong>14 iyul Fransanın milli bayramıdır.</strong>',i:'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=900&q=80'}},
+{q:'Azərbaycan öz müstəqilliyini hansı ildə bərpa etmişdir?',a:['1989','1991','1993','1990'],c:1,
+ f:{t:'18 oktyabr 1991 — tarixi müstəqillik günü',x:'<strong>Azərbaycan</strong> 18 oktyabr 1991-ci ildə Sovet İttifaqından müstəqilliyini elan etdi. Lakin ilk müstəqillik 1918-1920-ci illərdə Azərbaycan Xalq Cümhuriyyəti dövründə olmuşdu.',i:'https://images.unsplash.com/photo-1601314167099-232775b3d6fd?w=900&q=80'}},
 
-{q:'Xristofor Kolumb Amerikanı neçənci ildə kəşf etdi?',a:['1488','1490','1492','1498'],c:2,
-f:{t:'Kolumb ömrü boyunca Hindistana çatdığını düşündü',x:'<strong>12 oktyabr 1492-ci ildə</strong> Kolumb Karib adalarına çatdı. Ömrünün sonuna qədər <strong>Hindistana çatdığını</strong> düşündü! "Amerika" adı isə başqa bir italyan dənizçidən — Amerigo Vespuçidən gəlir.',i:'https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=900&q=80'}},
+{q:'Misir ehramlarının ən böyüyü hansıdır?',a:['Xafra','Menkaura','Xəops','Djedefra'],c:2,
+ f:{t:'Xəops ehramı 3.800 il ən hündür tikili idi',x:'<strong>Xəops (Xufuya aid) ehramı</strong> 138 m hündürlüyü ilə dünyanın Yeddi Möcüzəsinin yeganə sağ qalanıdır. 2,3 milyon daş blokdan ibarətdir — hər biri 2,5 ton!',i:'https://images.unsplash.com/photo-1539650116574-8efeb43e2750?w=900&q=80'}},
 
-{q:'Osmanlı imperiyası neçənci ildə süqut etdi?',a:['1919','1920','1922','1923'],c:2,
-f:{t:'Osmanlı imperiyası 623 il yaşadı',x:'Osmanlı imperiyası <strong>1 noyabr 1922-ci ildə</strong> süqut etdi. <strong>623 il</strong> mövcud oldu — tarihin ən uzun ömürlü imperiyalarından biri. 3 qitəyə — Avropa, Asiya, Afrika — yayılmışdı.',i:'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=900&q=80'}},
+{q:'Şekspirin ən məşhur faciəsinin qəhrəmanı kimdir?',a:['Otello','Makbet','Hamlet','Kral Lir'],c:2,
+ f:{t:'Hamlet 400 ildə 35 dildə oynanıb',x:'<strong>Hamlet</strong> Uilyam Şekspirin ən məşhur əsəridir. "Olmaq ya olmamaq — budur məsələ" sözləri tarixin ən çox sitat gətirilən ifadəsidir.',i:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=900&q=80'}},
 
-{q:'Birinci Dünya Müharibəsi neçənci ildə sona çatdı?',a:['1916','1917','1918','1919'],c:2,
-f:{t:'11-ci ayın 11-i, saat 11 — sülh',x:'Birinci Dünya Müharibəsi <strong>11 noyabr 1918-ci ildə, saat 11-də</strong> sona çatdı. Bu simvolik vaxt qərarlı seçilmişdi. <strong>20 milyondan</strong> çox insan həlak oldu.',i:'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=900&q=80'}},
+{q:'Koloradodakı Böyük Kanyon neçə il ərzində formalaşmışdır?',a:['500.000 il','1 milyon il','5-6 milyon il','10 milyon il'],c:2,
+ f:{t:'Böyük Kanyon canlı geoloji muzeydir',x:'<strong>Böyük Kanyon</strong> Kolorado çayının 5-6 milyon il ərzində daşı yuyub aparması nəticəsində əmələ gəlib. 1.6 km dərinliyi, 446 km uzunluğu var.',i:'https://images.unsplash.com/photo-1474044159687-1ee9f3a51722?w=900&q=80'}},
 
-{q:'Sovet İttifaqı neçənci ildə dağıldı?',a:['1989','1990','1991','1992'],c:2,
-f:{t:'25 dekabr 1991 — SSRİ bayrağı endiridi',x:'Sovet İttifaqı <strong>25 dekabr 1991-ci ildə</strong> Mixail Qorbaçovun istefa ilə dağıldı. 15 müstəqil dövlət yarandı. <strong>70 illik ideologiya</strong> tarixə qovuşdu.',i:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=900&q=80'}},
+{q:'Hansı riyaziyyatçı "Tanrı tərəfindən yaradılmış formula" adlanan e^(iπ)+1=0 bərabərliyini kəşf etmişdir?',a:['Qauss','Euler','Nyuton','Leybnits'],c:1,
+ f:{t:'Euler düsturunun 5 fundamental sabiti var',x:'<strong>Euler düsturu</strong> e, i, π, 1 və 0 — riyaziyyatın 5 ən mühüm sabitini bir yerdə birləşdirir. Riçard Feynman onu "riyaziyyatın ən gözəl düsturu" adlandırıb.',i:'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=900&q=80'}},
 
-{q:'Azərbaycan Xalq Cümhuriyyəti neçənci ildə elan edildi?',a:['1917','1918','1919','1920'],c:1,
-f:{t:'28 May 1918 — Şərqin ilk demokratiyası',x:'<strong>28 May 1918-ci ildə</strong> Azərbaycan Xalq Cümhuriyyəti elan edildi — müsəlman dünyasında <strong>ilk demokratik respublika!</strong> Dünyada ilk dəfə <strong>qadınlara oy hüququ</strong> tanıyan respublikalar arasındadır.',i:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=900&q=80'}},
+{q:'Günəş sisteminin ən böyük planeti hansıdır?',a:['Saturn','Uran','Yupiter','Neptun'],c:2,
+ f:{t:'Yupiter 1.300 Yer kürəsi tutumuna malikdir',x:'<strong>Yupiter</strong> Günəş sisteminin ən böyük planetidir — həcmi 1.321 Yerdən böyükdür. Böyük Qırmızı Ləkə isə 350 ildir davam edən nəhəng fırtınadır.',i:'https://images.unsplash.com/photo-1614728263952-84ea256f9d1d?w=900&q=80'}},
 
-{q:'Berlin Divarı neçənci ildə yıxıldı?',a:['1987','1988','1989','1990'],c:2,
-f:{t:'9 noyabr 1989 — Soğuq müharibənin simvolu yıxıldı',x:'<strong>9 noyabr 1989-cu ildə</strong> Berlin Divarı yıxıldı. 28 il şərq-qərbi ayıran bu divarın yıxılması <strong>Soyuq Müharibənin</strong> sona yaxınlaşmasını simvolizə edir. Yıxılma onu tikməkdən daha sürətli oldu.',i:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=900&q=80'}},
-
-{q:'Çin Səddi neçə km uzunluğundadır?',a:['3000 km','6000 km','21000 km','40000 km'],c:2,
-f:{t:'Çin Səddi kosmosdan görünmür — bu şayiədir',x:'Çin Səddi bütün qollarla birlikdə <strong>21.196 km</strong> uzunluğundadır. Bir əfsanə: kosmosdan görünür — lakin bu <strong>yanlışdır!</strong> İnsansız kosmik aparatla da görünmür — çox nazikdir.',i:'https://images.unsplash.com/photo-1490457843367-34b21a6e6897?w=900&q=80'}},
-
-{q:'NATO neçənci ildə yaradıldı?',a:['1945','1947','1949','1951'],c:2,
-f:{t:'NATO 1949 — 4 aprel, Vaşinqton',x:'NATO <strong>4 aprel 1949-cu ildə</strong> Vaşinqtonda yaradıldı. Sovet təhdidlərinə qarşı Qərb ittifaqının əsasını qoydu. İlk üzvləri 12 ölkə idi — bu gün üzvlük <strong>32 ölkəyə</strong> çatmışdır.',i:'https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=900&q=80'}},
-
-{q:'Qədim Olimpiya oyunları hansı ölkədə keçirilirdi?',a:['Roma','Misir','Yunanıstan','Türkiyə'],c:2,
-f:{t:'Qədim olimpiada 776 e.ə.-dən 393 m.-ə qədər davam etdi',x:'Qədim Olimpiya oyunları <strong>e.ə. 776-cı ildən</strong> başladı. <strong>1.169 il</strong> davam etdi! Roma imperatoru Teodosius 393-cü ildə "paqan" olaraq qadağan etdi. Müasir olimpiada 1896-dan yenidən başladı.',i:'https://images.unsplash.com/photo-1569517282132-25d22f4573e6?w=900&q=80'}},
-
-{q:'İlk çap maşınını kim ixtira etdi?',a:['Leonardo da Vinçi','Qutenberq','Galileo','Nyuton'],c:1,
-f:{t:'Qutenberq 1440 — kitab çapı sivilizasiyanı dəyişdirdi',x:'<strong>Yohannes Qutenberq</strong> 1440-cı ildə hərəkəthərfli çap maşını ixtira etdi. Bu ixtira <strong>Renessans, Reformasiya</strong> hərəkatlarını sürətləndirdi. Biliyin kütlələrə yayılmasının açarı oldu.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Birinci atom bombası hansı şəhərə atıldı?',a:['Naqasaki','Tokio','Xirosima','Osaka'],c:2,
-f:{t:'6 avqust 1945 — Xirosima — 80.000 nəfər ani ölüm',x:'<strong>6 avqust 1945-ci ildə</strong> "Little Boy" atom bombası Xirosimaya atıldı. Ani olaraq <strong>80.000 nəfər</strong> həlak oldu. Bu hadisə nüvə silahlarına qarşı ilk kütləvi sülh hərəkatını doğurdu.',i:'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=900&q=80'}},
-
-{q:'Novruz bayramı hansı tarixdə qeyd edilir?',a:['20 Mart','21 Mart','22 Mart','23 Mart'],c:1,
-f:{t:'Novruz 3.000 illik tarixə malikdir — UNESCO mirası',x:'<strong>Novruz 21 Mart</strong>da — bahar günobərasında — qeyd edilir. <strong>3.000 ildən çox</strong> tarixə malikdir. UNESCO-nun Qeyri-Maddi Mədəni İrs siyahısındadır. <strong>300 milyondan</strong> çox insan qeyd edir.',i:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=900&q=80'}},
-
-{q:'Azərbaycan Respublikasının Konstitusiyası neçənci ildə qəbul edilib?',a:['1992','1993','1995','1996'],c:2,
-f:{t:'12 noyabr 1995 — referendum yolu ilə qəbul edildi',x:'Azərbaycan Konstitusiyası <strong>12 noyabr 1995-ci ildə</strong> ümumxalq referendumu ilə qəbul edildi. <strong>158 maddədən</strong> ibarətdir. Müstəqil Azərbaycanın hüquqi əsasını formalaşdırdı.',i:'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=900&q=80'}},
-
-{q:'Azərbaycanda hər il 28 May nə günü kimi qeyd edilir?',a:['Müstəqillik günü','Respublika günü','Zəfər günü','Silahlı qüvvələr günü'],c:1,
-f:{t:'28 May 1918 — müsəlman Şərqinin ilk demokratiyası',x:'<strong>28 May Respublika günüdür</strong> — 1918-ci ildəki Azərbaycan Xalq Cümhuriyyətinin elan günü. Müsəlman dünyasında <strong>ilk demokratik respublika!</strong> Həmçinin dünyada qadınlara oy hüququ tanıyan ilk respublikalar arasındadır.',i:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=900&q=80'}},
-
-{q:'Azərbaycan dilinin əlifbası hazırda hansı yazı sisteminə əsaslanır?',a:['Kiril','Latın','Ərəb','Yunan'],c:1,
-f:{t:'Azərbaycan əlifbası 100 ildə 3 dəfə dəyişib',x:'Azərbaycan <strong>latın</strong> əlifbasından istifadə edir. Tarix boyu 3 fərqli yazı sistemi işlənib: <strong>ərəb → latın → kiril → latın.</strong> Son keçid 1991-dən sonra — müstəqilliklə — baş verdi.',i:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=900&q=80'}},
-
-{q:'Azərbaycanın milli valyutası nədir?',a:['Rubl','Manat','Lirə','Qrivna'],c:1,
-f:{t:'Manat — "mənata" sözündən gəlir',x:'Azərbaycanın milli valyutası <strong>manat</strong>dır. 1 manat = 100 qəpik. <strong>2006-cı ildə</strong> yenilənmiş manat dövriyyəyə girdi. "Manat" sözü rus dilindəki "moneta" sözündən götürülüb.',i:'https://images.unsplash.com/photo-1497796742626-fe30f204ec54?w=900&q=80'}},
-
-{q:'Azərbaycanın Dövlət bayrağında neçə rəng var?',a:['2','3','4','5'],c:1,
-f:{t:'Mavi-Qırmızı-Yaşıl — hər rəngin öz mənası var',x:'Azərbaycan bayrağında <strong>3 rəng</strong> var: mavi (türk dünyası), qırmızı (müasirlik və demokratiya), yaşıl (islam). Mərkəzdəki <strong>hilal və səkkizguşəli ulduz</strong> türk xalqlarının simvoludur.',i:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=900&q=80'}},
-
-{q:'Azərbaycanın Dövlət himni müsiqisini kim bəstələmişdir?',a:['Üzeyir Hacıbəyov','Fikrət Əmirov','Qara Qarayev','Cahangir Cahangirov'],c:0,
-f:{t:'Üzeyir Hacıbəyov — 1918-ci ildə bəstədi',x:'<strong>Üzeyir Hacıbəyov</strong> Azərbaycan Dövlət himninin musiqisini bəstələdi. Sözlərini <strong>Əhməd Cavad</strong> yazdı. Hacıbəyov həm də Şərqin ilk operasının — "Leyli və Məcnun" (1908) — müəllifidir.',i:'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=900&q=80'}},
-
-{q:'Şuşa şəhəri 2021-ci ildə nə elan edildi?',a:['Turizm mərkəzi','Mədəniyyət paytaxtı','Azərbaycanın mədəni paytaxtı','Sənaye mərkəzi'],c:2,
-f:{t:'Şuşa — Qarabağın tacı, muğamın beşiyi',x:'<strong>Şuşa</strong> 2021-ci ildə Azərbaycanın mədəni paytaxtı elan edildi. 44 günlük müharibədən sonra <strong>8 noyabr 2020-ci ildə</strong> azad edildi. "Qarabağın tacı" adlanan bu şəhər Azərbaycan muğamının beşiyidir.',i:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=900&q=80'}},
-
-{q:'Azərbaycanın birinci prezidenti kim olub?',a:['Heydar Əliyev','Əyaz Mütəllibov','Əbülfəz Elçibəy','İlham Əliyev'],c:1,
-f:{t:'Əyaz Mütəllibov Azərbaycanın ilk prezidenti idi',x:'<strong>Əyaz Mütəllibov</strong> 1991-1992-ci illərdə Azərbaycanın ilk prezidenti oldu. Sonra <strong>Əbülfəz Elçibəy</strong>, ardından <strong>Heydər Əliyev</strong> prezident seçildi. Müstəqilliyin ilk illəri siyasi baxımdan çox gərgin keçdi.',i:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=900&q=80'}},
-
-{q:'Bakının tarixi mərkəzi necə adlanır?',a:['Əski şəhər','İçərişəhər','Köhnə şəhər','Qala'],c:1,
-f:{t:'İçərişəhər 2.000 il yaşındadır — UNESCO mirası',x:'<strong>İçərişəhər</strong> Bakının tarixi qala divarları ilə əhatə olunmuş mərkəzidir. <strong>2.000 ildən</strong> artıq tarixi var. UNESCO Dünya İrsi siyahısındadır. Qız qalası, Şirvanşahlar sarayı burada yerləşir.',i:'https://images.unsplash.com/photo-1538300342682-cf57afb97285?w=900&q=80'}},
-
-{q:'Azərbaycanda ilk neft neçənci ildə çıxarıldı?',a:['1848','1858','1868','1878'],c:0,
-f:{t:'1848 — Pensilvaniyadan 11 il əvvəl dünya ilki',x:'Azərbaycanda ilk sənaye neft quyusu <strong>1848-ci ildə</strong> Bibi-Heybətdə açıldı. Bu, Pensilvaniyada (ABŞ) açılan quyudan <strong>11 il əvvəldir!</strong> Azərbaycan dünya neft sənayesinin beşiyidir.',i:'https://images.unsplash.com/photo-1511884642898-4c92249e20b6?w=900&q=80'}},
-
-{q:'Azərbaycanda ilk teatr neçənci ildə açılmışdır?',a:['1850','1873','1898','1910'],c:1,
-f:{t:'1873 — Bakıda Şərqin ilk Azərbaycandilli teatrı',x:'Azərbaycanda ilk teatr <strong>1873-cü ildə</strong> Bakıda açıldı — Şərqdə ilk Azərbaycan dilində professional teatr. İlk tamaşa Mirzə Fətəli Axundovun pyesi əsasında hazırlandı.',i:'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=900&q=80'}},
-
-{q:'Üzeyir Hacıbəyovun ilk operasının adı nədir?',a:['Koroğlu','Leyli və Məcnun','Arşın mal alan','O olmasın, bu olsun'],c:1,
-f:{t:'Leyli və Məcnun 1908 — bütün Şərqin ilk operası',x:'<strong>Üzeyir Hacıbəyov</strong>un 1908-ci ildə bəstələdiyi "Leyli və Məcnun" operası bütün müsəlman Şərqinin <strong>ilk operasıdır!</strong> Bu əsər Şərq musiqisi ilə Qərb opera formasını ustalıqla birləşdirir.',i:'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=900&q=80'}},
-
-{q:'"Dədə Qorqud" dastanı hansı dildə yazılmışdır?',a:['Ərəb','Fars','Türk (Azərbaycan)','Gürcü'],c:2,
-f:{t:'Dədə Qorqud UNESCO mirası — 12 qəhrəmanlıq dastanı',x:'"<strong>Dədə Qorqud</strong>" dastanları qədim Azərbaycan türkcəsində yazılmışdır. <strong>12 qəhrəmanlıq boyundan</strong> ibarətdir. UNESCO Qeyri-Maddi Mədəni İrs siyahısındadır.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'İkinci Qarabağ müharibəsi neçə gün davam etdi?',a:['27','44','60','90'],c:1,
-f:{t:'44 günlük müharibə — Şuşa 8 noyabrda azad edildi',x:'İkinci Qarabağ müharibəsi <strong>44 gün</strong> davam etdi (27 sentyabr — 10 noyabr 2020). Tarixi qələbə ilə <strong>Şuşa 8 noyabrda</strong> azad edildi. Bu müharibə müasir döyüş texnologiyalarının yeni çağını simvolizə etdi.',i:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=900&q=80'}},
-
-// ── ƏDƏBİYYAT & İNCƏSƏNƏT ──
-{q:'"Romeo və Cülyetta" əsərinin müəllifi kimdir?',a:['Çarlz Dikkens','Lev Tolstoy','Uilyam Şekspir','Höte'],c:2,
-f:{t:'Şekspir bu əsəri 1.597-ci ildə yazdı — özü məhəbbəti çox yaşadı',x:'<strong>Uilyam Şekspir</strong> "Romeo və Cülyyetta"nı 1597-ci ildə yazdı. Maraqlıdır: Şekspirin özü gənclikdə bir qadına vurulmuş, lakin başqası ilə evlənmişdi. Bu əsər <strong>200-dən çox film versiyasına</strong> çevrilmişdir.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'"Hərb və Sülh" əsərinin müəllifi kimdir?',a:['Dostoyevski','Turgenyev','Lev Tolstoy','Puşkin'],c:2,
-f:{t:'Lev Tolstoy 7 il yazdı — 580.000 söz',x:'<strong>Lev Tolstoy</strong> "Hərb və Sülh"ü 1865-1869-cu illərdə yazdı — <strong>7 il!</strong> Roman <strong>580.000 sözdən</strong> ibarətdir. 500-dən çox personaj var. Hər yaza başlayanda həyat deyirdi: "Bu mümkünsüzdür!"',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Nizami Gəncəvi neçənci əsrdə yaşamışdır?',a:['X əsr','XI əsr','XII əsr','XIII əsr'],c:2,
-f:{t:'Nizami Gəncəvi — 30.000 beyt, Şərqin dahisi',x:'<strong>Nizami Gəncəvi</strong> (1141-1209) XII əsrin dahisidir. Xəmsəsi <strong>30.000-dən çox beytdən</strong> ibarətdir. Gəncədə anadan olub. UNESCO onu dünya mədəniyyət abidəsi elan etmişdir.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'"Don Kixot" əsərinin müəllifi kimdir?',a:['Servantes','Balzak','Flober','Mopassan'],c:0,
-f:{t:'Don Kixot 500 milyon nüsxə — dünya rekordçusu',x:'<strong>Servantes</strong> Don Kixotu 1605-ci ildə nəşr etdi. <strong>500 milyondan</strong> çox nüsxə satılıb — İncildən sonra ən çox satılan kitab! Maraqlı: Servantes onu həbsdə ikən yazmağa başladı.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Mona Liza tablosunu kim çəkib?',a:['Mikelancelo','Rafael','Leonardo da Vinçi','Botticelli'],c:2,
-f:{t:'Mona Liza 700 milyon dollar dəyərindədir — satıla bilməz',x:'<strong>Leonardo da Vinçi</strong> Mona Lizanı 1503-1519-cu illərdə çəkdi. Fransız qanununa görə <strong>heç vaxt satıla bilməz!</strong> 700 milyon dollar dəyərindədir. 1911-ci ildə oğurlandı — bu hadisə onu dünya şöhrətinə çıxardı.',i:'https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=900&q=80'}},
-
-{q:'Üzeyir Hacıbəyovun "Koroğlu" əsəri nə janrındadır?',a:['Opera','Operet','Dram','Komediya'],c:0,
-f:{t:'Koroğlu 1937 — Azərbaycan operasının zirvəsi',x:'<strong>Üzeyir Hacıbəyov</strong>un "Koroğlu" operası 1937-ci ildə Parisdə beynəlxalq sərgi çərçivəsində səhnəyə qoyuldu. <strong>Şərq qəhrəmanlıq eposunu</strong> Avropa opera forması ilə birləşdirir.',i:'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=900&q=80'}},
-
-{q:'"Hamlet" hansı müəllifin əsəridir?',a:['Marlov','Bencon','Şekspir','Drayden'],c:2,
-f:{t:'"Olmaq ya olmamaq" — ən çox sitat gətirilən söz',x:'<strong>Şekspir</strong>in "Hamlet"i (1603) ən çox sitat gətirilən ədəbi əsərdir. <strong>"Olmaq, ya olmamaq — sual budur!"</strong> cümləsi dünyada ən çox tanınan teatr monoloqu sayılır.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Beethoven hansı ölkənin bəstəkarıdır?',a:['Avstriya','Almaniya','Fransa','İtaliya'],c:1,
-f:{t:'Beethoven 9-cu simfoniyasını tam kar olduğu zaman bəstədi',x:'<strong>Ludwig van Beethoven</strong> Almaniyanın ən böyük bəstəkarıdır. 9-cu simfoniyasını <strong>tam kar olduğu zaman</strong> bəstədi — üstəlik premyerada tamaşaçıların alqışını eşitmədi. Birisi onu çevirdi ki, baxsın.',i:'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=900&q=80'}},
-
-{q:'"İliada" epik poemasının müəllifi kim sayılır?',a:['Sofokl','Esxil','Homer','Evripid'],c:2,
-f:{t:'Homer — görünüşü billinmir, amma 2.800 il oxunur',x:'<strong>Homer</strong>ə aid edilən "İliada" (e.ə. VIII əsr) <strong>2.800 ildən</strong> artıqdır oxunur. Maraqlı: Homerin əslində mövcud olub-olmadığı mübahisəlidir! Bəziləri bu adda bir nəfərin deyil, bir neçə şairin olduğunu düşünür.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Picasso hansı ölkənin rəssamıdır?',a:['Fransa','İspaniya','İtaliya','Portuqaliya'],c:1,
-f:{t:'Picasso 20.000-dən çox əsər yaratdı',x:'<strong>Pablo Picasso</strong> İspaniyalıdır. Kubizm sənət axımının yaradıcılarından biridir. Həyatı boyunca <strong>20.000-dən çox</strong> rəsm, heykəl, keramika əsəri yaratdı. Ən bahalı əsəri 179 milyon dollara satılıb.',i:'https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=900&q=80'}},
-
-{q:'"Cinayət və Cəza" əsərinin müəllifi kimdir?',a:['Tolstoy','Turgenyev','Dostoyevski','Çexov'],c:2,
-f:{t:'Dostoyevski bu əsəri borcu ödəmək üçün yazdı',x:'<strong>Fyodor Dostoyevski</strong> "Cinayət və Cəza"nı 1866-cı ildə yazdı. Həmin dövrdə böyük borcu vardı — <strong>31 gündə yazdı!</strong> Yoxsa nəşriyyat əsərin hüquqlarını alacaqdı.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Rembrandt hansı ölkənin rəssamıdır?',a:['Belçika','Fransa','Hollandiya','Almaniya'],c:2,
-f:{t:'Rembrandt işıq-kölgə ustası — 600 əsər',x:'<strong>Rembrandt van Rijn</strong> Hollandiyadır. XVII əsr Hollandiya qızıl dövrünün ən böyük rəssamı. <strong>İşıq-kölgə texnikasının</strong> ustasıdır. 600-dən çox rəsm, 300 qravür, 2.000 eskiz yaratdı.',i:'https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=900&q=80'}},
-
-{q:'Azərbaycan ədəbiyyatının atası kim sayılır?',a:['Nizami','İmadəddin Nəsimi','Füzuli','Xaqani'],c:0,
-f:{t:'Nizami Gəncəvi — Şərq ədəbiyyatının zirvəsi',x:'<strong>Nizami Gəncəvi</strong> Azərbaycan ədəbiyyatının atası sayılır. "Xəmsə" əsəri — 5 böyük poema — Şərq ədəbiyyatının <strong>ən böyük şedevrlərindən</strong> biridir. UNESCO Nizami ili elan etmişdir.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Van Qoq hansı ölkənin rəssamıdır?',a:['Belçika','Fransa','Hollandiya','Almaniya'],c:2,
-f:{t:'Van Qoq həyatında yalnız 1 tablo satdı',x:'<strong>Vinsent van Qoq</strong> Hollandiyadır. Həyatında cəmi <strong>1 tablo satdı!</strong> Ölümündən sonra əsərləri milyonlara satılmağa başladı. "Ulduzlu Gecə" 1889-da çəkildi — bu gün 1 milyard dollardan çoxdur.',i:'https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=900&q=80'}},
-
-{q:'Mozartın doğum ölkəsi hansıdır?',a:['Almaniya','İsveçrə','Avstriya','Çexiya'],c:2,
-f:{t:'Mozart 4 yaşında kompozisiya, 5 yaşında konsert verdi',x:'<strong>Volfqanq Amadeus Motsart</strong> Avstriyada anadan oldu. <strong>4 yaşında</strong> bəstəkarlıq etdi, 5 yaşında konsert verdi! 36 yaşında öldü — lakin 41 simfoniya, 27 fortepiano konserti, 17 opera yazdı.',i:'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=900&q=80'}},
-
-{q:'"1984" romanının müəllifi kimdir?',a:['Haksli','Orwell','Kafka','Kamyu'],c:1,
-f:{t:'Orwell "Böyük Qardaş sizi izləyir" ifadəsini ixtira etdi',x:'<strong>George Orwell</strong>in "1984" romanı 1949-cu ildə nəşr edildi. <strong>"Böyük Qardaş sizi izləyir"</strong> ifadəsi bu romandan gəlir. Totalitarizmin ən dərin analizi kimi qəbul edilir.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'"Cəngəllik kitabı"nın müəllifi kimdir?',a:['Marks Tven','Radyard Kipling','Robert Luis Stivenson','Corc Eliot'],c:1,
-f:{t:'Mauqli — Kipling 1894-də yaratdı',x:'<strong>Radyard Kipling</strong> "Cəngəllik kitabı"nı 1894-cü ildə yazdı. Bu əsərlə <strong>Nobel ədəbiyyat mükafatı</strong> almışdır (1907). Mauqli xarakteri dünya mədəniyyətinə hopdu — onlarca film çəkildi.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Şekspir neçə pyes yazmışdır?',a:['27','37','47','57'],c:1,
-f:{t:'Şekspir ingilis dilinə 1.700 yeni söz gətirdi',x:'<strong>Şekspir</strong> 37 pyes yazdı. Daha maraqlısı: ingilis dilinə <strong>1.700-dən çox yeni söz</strong> gətirdi! "bedroom", "lonely", "generous", "obscene" sözlərini o ixtira etmişdir.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'"Alisa Möcüzələr ölkəsində" əsərinin müəllifi kimdir?',a:['Çarlz Dikkens','Corc Eliot','Luis Kerrol','Tomas Xardi'],c:2,
-f:{t:'Kerrol bu əsəri bir qız uşağı üçün yazdı',x:'<strong>Luis Kerrol</strong> (Çarlz Dodcson) 1865-ci ildə bu əsəri Alice Liddell adlı uşaq üçün yazdı. <strong>Riyaziyyat professoru idi</strong> — bu gün alimlər bu kitabda gizli riyaziyyat məntiqini axtarır.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Mona Liza hansı muzeydədir?',a:['Ermitajda','Vatikanda','Luvrdə','Metropolitendə'],c:2,
-f:{t:'Luvr — Paris, gündə 30.000 ziyarətçi',x:'Mona Liza <strong>Parisdəki Luvr muzeyindədir.</strong> Gündə orta hesabla <strong>30.000 ziyarətçi</strong> onu görmək üçün gəlir. Tablo kiçikdir — cəmi 77 x 53 sm. Bir çox insanlar onun "düşündüyündən kiçik olduğunu" deyir.',i:'https://images.unsplash.com/photo-1544967082-d9d25d867d66?w=900&q=80'}},
-
-// ── İDMAN ──
-{q:'FIFA Dünya Çempionatı neçə ildən bir keçirilir?',a:['2','3','4','5'],c:2,
-f:{t:'İlk dünya çempionatı 1930-da Uruqvayda keçirildi',x:'FIFA Dünya Çempionatı <strong>hər 4 ildə</strong> bir keçirilir. İlk çempionat <strong>1930-cu ildə</strong> Uruqvayda oldu. Dünya çempionluğunu ən çox qazanan ölkə 5 titulla <strong>Braziliyादır.</strong>',i:'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=900&q=80'}},
-
-{q:'Şahmat neçə fiqurla oynanılır (hər tərəf)?',a:['12','14','16','18'],c:2,
-f:{t:'Şahmat VI əsrdə Hindistanda yaranıb',x:'Şahmatda hər tərəf <strong>16 fiqurla</strong> başlayır. <strong>VI əsrdə Hindistanda</strong> yaranıb. İlk hərəkətdən başlayaraq mümkün oyun sayı <strong>10¹²⁰-dır</strong> — kainatdakı atom sayından çoxdur!',i:'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=900&q=80'}},
-
-{q:'Tennisin Grand Slam turnirləri neçədir?',a:['2','3','4','5'],c:2,
-f:{t:'4 Grand Slam — hər biri fərqli səthdə oynanılır',x:'Tennisin <strong>4 Grand Slam</strong> turniri var: Wimbledon (ot), Roland Garros (gil), US Open (sert), Australian Open (sert). Hər birini qazanmaq — <strong>"Golden Grand Slam"</strong> — yalnız bir nəfər bacarmışdır: Steffi Graf (1988).',i:'https://images.unsplash.com/photo-1569517282132-25d22f4573e6?w=900&q=80'}},
-
-{q:'Futbol meydanında neçə oyunçu olur (hər komandadan)?',a:['9','10','11','12'],c:2,
-f:{t:'11 oyunçu — 1863-dən bəri dəyişməyib',x:'Hər futbol komandasında <strong>11 oyunçu</strong> olur. Bu qayda <strong>1863-cü ildən</strong> bəri dəyişməyib. Dünyada <strong>4 milyarddan</strong> çox futbol azarkeşi var — rəsmi olaraq dünyanın ən populyar idmanı.',i:'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=900&q=80'}},
-
-{q:'Dünya çempionatında ən çox qələbə qazanan ölkə hansıdır?',a:['Almaniya','Argentina','Braziliya','İtaliya'],c:2,
-f:{t:'Braziliya 5 dünya çempionluğu — 1958, 1962, 1970, 1994, 2002',x:'<strong>Braziliya</strong> 5 dünya çempionluğu ilə liderdir. Maraqlı fakt: Braziliya <strong>1958-ci ildə</strong> 17 yaşlı Pelé ilə çempion oldu. O tarixdə heç bir futbolçu bu qədər gənc yaşda dünya çempionu olmamışdı.',i:'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=900&q=80'}},
-
-{q:'Basketbolda halqanın hündürlüyü neçə metrdir?',a:['2,5 m','3 m','3,05 m','3,5 m'],c:2,
-f:{t:'3,05 m — James Naismith 1891-də şəftəli səbətiylə başladı',x:'Basketbol halqası <strong>3,05 m</strong> hündürlükdədir. <strong>James Naismith</strong> 1891-ci ildə Kanadada bu oyunu ixtira etdi — zalın divarına şəftəli səbəti asıb top atmağı təklif etdi. O vaxtdan hal-hazıra qədər ölçü dəyişməyib!',i:'https://images.unsplash.com/photo-1569517282132-25d22f4573e6?w=900&q=80'}},
-
-{q:'Olimpiya oyunlarının rəmzi neçə halqadan ibarətdir?',a:['3','4','5','6'],c:2,
-f:{t:'5 halqa — 5 qitənin birliyini simvolizə edir',x:'Olimpiya bayrağındakı <strong>5 halqa</strong> 5 qitəni simvolizə edir. Bütün dünya bayraqlarında istifadə olunan hər rəng bu 5 halqadan birindədir. Dizaynı <strong>Pierre de Coubertin</strong> 1913-də yaratdı.',i:'https://images.unsplash.com/photo-1569517282132-25d22f4573e6?w=900&q=80'}},
-
-{q:'Hansı ölkə 2022 FIFA Dünya Çempionatına ev sahibliyi etdi?',a:['Rusiya','Braziliya','Katar','BAE'],c:2,
-f:{t:'Katar — tarihin ən bahalı çempionatı, 220 milyard dollar',x:'<strong>Katar</strong> 2022 FIFA Dünya Çempionatına ev sahibliyi etdi. Bu, kənar tarixdə keçirilən ilk dünya çempionatıdır — <strong>noyabr-dekabr!</strong> Həmçinin ən bahalısıdır: <strong>220 milyard dollar</strong> xərcləndi.',i:'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=900&q=80'}},
-
-{q:'Şahmatda "pat" nə deməkdir?',a:['Qalib gəlmək','Məğlub olmaq','Heç-heçə','Oyunu dayandırmaq'],c:2,
-f:{t:'Pat — şah olmadan heç gedilə bilməyən vəziyyət',x:'<strong>Pat</strong> oyunçunun heç bir gedişi olmadığı, lakin şahın da olmadığı vəziyyətdir — <strong>heç-heçədir!</strong> Şahmatda ən dramatik sonlardan biridir. Məğlub olan tərəf belə patla xilas ola bilir.',i:'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=900&q=80'}},
-
-{q:'Olimpiya oyunları ilk dəfə neçənci ildə keçirildi?',a:['1892','1896','1900','1904'],c:1,
-f:{t:'1896 — Afina, 14 ölkə, 241 idmançı',x:'Müasir Olimpiya oyunları <strong>1896-cı ildə</strong> Afinada keçirildi. <strong>14 ölkədən 241 idmançı</strong> iştirak etdi. İndi isə 200-dən çox ölkə, 10.000-dən çox idmançı iştirak edir.',i:'https://images.unsplash.com/photo-1569517282132-25d22f4573e6?w=900&q=80'}},
-
-{q:'Dünya çempionatlarında ən çox qol vuran futbolçu kimdir?',a:['Ronaldo','Messi','Miroslav Klose','Ronaldo Nazario'],c:2,
-f:{t:'Miroslav Klose 16 qol — 4 dünya çempionatında',x:'<strong>Miroslav Klose</strong> 4 dünya çempionatında cəmi <strong>16 qol</strong> vurub dünya rekordunu qoydu. Alman oyunçusu 2014-də 36 yaşında bu rekordunu qoydu.',i:'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=900&q=80'}},
-
-{q:'Hansı ölkə 2022-ci ildə dünya kubokunu qazandı?',a:['Fransa','Braziliya','Argentina','Almaniya'],c:2,
-f:{t:'Argentina — Messinin 36 illik arzusu',x:'<strong>Argentina</strong> 2022-ci ildə dünya çempionluğunu qazandı. <strong>36 illik</strong> gözləmə sona çatdı. Lionel Messin arzusu həyata keçdi — finalda Fransanı penaltilərdə məğlub etdilər.',i:'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=900&q=80'}},
-
-{q:'Atletizmde "maraton" neçə km-dir?',a:['21','40','42,195','50'],c:2,
-f:{t:'42,195 km — bir yunan əsgərinin əfsanəsindən gəlir',x:'Maraton <strong>42,195 km</strong>-dir. Əfsanəyə görə, <strong>Fidiпидis</strong> adlı yunan əsgəri Maratondan Afinaya qaçıb "Qazandıq!" deyib düşdü. 1908 London Olimpiyasında bu məsafə standartlaşdırıldı.',i:'https://images.unsplash.com/photo-1569517282132-25d22f4573e6?w=900&q=80'}},
-
-{q:'Yerüstü idman branşında 100 metrlik sprint rekordunu kim saxlayır?',a:['Carl Lewis','Usain Bolt','Justin Qatlin','Tayvon Brekinrij'],c:1,
-f:{t:'Usain Bolt 9,58 saniyə — 2009 Berlin',x:'<strong>Usain Bolt</strong> 2009-cu ildə Berlində <strong>9,58 saniyə</strong> ilə dünya rekordunu qırdı. Demək olar ki, <strong>44 km/saat</strong> sürətlə qaçdı! Bu rekord hələ qırılmayıb.',i:'https://images.unsplash.com/photo-1569517282132-25d22f4573e6?w=900&q=80'}},
-
-// ── TEXNOLOGİYA ──
-{q:'WWW nəyin qısaltmasıdır?',a:['World Wide Web','World Wide Wire','Wide World Web','Wide Web World'],c:0,
-f:{t:'Tim Berners-Li interneti dünyaya pulsuz bağışladı',x:'WWW = <strong>World Wide Web</strong>. <strong>Tim Berners-Li</strong> 1991-ci ildə World Wide Web-i ictimaiyyətə açdı. Ən şərəfli hərəkəti: <strong>patent almadı!</strong> Əgər patent alsaydı, dünyada ən varlı insan olardı.',i:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'}},
-
-{q:'İlk kompüter proqramçısı kim hesab edilir?',a:['Alan Türinq','Ada Lavleys','Bill Qeyts','Çarlz Bebbic'],c:1,
-f:{t:'Ada Lavleys — 1843-cü ildə ilk alqoritm',x:'<strong>Ada Lavleys</strong> (1815-1852) dünyada ilk kompüter proqramçısı sayılır. 1843-cü ildə <strong>ilk alqoritm</strong> yazdı — kompüter hələ mövcud olmamışdan əvvəl! Ada prоqramlaşdırma dilinin adı onun şərəfinədir.',i:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'}},
-
-{q:'İlk iPhone neçənci ildə təqdim edildi?',a:['2005','2006','2007','2008'],c:2,
-f:{t:'9 yanvar 2007 — Steve Jobs: "Telefonu yenidən ixtira edirik"',x:'<strong>Steve Jobs</strong> 9 yanvar 2007-ci ildə ilk iPhone-u təqdim etdi. Nokia CEO-su "Bu heç iş görməz" dedi — şirkəti sonra iflas etdi. Hazırkı iPhonelar ilk modeldan <strong>milyonlarla dəfə güclüdür.</strong>',i:'https://images.unsplash.com/photo-1523206489230-c012c64b2b48?w=900&q=80'}},
-
-{q:'Ən çox istifadə edilən axtarış motoru hansıdır?',a:['Bing','Yahoo','Google','DuckDuckGo'],c:2,
-f:{t:'Google gündə 8,5 milyard axtarış emal edir',x:'<strong>Google</strong> gündə <strong>8,5 milyard axtarış</strong> emal edir. İnternetin 90%-dən çox axtarış payını tutur. "Google" sözü rəqəm olan "googol" (10¹⁰⁰) sözündən gəlir.',i:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'}},
-
-{q:'CPU nə deməkdir?',a:['Central Processing Unit','Computer Power Unit','Core Processing Unit','Central Power Unit'],c:0,
-f:{t:'CPU — ilk transistoru 2.300 idi, indi 100 milyard',x:'CPU = <strong>Central Processing Unit</strong>. 1971-ci ilki ilk Intel prosessoru cəmi <strong>2.300 transistordan</strong> ibarəti idi. Bugünkü prosessorlar <strong>100 milyard-dan çox</strong> transistor saxlayır!',i:'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=900&q=80'}},
-
-{q:'Sosial media platforması Facebook neçənci ildə yaradıldı?',a:['2002','2003','2004','2005'],c:2,
-f:{t:'Zuckerberg Facebook-u Harvard yataqxanasında yaratdı',x:'<strong>Mark Zuckerberg</strong> 2004-cü ildə Harvardda Facebook-u yaratdı. İlk gün <strong>1.200 tələbə</strong> qeydiyyatdan keçdi. Bugün <strong>3 milyarddan</strong> çox aktiv istifadəçisi var.',i:'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=900&q=80'}},
-
-{q:'USB nəyin qısaltmasıdır?',a:['Universal Serial Bus','Universal System Base','United Serial Board','Universal Speed Bridge'],c:0,
-f:{t:'USB 1996-da yarandı — əvvəl hər cihazın fərqli kabeli var idi',x:'USB = <strong>Universal Serial Bus</strong>. 1996-cı ildə standartlaşdırıldı. Bundan əvvəl hər cihaz — printer, klaviatura, siçan — <strong>fərqli kabel və port</strong> tələb edirdi. USB hər şeyi birləşdirdi.',i:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'}},
-
-{q:'Python nədir?',a:['İlan növü','Proqramlaşdırma dili','Avadanlıq','Antivirus'],c:1,
-f:{t:'Python — Gido van Rossum yılbaşı tətilində yazdı',x:'<strong>Python</strong> proqramlaşdırma dilidir. <strong>Gido van Rossum</strong> 1989-cu ildə yılbaşı tətilindəki könüllü iş olaraq yazmağa başladı. Bu gün dünyanın ən populyar proqramlaşdırma dilindən biridir.',i:'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=900&q=80'}},
-
-{q:'RAM nə deməkdir?',a:['Random Access Memory','Read All Memory','Rapid Access Module','Read Access Memory'],c:0,
-f:{t:'RAM kompüter söndükdə tamamilə silinir',x:'RAM = <strong>Random Access Memory</strong>. Kompüter söndükdə RAM-dakı bütün məlumat <strong>tamamilə silinir!</strong> 1980-ci illərdə 64KB RAM normaldı. Bugün <strong>32-64 GB RAM</strong> adi sayılır — 500.000 dəfə artıq!',i:'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=900&q=80'}},
-
-{q:'Hansı şirkət "Android" əməliyyat sistemini yaratdı?',a:['Apple','Microsoft','Google','Samsung'],c:2,
-f:{t:'Android əvvəlcə kamera üçün nəzərdə tutulmuşdu',x:'<strong>Google</strong> Android-i 2008-ci ildə bazara çıxardı. Maraqlı tarix: Android əvvəlcə <strong>kamera üçün</strong> nəzərdə tutulmuşdu — sonra smartfona yönəldildi! Bu gün dünya smartfonlarının <strong>72%-i</strong> Android işlədir.',i:'https://images.unsplash.com/photo-1523206489230-c012c64b2b48?w=900&q=80'}},
-
-{q:'İnternetin əcdadı hesab olunan şəbəkə hansıdır?',a:['ARPANET','BITNET','USENET','NSFNET'],c:0,
-f:{t:'ARPANET — ilk mesaj sadəcə "LO" oldu',x:'<strong>ARPANET</strong> 1969-cu ildə ABŞ müdafiə nazirliyi tərəfindən yaradıldı. İlk göndərilən mesaj "login" idi — lakin sistem <strong>çöküb yalnız "LO" çatdırdı!</strong> Bu iki hərf internetin ilk sözüdür.',i:'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=900&q=80'}},
-
-{q:'Hansı proqramlaşdırma dili ən çox istifadə edilir?',a:['Java','C++','Python','JavaScript'],c:3,
-f:{t:'JavaScript — hər brauzerdə işləyir',x:'<strong>JavaScript</strong> 2024-cü ildə ən geniş istifadə olunan proqramlaşdırma dilidir. 1995-ci ildə Brendan Eich tərəfindən cəmi <strong>10 gündə yaradıldı!</strong> Hər vebsayt JavaScript işlədir.',i:'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=900&q=80'}},
-
-{q:'"Bitcoin" kriptovalyutasını kim yaratdı?',a:['Elon Musk','Satoshi Nakamoto','Jeff Bezos','Vitalik Buterin'],c:1,
-f:{t:'Satoshi Nakamoto — kimliyini heç kim bilmir',x:'<strong>Satoshi Nakamoto</strong> Bitcoin-i 2009-cu ildə yaratdı. Amma bu <strong>real bir insanın adı deyil</strong> — yaxud bir qrup insandır. Kimliyi bu günə qədər <strong>sirr olaraq qalır!</strong> 1 milyon Bitcoini olduğu güman edilir.',i:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'}},
-
-{q:'Hansı şirkət "ChatGPT"ni yaratdı?',a:['Google','Meta','OpenAI','Microsoft'],c:2,
-f:{t:'ChatGPT 5 gündə 1 milyon istifadəçi qazandı',x:'<strong>OpenAI</strong> şirkəti ChatGPT-ni 2022-ci ilin noyabrında buraxdı. Cəmi <strong>5 gündə 1 milyon istifadəçi</strong> topladı — bu sürət tarixdə görünməmişdi! Netflix bu həddə çatmaq üçün <strong>3,5 il</strong> gözləmişdi.',i:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'}},
-
-// ── RİYAZİYYAT ──
-{q:'π (pi) ədədinin ilk üç rəqəmi hansıdır?',a:['3,12','3,14','3,16','3,18'],c:1,
-f:{t:'Pi — hər il 14 mart dünyada "Pi günü" qeyd edilir',x:'Pi = <strong>3,14159265...</strong> — sonsuz, qeyri-dövri ədəd. Hər il <strong>14 mart</strong> (3/14) "Pi günü" kimi qeyd edilir. <strong>100 trilyon rəqəmi</strong> hesablanmışdır. Çevrənin diametrə nisbətidir.',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'1-dən 10-a qədər ədədlərin cəmi nə qədərdir?',a:['45','50','55','60'],c:2,
-f:{t:'Cəm = 55 — Qaus 10 yaşında bunu anında hesabladı',x:'1-dən 10-a qədər ədədlərin cəmi <strong>55-dir.</strong> Əfsanəyə görə 10 yaşlı <strong>Karl Qaus</strong> 1-dən 100-ə qədər cəmi bir neçə saniyədə hesabladı: n×(n+1)/2 formulundan istifadə etdi.',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'Üçbucağın daxili bucaqlarının cəmi neçə dərəcədir?',a:['90°','120°','180°','360°'],c:2,
-f:{t:'180° — ancaq düz səthdə! Sferik üçbucaqda fərqlidir',x:'Düz səthdəki üçbucağın daxili bucaqları cəmi <strong>180°-dir</strong>. Amma sferik səthdə — məsələn, Yer kürəsinin üzərində — üçbucağın bucaqları cəmi <strong>180°-dən çox</strong> ola bilər!',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'Fibonacci ardıcıllığında 8-dən sonra gələn ədəd hansıdır?',a:['10','12','13','15'],c:2,
-f:{t:'Fibonacci 1,1,2,3,5,8,13... — təbiətdə hər yerdə',x:'Fibonacci sırası: 1,1,2,3,5,8,<strong>13</strong>,21... Heyrətamiz fakt: gül ləçəklərinin sayı, qabıq spiralları, galaktika kolları hər yerdə Fibonacci ədədlərini izləyir!',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'Hansı ədəd həm cüt həm də sadədir?',a:['1','2','3','4'],c:1,
-f:{t:'2 — yeganə cüt sadə ədəd',x:'<strong>2</strong> həm cüt, həm sadədir — bu xüsusiyyətə malik <strong>yeganə ədəd!</strong> İnternet şifrələmə sistemlərinin (RSA) əsasını böyük sadə ədədlər təşkil edir — bu olmasa, onlayn bankçılıq mümkünsüz olardı.',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'100-ün kvadrat kökü nədir?',a:['5','8','10','12'],c:2,
-f:{t:'Kvadrat kök — babilonlular 3.600 il əvvəl bilirdilər',x:'100-ün kvadrat kökü <strong>10-dur</strong>. Maraqlı tarix: <strong>Babilonlular</strong> kvadrat kökü e.ə. 1600 illərdə gil lövhələrə yazırdılar. √2 = 1,41421... onların hesablamasında da bu dəqiqliqdə idi!',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'"Qızıl nisbət" hansı rəqəmə bərabərdir?',a:['1,414','1,618','2,718','3,141'],c:1,
-f:{t:'Qızıl nisbət gözəlliyin riyazi sirri',x:'Qızıl nisbət <strong>φ = 1,618...</strong> Parthenon, Mona Liza, nautilus qabığı, insan üzündəki nisbətlər — hamısında var! Leonardo da Vinçi bu nisbəti <strong>"ilahi nisbət"</strong> adlandırırdı.',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'e (Eyler ədədi) təxminən nə qədərdir?',a:['1,618','2,718','3,141','4,669'],c:1,
-f:{t:'e — bankçılıqdakı faiz artımının əsasıdır',x:'Eyler ədədi <strong>e ≈ 2,71828...</strong> Bankçılıqdakı mürəkkəb faiz artımının riyazi əsasıdır. Böyük Eyler identikliyi: <strong>e^(iπ)+1=0</strong> — bu düsturda riyaziyyatın beş ən vacib ədədi var!',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-// ── AZƏRBAYCAN ──
-{q:'Azərbaycanın milli marşının sözlərini kim yazmışdır?',a:['Üzeyir Hacıbəyov','Əhməd Cavad','Hüseyn Cavid','Cəlil Məmmədquluzadə'],c:1,
-f:{t:'Əhməd Cavad — marş sözlərinin müəllifi, şair',x:'<strong>Əhməd Cavad</strong> Azərbaycan Dövlət Himninin sözlərini yazmışdır. <strong>Üzeyir Hacıbəyov</strong> musiqisini bəstəlayib. Əhməd Cavad 1918-ci ilki AXC dövründə aktiv şair idi.',i:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=900&q=80'}},
-
-{q:'Azərbaycanda ilk neft şirkəti neçənci ildə yaradıldı?',a:['1871','1879','1883','1891'],c:1,
-f:{t:'1879 — Nobel qardaşları Bakıda neft şirkəti yaratdı',x:'<strong>1879-cu ildə</strong> Nobel qardaşları (Alfredlə eyni ailə!) Bakıda "Branobel" neft şirkəti yaratdı. Bu, Bakı neft sənayesinin <strong>qlobal miqyasda</strong> böyüməsini sürətləndirdi.',i:'https://images.unsplash.com/photo-1511884642898-4c92249e20b6?w=900&q=80'}},
-
-{q:'Azərbaycanda hansı şəhər ipək istehsalı ilə məşhurdur?',a:['Gəncə','Şuşa','Şəki','Lənkəran'],c:2,
-f:{t:'Şəki — 1.000 ildir ipək istehsal edir',x:'<strong>Şəki</strong> 1.000 ildən artıqdır ipək istehsal edir. Məşhur <strong>Şəki halvası</strong> da bu şəhərdəndir. Xan Sarayının şüşəbənd pəncərə mozaikası zərif ipəkçilik sənəti kimi qorunur.',i:'https://images.unsplash.com/photo-1538300342682-cf57afb97285?w=900&q=80'}},
-
-{q:'Azərbaycan bayrağındakı ay və ulduz nəyi simvolizə edir?',a:['Torpaq və göy','İslam dini','Dövlət müstəqilliyi','Türk xalqları'],c:1,
-f:{t:'Hilal müsəlman dünyasının, ulduz türk xalqlarının simvoludur',x:'Azərbaycan bayrağındakı <strong>hilal (ay)</strong> İslam dinini simvolizə edir. <strong>8 guşəli ulduz</strong> isə türk xalqlarını. 1918-ci ildə AXC dövrünün bayrağından qalmış bu dizayn müstəqillikdən sonra yenidən qəbul edildi.',i:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=900&q=80'}},
-
-{q:'Bakıdakı "Qız qalası" neçənci əsrə aiddir?',a:['VI-VII','VIII-IX','XI-XII','XIII-XIV'],c:2,
-f:{t:'Qız qalası 2.000 il tarixə malik UNESCO mirası',x:'<strong>Qız qalası</strong> XI-XII əsrlərə aid olduğu ehtimal edilir. UNESCO Dünya İrsi siyahısındadır. Qalanın 8 mərtəbəsi var, divarlrın qalınlığı <strong>5 metrdir.</strong> İçindəki nə iş üçün işlədildiyi hələ tam öyrənilməyib.',i:'https://images.unsplash.com/photo-1538300342682-cf57afb97285?w=900&q=80'}},
-
-{q:'Azərbaycanın ən böyük su anbarı hansıdır?',a:['Mingəçevir','Şamkir','Araz','Varvara'],c:0,
-f:{t:'Mingəçevir su anbarı — Azərbaycanın enerji qalası',x:'<strong>Mingəçevir</strong> su anbarı Azərbaycanın ən böyük su anbarıdır. 1954-cü ildə tamamlandı. Kür çayı üzərindədir. Azərbaycanın elektrik enerjisinin böyük hissəsini <strong>Mingəçevir HES</strong> istehsal edir.',i:'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=900&q=80'}},
-
-{q:'Azərbaycanda muğamın neçə əsas növü var?',a:['5','7','9','12'],c:3,
-f:{t:'12 muğam — Azərbaycanın musiqi xəzinəsi',x:'Azərbaycan muğamının <strong>12 əsas növü</strong> var: Rast, Şur, Segah, Çahargah, Bayatı-Şiraz, Şüştər, Homayun, Şahnaz, Sarənc, Chahargah-Hicaz, Bayatı-Kürd, Rahab. UNESCO mirası!',i:'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=900&q=80'}},
-
-{q:'Azərbaycanın milli bayrağının rənglərinin sırası necədir?',a:['Yaşıl-Qırmızı-Mavi','Mavi-Qırmızı-Yaşıl','Qırmızı-Yaşıl-Mavi','Mavi-Yaşıl-Qırmızı'],c:1,
-f:{t:'Üç rəng: mavi, qırmızı, yaşıl',x:'Azərbaycan bayrağının rənglərinin sırası <strong>mavi-qırmızı-yaşıl</strong>dir (yuxarıdan aşağı). <strong>Mavi</strong> türk dünyasını, <strong>qırmızı</strong> müasirliyi, <strong>yaşıl</strong> İslam dinini simvolizə edir.',i:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=900&q=80'}},
-
-{q:'"Kitabi-Dədə Qorqud" neçənci əsrə aiddir?',a:['V-VI','VII-VIII','IX-XI','XII-XIII'],c:2,
-f:{t:'Dədə Qorqud — türk xalqlarının ən qədim dastanı',x:'"<strong>Kitabi-Dədə Qorqud</strong>" IX-XI əsrlərə aid hesab edilir. Türk xalqlarının ən qədim dastanlarından biridir. Drezden, Vatikan və Türkiyə kitabxanalarında qorunur. UNESCO mirası.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Cəlil Məmmədquluzadənin qələmə aldığı "Ölülər" nə janrındadır?',a:['Roman','Hekayə','Dram','Poema'],c:2,
-f:{t:'"Ölülər" — Azərbaycan dramaturgiyasının şedevri',x:'<strong>Cəlil Məmmədquluzadə</strong>nin "Ölülər" <strong>dramıdır</strong> (pyesdir). 1909-cu ildə yazılıb. Geridəqalmışlığı, fanatizmi, cəhaləti satirik şəkildə tənqid edir. Azərbaycan dramaturgiyasının ən mühüm əsərlərindən sayılır.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Azərbaycanın ən böyük gölü hansıdır?',a:['Göygöl','Sarısu','Ağgöl','Hacıqabul gölü'],c:1,
-f:{t:'Sarısu gölü Azərbaycanın ən böyük gölüdür',x:'<strong>Sarısu gölü</strong> Azərbaycanın ən böyük gölüdür. <strong>Göygöl</strong> isə ən məşhur gölüdür — 1139-cu ildə zəlzələ zamanı yaranmışdır! Göygölün mənasında "göy rəngli göl" var.',i:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&q=80'}},
-
-{q:'Azərbaycanın hansı şəhəri "Xan şəhəri" adlanır?',a:['Şəki','Şuşa','Gəncə','Naxçıvan'],c:0,
-f:{t:'Şəki — XVIII əsr Şəki xanlığının paytaxtı',x:'<strong>Şəki</strong> "Xan şəhəri" adlanır. XVIII əsrdə Şəki xanlığının paytaxtı olub. <strong>Xan Sarayı</strong> rəngli şüşə mozaikası ilə məşhurdur — heç bir yapışdırıcı işlənməyib! UNESCO mirası siyahısındadır.',i:'https://images.unsplash.com/photo-1538300342682-cf57afb97285?w=900&q=80'}},
-
-{q:'Azərbaycanda Novruz neçə gün qeyd edilir?',a:['1 gün','3 gün','7 gün','13 gün'],c:1,
-f:{t:'Novruz 3 gün — lakin hazırlıq həftələr əvvəl başlayır',x:'Rəsmi olaraq Novruz <strong>3 gün</strong> qeyd edilir. Lakin bayrama hazırlıq — çərşənbələr, xonça, səməni — <strong>aylar əvvəl</strong> başlayır. Böyük Çərşənbə — Novruz axşamı — ən mühüm ənənədir.',i:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=900&q=80'}},
-
-// ── COĞRAFIYA 2 ──
-{q:'Braziliyanın paytaxtı hansıdır?',a:['Rio-de-Janeyro','San-Paulo','Braziliya','Salvador'],c:2,
-f:{t:'Braziliya şəhəri 1960-da sıfırdan tikildi',x:'Braziliyanın paytaxtı <strong>Braziliya şəhəridir</strong> — Rio deyil! <strong>1960-cu ildə</strong> sıfırdan planlı şəkildə tikildi. 1.000 km daxildə, dənizə çıxışı yoxdur. UNESCO-nun dünya irsinə daxildir.',i:'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=900&q=80'}},
-
-{q:'Yaponiya neçə adadan ibarətdir (əsas)?',a:['2','3','4','5'],c:2,
-f:{t:'4 əsas ada — 6.852 ada toplumu',x:'Yaponiyanın <strong>4 əsas adası</strong> var: Honşu, Hokkaydo, Kyuşu, Şikoku. Lakin ümumilikdə <strong>6.852 ada</strong>sı mövcuddur! Yaponiyanın əhalisinin 98%-i bu 4 əsas adada yaşayır.',i:'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=900&q=80'}},
-
-{q:'Hansı ölkənin paytaxtı "Naypyidav"dır?',a:['Tailand','Myanma','Kamboca','Vyetnam'],c:1,
-f:{t:'Naypyidav — 2006-da gecə bir anda elan edildi',x:'<strong>Myanmanın</strong> paytaxtı Naypyidav 2006-cı ildə hərbi xunta tərəfindən <strong>gecə vaxtı, birdən-birə</strong> elan edildi. Yangondan 400 km şimaldadır. "Kral şəhəri" mənasını verir.',i:'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=900&q=80'}},
-
-{q:'Misirin paytaxtı hansıdır?',a:['İskəndəriyyə','Qahirə','Lusaka','Xartum'],c:1,
-f:{t:'Qahirə — "Qalib" mənasında, Afrikanın ən böyük şəhəri',x:'<strong>Qahirə</strong> Misirin paytaxtı, Afrikanın ən böyük şəhəri — 20 milyondan çox əhali. "Qahirə" sözü ərəbcə <strong>"qalib"</strong> mənasını verir. Yaxınlığında Giza piramidaları yerləşir.',i:'https://images.unsplash.com/photo-1609619385002-f40f1df9b7eb?w=900&q=80'}},
-
-{q:'Afrikanın ən yüksək dağı hansıdır?',a:['Kilimanjaro','Kenya dağı','Ruvenzori','Kamerun dağı'],c:0,
-f:{t:'Kilimanjaro 5.895 m — amma buzları əriyir',x:'<strong>Kilimanjaro</strong> 5.895 m ilə Afrikanın ən hündür zirvəsidir. Tanzaniyadadır. Maraqlı: ekvatora yaxın olmasına baxmayaraq zirvəsi <strong>daim qarlıdır</strong>. Lakin iqlim dəyişikliyi ucbatından bu buz sürətlə əriyir.',i:'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&q=80'}},
-
-{q:'Hindistanın paytaxtı hansıdır?',a:['Mumbay','Dehli','Kalkutta','Çennay'],c:1,
-f:{t:'Dehli — dünyanın ən sürətlə böyüyən böyük şəhəri',x:'<strong>Dehli</strong> Hindistanın paytaxtı, əhalisi 32 milyona yaxın olan <strong>dünyanın ən böyük şəhərlərindən</strong> biridir. "Yeni Dehli" hissəsi 1911-də ingilislər tərəfindən tikildi.',i:'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=900&q=80'}},
-
-{q:'Finlandiyanın paytaxtı hansıdır?',a:['Oslo','Stokholm','Helsinki','Kopenhagen'],c:2,
-f:{t:'Helsinki — dünyanın ən xoşbəxt ölkəsinin paytaxtı',x:'<strong>Helsinki</strong> Finlandiyanın paytaxtıdır. Finlandiya ardıcıl <strong>illərdə dünyada ən xoşbəxt ölkə</strong> seçilmişdir. Helsinki eyni zamanda <strong>Skandinaviyanın ən güneyindəki böyük şəhərlərindən</strong> biridir.',i:'https://images.unsplash.com/photo-1559825481-12a05cc00344?w=900&q=80'}},
-
-{q:'Böyük Britaniya neçə ölkədən ibarətdir?',a:['2','3','4','5'],c:2,
-f:{t:'4 ölkə: İngiltərə, Şotlandiya, Uels, Şimali İrlandiya',x:'Böyük Britaniya <strong>4 ölkədən</strong> ibarətdir: İngiltərə, Şotlandiya, Uels, Şimali İrlandiya. Hər birinin öz bayrak, idman komandaları var. Şotlandiya <strong>müstəqillik referendumu</strong> ilə Britaniyada qaldı.',i:'https://images.unsplash.com/photo-1513026705753-bc3fffca8bf4?w=900&q=80'}},
-
-{q:'Hansı ölkənin paytaxtı "Ankara"dır?',a:['Yunanıstan','Bolqarıstan','Türkiyə','Rumıniya'],c:2,
-f:{t:'Ankara — İstanbul deyil! Müasir Türkiyənin paytaxtı',x:'<strong>Türkiyənin</strong> paytaxtı Ankaradır — İstanbul deyil! Atatürk 1923-cü ildə Türkiyə Cümhuriyyəti elan etdikdən sonra paytaxtı Ankaraya köçürdü. Ankara <strong>Anadolunun</strong> mərkəzindədir.',i:'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=900&q=80'}},
-
-{q:'Çinin ən uzun çayı hansıdır?',a:['Sarı çay','Yanszı','Mekong','Amur'],c:1,
-f:{t:'Yanszı 6.300 km — Asiya\'nın ən uzun çayı',x:'<strong>Yanszı</strong> 6.300 km ilə Asiyada ən uzun çaydır. Üç Boğaz bəndi — <strong>dünyanın ən böyük hidroelektrik stansiyası</strong> — bu çay üzərindədir. 400 milyondan çox insan bu çay hövzəsindən asılıdır.',i:'https://images.unsplash.com/photo-1490457843367-34b21a6e6897?w=900&q=80'}},
-
-{q:'Norveçin paytaxtı hansıdır?',a:['Bergon','Oslo','Tromsø','Stavanger'],c:1,
-f:{t:'Oslo — dünyanın ən bahalı şəhərlərindən biri',x:'<strong>Oslo</strong> Norveçin paytaxtıdır. Dünyanın ən bahalı şəhərləri siyahısında daim ilk yerdədir. Norveçin neft gəlirləri sayəsində ölkə <strong>2 trilyon dollardan çox</strong> milli fond yaratmışdır.',i:'https://images.unsplash.com/photo-1559825481-12a05cc00344?w=900&q=80'}},
-
-{q:'Venesuelanın paytaxtı hansıdır?',a:['Bogota','Lima','Karakas','Montevideo'],c:2,
-f:{t:'Karakas — Simon Bolivarın vətəni',x:'<strong>Karakas</strong> Venesuelanın paytaxtıdır. Latın Amerikanı İspan müstəmləkəsindən azad edən <strong>Simon Bolivar</strong> 1783-cü ildə məhz burada anadan olmuşdur.',i:'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=900&q=80'}},
-
-{q:'Ukrayna hansı dənizlərə çıxır?',a:['Qara dəniz','Azov dənizi','Hər ikisi','Heç birinə'],c:2,
-f:{t:'Ukrayna həm Qara, həm Azov dənizinə çıxır',x:'<strong>Ukrayna</strong> həm <strong>Qara dənizə</strong>, həm <strong>Azov dənizinə</strong> çıxır. Krim yarımadası hər iki dəniz arasındadır. Ukrayna dünyada ən böyük buğda ixracatçılarından biridir.',i:'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=900&q=80'}},
-
-{q:'Himalay dağlarının ən hündür zirvəsi hansıdır?',a:['K2','Everest','Kançendzunqa','Lhotse'],c:1,
-f:{t:'Everest 8.849 m — hər il bir az daha hündür olur',x:'<strong>Everest</strong> 8.849 m ilə dünyanın ən hündür zirvəsidir. Hər il <strong>Hindistan plitəsinin</strong> hərəkəti ucbatından bir az daha hündür olur. 1953-dən bu günə qədər <strong>6.000-dən çox alpinist</strong> zirvəyə çıxıb.',i:'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&q=80'}},
-
-{q:'Hansı ölkənin paytaxtı "Astana"dır?',a:['Qırğızıstan','Tacikistan','Qazaxıstan','Türkmənistan'],c:2,
-f:{t:'Astana — çox adını dəyişən paytaxt',x:'<strong>Qazaxıstanın</strong> paytaxtı Astana (əvvəlcə Nur-Sultan, əvvəlcə Akmola). 1997-ci ildə köhnə paytaxt Almatıdan yeni salınmış şəhərə köçürüldü. Qış temperaturu <strong>-40°C-yə</strong> düşə bilir!',i:'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=900&q=80'}},
-
-{q:'Qara dəniz hansı ölkələrlə əhatə olunub?',a:['4','5','6','7'],c:2,
-f:{t:'6 ölkə Qara dənizi paylaşır',x:'<strong>Qara dəniz</strong> 6 ölkə ilə əhatə olunub: Türkiyə, Bolqarıstan, Rumıniya, Ukrayna, Rusiya, Gürcüstan. "Qara" adı qış fırtınalarının dənizi tünd göstərməsindən yaranıb.',i:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=900&q=80'}},
-
-// ── ƏLAVƏ ELM ──
-{q:'İnsan bədəninin neçə faizi sudur?',a:['40%','50%','60%','70%'],c:2,
-f:{t:'İnsan bədəninin 60%-i sudur — beyinin 80%-i',x:'Yetkin insan bədəninin orta hesabla <strong>60%-i sudur</strong>. Amma beyin <strong>80%</strong>, qan <strong>90%</strong>, sümüklər <strong>31%</strong> sudur. Bədəndən 2% su itirilsə — performans düşür, 10% — təhlükəli!',i:'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=900&q=80'}},
-
-{q:'Hansı heyvan öz çəkisinin 50 dəfəsini qaldıra bilir (qarışqa)?',a:['10 dəfə','50 dəfə','100 dəfə','5000 dəfə'],c:1,
-f:{t:'Qarışqa öz çəkisinin 50 qatını qaldırır',x:'<strong>Qarışqa</strong> öz çəkisinin <strong>50 qatını</strong> qaldıra bilir. Həmçinin üzgüçüdür, dalğıcdır, çiftçidir (göbələk becərirlər!). Dünyadakı bütün qarışqaların ümumi kütləsi <strong>bütün insanların kütləsinə bərabərdir!</strong>',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Ən sürətli quruda heyvan hansıdır?',a:['Aslan','Leopard','Gepard','Zebra'],c:2,
-f:{t:'Gepard 110 km/saat — 3 saniyədə 100 km/saat',x:'<strong>Gepard</strong> saatda <strong>110 km/saata</strong> çata bilir. 0-dan 100 km/saata cəmi <strong>3 saniyədə!</strong> Maraqlı: gepard qaçış zamanı nəfəs almağı dayana bilir — o qədər güc tələb edir.',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Dünyada ən böyük heyvan hansıdır?',a:['Fil','Zürafə','Mavi balina','Kərgədan'],c:2,
-f:{t:'Mavi balina Günəş sistemindəki ən böyük canlıdır',x:'<strong>Mavi balina</strong> 30 m uzunluğu, 150 ton kütləsi ilə tarihin ən böyük heyvanıdır. Nəinki bu gün — <strong>bütün Yer tarixinin!</strong> Dinazavrları da keçdi. Ürəyi bir avtomobil boyda, ötüşü <strong>800 km uzaqdan</strong> eşidilir.',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Ən hündür heyvan hansıdır?',a:['Fil','Zürafə','Dəvə quşu','At'],c:1,
-f:{t:'Zürafə 5,5 m — 6 ayaq boyunda qan basınması problemi',x:'<strong>Zürafə</strong> 5,5 m hündürlüyü ilə dünyanın ən hündür heyvanıdır. Belə hündür olmaq böyük problem yaradır — beynə qan çatdırmaq üçün ürəyi <strong>nəhəng təzyiq</strong> yaratmalıdır.',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Bal hansı canlı tərəfindən istehsal edilir?',a:['Arı','Kəpənək','Çiçək','Qarışqa'],c:0,
-f:{t:'Arı 1 kq bal üçün 4 milyon çiçəyə gedir',x:'<strong>Arılar</strong> bal istehsal edir. 1 kq bal üçün bir arı <strong>4 milyon çiçəyə</strong> baş çəkməlidir! Bal heç vaxt xarab olmur — Misir piramidalarında tapılan 3.000 illik bal hələ yeyilebilir olmuşdur.',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Ən sürətli quş hansıdır?',a:['Qartal','Laçın','Sərçə','Qu quşu'],c:1,
-f:{t:'Laçın 390 km/saat — kainatdakı ən sürətli canlı hərəkəti',x:'<strong>Laçın (şahin)</strong> dalış anında saatda <strong>390 km/saata</strong> çatır — canlılar arasında ən yüksək sürət! Yataqdan uçuşa cəmi <strong>0,3 saniyə</strong> lazımdır.',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Kainatda ən çox yayılmış element hansıdır?',a:['Oksigen','Helium','Hidrogen','Karbon'],c:2,
-f:{t:'Hidrogen kainatın 75%-dir — bütün ulduzların yanacağı',x:'<strong>Hidrogen</strong> kainatdakı bütün maddənin <strong>75%-ni</strong> təşkil edir. Bütün ulduzlar hidrogeni heluma çevirərək enerji istehsal edir. Günəş hər saniyə <strong>600 milyon ton hidrogeni</strong> yandırır.',i:'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=900&q=80'}},
-
-{q:'İlk süni peyk "Sputnik" neçənci ildə fəzaya buraxıldı?',a:['1955','1957','1959','1961'],c:1,
-f:{t:'Sputnik 4 oktyabr 1957 — kosmik dövrü başlatdı',x:'<strong>Sputnik-1</strong> <strong>4 oktyabr 1957-ci ildə</strong> Sovet İttifaqı tərəfindən buraxıldı. Dünya kosmik dövr başladı! Beep-beep siqnalını radio ilə bütün dünya eşitdi. ABŞ böyük şok yaşadı — NASA bu hadisədən sonra yaradıldı.',i:'https://images.unsplash.com/photo-1516849677043-ef67c9557e16?w=900&q=80'}},
-
-{q:'İlk kosmosa çıxan insan kimdir?',a:['Neil Armstrong','Yuri Qaqarin','Alan Şepard','John Qlen'],c:1,
-f:{t:'Qaqarin 12 aprel 1961 — 108 dəqiqə, 27 yaşında',x:'<strong>Yuri Qaqarin</strong> <strong>12 aprel 1961-ci ildə</strong> kosmosa çıxdı. Yerin ətrafını <strong>108 dəqiqədə</strong> dövrə vurdu. Cəmi <strong>27 yaşında</strong> idi. Uçuşdan əvvəl "Poyexali!" (Gedək!) dedi — bu söz tarixi oldu.',i:'https://images.unsplash.com/photo-1516849677043-ef67c9557e16?w=900&q=80'}},
-
-{q:'Günəş sisteminin ən soyuq planeti hansıdır?',a:['Neptun','Uranüs','Saturn','Pluton'],c:1,
-f:{t:'Uranüs -224°C — amma Neptun kənarından soyuq görünür',x:'<strong>Uranüs</strong> Günəş sisteminin ən soyuq planetidir — <strong>-224°C!</strong> Neptun daha uzaqdır amma Uranüs daha soyuqdur — çünki Uranüsün daxili istilik qaynağı yoxdur. Həmçinin <strong>yan fırlanır!</strong>',i:'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=900&q=80'}},
-
-{q:'Elektromaqnetizmin qurucusu kim hesab edilir?',a:['Volta','Faradey','Tesla','Edison'],c:1,
-f:{t:'Michael Faradey — oxumaq bilmədən fizikanın ustası',x:'<strong>Michael Faradey</strong> elektromaqnetizmin əsasını qoydu. Heyrətamiz: rəsmi təhsili yox idi, <strong>12 yaşından</strong> kitab cildçisinin yanında çalışırdı. Öz-özünü yetişdirdi — 19-cu əsrin ən böyük eksperimental fiziki oldu.',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'Qan dövranını kim kəşf etdi?',a:['Qalen','Vezali','Uiyam Harvi','Paster'],c:2,
-f:{t:'Uilyam Harvi 1628 — 2.000 illik yanılış düzəldildi',x:'<strong>Uilyam Harvi</strong> 1628-ci ildə qan dövranını kəşf etdi. Bundan əvvəl 2.000 il boyunca <strong>Qalenin yanış nəzəriyyəsi</strong> — qanın qaraciyərdə istehsal olunması — doğru sayılırdı.',i:'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=900&q=80'}},
-
-{q:'Dünyanın ən uzun tuneli haradır?',a:['Yaponiyadakı Seikan tuneli','İsveçrədəki Qotard tuneli','Çindəki Yanşan tuneli','Norveçdəki Lærdal tuneli'],c:1,
-f:{t:'Qotard bazası tuneli 57 km — 17 il çəkdi',x:'<strong>İsveçrədəki Qotard bazası tuneli</strong> 57 km ilə dünyanın ən uzun dəmir yolu tünelidir. <strong>17 il</strong> tikildi, 2016-da açıldı. 2.400 m dərinlikdə qazıldı. Alp dağlarının altından keçir.',i:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'}},
-
-{q:'Hansı ölkə ən çox neft ixrac edir?',a:['İran','Rusiya','Səudiyyə Ərəbistanı','ABŞ'],c:2,
-f:{t:'Səudiyyə Ərəbistanı — gündə 10 milyon barrel',x:'<strong>Səudiyyə Ərəbistanı</strong> gündə 10 milyon bareldən çox neft ixrac edir — dünya rekordçusu. ARAMCO şirkəti <strong>dünyanın ən dəyərli şirkətidir.</strong> Neft ehtiyatları 260 milyard bareldən çoxdur.',i:'https://images.unsplash.com/photo-1511884642898-4c92249e20b6?w=900&q=80'}},
-
-{q:'Nobel mükafatı neçənci ildən verilir?',a:['1895','1901','1910','1920'],c:1,
-f:{t:'Nobel mükafatı 1901-dən — Alfred Nobelsin vəsiyyəti',x:'<strong>Nobel mükafatı</strong> ilk dəfə <strong>1901-ci ildə</strong> verildi. Alfred Nobel dinamiti ixtira etmişdi. Ölümündən sonra vəsiyyəti açıldı — bütün varını mükafat fonduna buraxmışdı. Ailəsi heyrəti icindən çıxa bilmirdi.',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Dünyanın ən hündür binası neçə metrdir?',a:['600 m','800 m','828 m','1000 m'],c:2,
-f:{t:'Burj Xəlifə 828 m — 200.000 ton beton',x:'<strong>Burj Xəlifə</strong> 828 m ilə dünyanın ən hündür binasıdır. <strong>200.000 ton beton</strong> işləndi. Zirvəsindən günbatımını 2 dəfə izləmək mümkündür — birinci yerdə, sonra lifllə zirvəyə çıxıb yenidən!',i:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'}},
-
-{q:'Dünyada ən çox istehlak edilən içki hansıdır?',a:['Çay','Qəhvə','Su','Şirə'],c:2,
-f:{t:'Su — gündə 3 milyard litr, həyatın əsası',x:'<strong>Su</strong> dünyanın ən çox istehlak edilən içkisidir. İnsan susuzluğa aclıqdan <strong>3 dəfə tez</strong> məhv olur! Dünyada 780 milyon insan təmiz içmə suyundan məhrumdur — bu ən böyük qlobal problemlərdən biridir.',i:'https://images.unsplash.com/photo-1559825481-12a05cc00344?w=900&q=80'}},
-
-{q:'Dünyanın ən böyük demokratiyası hansı ölkədir?',a:['ABŞ','Braziliya','Hindistan','Avropa İttifaqı'],c:2,
-f:{t:'Hindistan 970 milyon seçici — dünyanın ən böyük seçimi',x:'<strong>Hindistan</strong> 970 milyondan çox seçicisi ilə dünyanın ən böyük demokratiyasıdır. Parlament seçkiləri zamanı <strong>1 milyondan çox</strong> seçki məntəqəsi qurulur — bu rekordun özüdür.',i:'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=900&q=80'}},
-
-{q:'Hansı ölkə ən çox meşəyə malikdir?',a:['Kanada','Braziliya','Rusiya','Çin'],c:2,
-f:{t:'Rusiyada dünyanın 20% meşəsi var',x:'<strong>Rusiya</strong> 815 milyon hektar meşə ilə dünyanın ən çox meşəli ölkəsidir — dünyada bütün meşələrin <strong>20%-i!</strong> Sibir meşəsi "Yer kürəsinin ağciyəri" adlanır.',i:'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=900&q=80'}},
-
-{q:'Avropanın ən böyük gölü hansıdır?',a:['Ladoqa','Oneqa','Venern','Vättern'],c:0,
-f:{t:'Ladoqa gölü Rusiyadır — 17.700 km²',x:'<strong>Ladoqa gölü</strong> 17.700 km² ilə Avropanın ən böyük gölüdür. Rusiyadır, Sankt-Peterburqun yaxınlığındadır. II Dünya Müharibəsi zamanı "Həyat yolu" — buz üzərindən keçirilən ikmal xətti — bu gölün üstündən keçirdi.',i:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&q=80'}},
-
-{q:'Hansı ölkə ən çox çay içir (adambaşına)?',a:['İngiltərə','Çin','Türkiyə','Hindistan'],c:2,
-f:{t:'Türkiyə adambaşına 3,16 kq çay — dünya rekordçusu',x:'<strong>Türkiyə</strong> adambaşına ildə <strong>3,16 kq çay</strong> istehlakı ilə dünya rekordçusudur. Çaydanlıq (iki qatlı) türkiyəlilərin icadıdır. Türk çay mədəniyyəti UNESCO mirası siyahısınadır.',i:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=900&q=80'}},
-
-{q:'Dünyanın ən böyük bazarı haradır?',a:['Dubay','İstanbul','Tokio','Şanxay'],c:1,
-f:{t:'İstanbul Qapalı Çarşısı — 550 ildən çox tarix',x:'İstanbul <strong>Qapalı Çarşısı (Kapalıçarşı)</strong> dünyanın ən böyük örtülü bazarıdır. <strong>550 ildən çox</strong> tarixə malikdir. 4.000-dən çox mağaza, 61 küçə, gündə 250.000-400.000 ziyarətçi.',i:'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=900&q=80'}},
-
-{q:'Hansı ölkənin maşın istehsalı dünyada ən çoxdur?',a:['Yaponiya','ABŞ','Çin','Almaniya'],c:2,
-f:{t:'Çin ildə 30 milyon avtomobil — dünyanın yarısı',x:'<strong>Çin</strong> ildə <strong>30 milyondan çox</strong> avtomobil istehsal edir — dünyanın yarısı! 2023-də Çin elektromobil ixracatında da dünya lideri oldu. <strong>BYD, Geely</strong> kimi markalar qlobal bazara çıxıb.',i:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'}},
-
-{q:'Dünyada ən çox yeyilən ət hansıdır?',a:['Mal əti','Donuz əti','Toyuq əti','Qoyun əti'],c:1,
-f:{t:'Donuz əti dünya ət istehlakının 36%-i',x:'<strong>Donuz əti</strong> dünya ət istehlakının <strong>36%-ini</strong> təşkil edir. Çin dünyanın ən çox donuz əti istehlakçısıdır — ildə <strong>54 milyon ton!</strong> Bu, qalan bütün dünyanın ümumi istehlakına bərabərdir.',i:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=900&q=80'}},
-
-{q:'"IQ" nəyin qısaltmasıdır?',a:['Intellectual Quality','Intelligence Quotient','Information Quantity','Index Quality'],c:1,
-f:{t:'IQ — zəka əmsalı, ortalama 100',x:'IQ = <strong>Intelligence Quotient</strong> (zəka əmsalı). Ortlama IQ <strong>100-dür</strong>. Albert Eynşteynin IQ-sunun 160-180 arasında olduğu iddia edilir. Lakin alimlər qeyd edir: IQ insanın həyatdaki uğurunu tam ölçmür.',i:'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=900&q=80'}},
-
-{q:'Hansı ölkə dünyada ən çox zeytun istehsal edir?',a:['Yunanıstan','İtaliya','İspaniya','Türkiyə'],c:2,
-f:{t:'İspaniya dünya zeytun istehsalının 40%-i',x:'<strong>İspaniya</strong> dünya zeytun istehsalının <strong>40%-ini</strong> təmin edir. Ölkənin <strong>340 milyon zeytun ağacı</strong> var! Bəzi ağaclar <strong>1.000 ildən çox yaşlıdır</strong> — hələ zeytun verir.',i:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=900&q=80'}},
-
-{q:'Hansı heyvan ən çox insana hücum edir (dünyada ölüm sayına görə)?',a:['Aslan','Fil','Ağcaqanad','Köpək'],c:2,
-f:{t:'Ağcaqanad ildə 700.000 insan öldürür',x:'<strong>Ağcaqanad</strong> ildə <strong>700.000-dən çox insanı</strong> öldürür — xəstəlik daşıyaraq! Malyariya, denq, Zika virusu vasitəsilə. Aslan isə ildə cəmi 200 nəfər. Ağcaqanad tarihin ən ölümcül heyvanıdır.',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Hansı ölkə 2026-cı ildə FIFA Dünya Çempionatına ev sahibliyi edəcək?',a:['Braziliya','Qatar','ABŞ-Kanada-Meksika','Argentina'],c:2,
-f:{t:'2026 — 3 ölkə, 48 komanda, tarixdə ən böyük çempionat',x:'<strong>2026 FIFA Dünya Kuboku</strong> ABŞ, Kanada və Meksikada keçiriləcək — 3 ölkə birlikdə! Bu dəfə iştirakçı komandalar 32-dən <strong>48-ə</strong> çatdırılır. Ən çox oyun oynanacaq dünya çempionatı olacaq.',i:'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=900&q=80'}},
-
-{q:'Hansı ölkə dünyanın ən çox ixrac edir?',a:['ABŞ','Almaniya','Çin','Yaponiya'],c:2,
-f:{t:'Çin 2009-dan bəri dünya ixracatının şampionudur',x:'<strong>Çin</strong> 2009-cu ildən bəri dünyanın ən böyük ixracatçısıdır. İldə <strong>3,5 trilyon dollardan</strong> çox mal ixrac edir. "Dünyanın fabriki" olaraq tanınır.',i:'https://images.unsplash.com/photo-1490457843367-34b21a6e6897?w=900&q=80'}},
-
-{q:'Dünyanın ən böyük mağarası hansıdır?',a:['Mammoth Mağarası','Son Doong','Lechugilla','Krubera'],c:0,
-f:{t:'Mammoth mağarası — 676 km yol, hələ kəşf davam edir',x:'<strong>Mammoth Mağarası</strong> (ABŞ, Kentaki) 676 km-dən çox məlum keçidi ilə dünyanın ən uzun mağara sistemidir. Hər il yeni tunellər kəşf edilir. 2-ci dünyada isə Vyetnamdakı <strong>Son Doong</strong>dur — içindəki orman var!',i:'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=900&q=80'}},
-
-{q:'Yer kürəsinin ümumi səthi neçədir?',a:['310 milyon km²','410 milyon km²','510 milyon km²','610 milyon km²'],c:2,
-f:{t:'510 milyon km² — 71% su ilə örtülüdür',x:'Yer kürəsinin ümumi səthi <strong>510 milyon km²-dir</strong>. Bunun <strong>71%-i</strong> su ilə örtülüdür. Bütün quru ərazilər <strong>150 milyon km²-dir</strong> — Sakit okeanın sahəsindən azdır!',i:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=900&q=80'}},
-
-{q:'Hansı ölkənin bayrağında ulduz yoxdur?',a:['Türkiyə','Braziliya','Yaponiya','ABŞ'],c:2,
-f:{t:'Yaponiya bayrağı — "Günəşin ölkəsi", sadə qırmızı dairə',x:'<strong>Yaponiya bayrağı</strong> cəmi ağ fon üzərindəki qırmızı dairədir — ulduz yoxdur. Bu dairə <strong>Günəşi</strong> simvolizə edir. Ən sadə, lakin ən tanınan bayraqlardan biridir.',i:'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=900&q=80'}},
-
-{q:'BMT-nin neçə rəsmi dili var?',a:['4','5','6','7'],c:2,
-f:{t:'BMT-nin 6 rəsmi dili: ərəb, çin, fransız, ingilis, rus, ispan',x:'BMT-nin <strong>6 rəsmi dili</strong> var: ərəb, çin (mandarin), fransız, ingilis, rus, ispan. Bu 6 dil dünyada ən geniş danışılan dillər sırasındadır. <strong>193 üzv ölkənin</strong> rəsmi BMT sənədləri bu 6 dildə hazırlanır.',i:'https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=900&q=80'}},
-
-{q:'Hansı ölkə "Günəşin batmadığı imperiya" kimi tanınırdı?',a:['Fransa','İspaniya','Böyük Britaniya','Portuqaliya'],c:2,
-f:{t:'Britaniya imperiyası — 33,7 milyon km², dünyanın 1/4-ü',x:'<strong>Britaniya imperiyası</strong> XIX əsrin sonunda ən böyük həcminə çatdı — 33,7 milyon km², dünya quru sahəsinin <strong>1/4-ü!</strong> Beləcə günəş imperiyada hər zaman bir yerdə şüalanırdı.',i:'https://images.unsplash.com/photo-1513026705753-bc3fffca8bf4?w=900&q=80'}},
-
-{q:'Sakit okean adı nə üçün bu şəkildə verilmişdir?',a:['Magellanın ona sakit deyə müraciət etməsinə görə','Ən az dalğalı olduğuna görə','Ən mülayim iqlimə görə','Balıqlarının ən sakit olmasına görə'],c:0,
-f:{t:'Magellan Sakit okeanı kəşf edəndə səmtə uğurlu düşdü',x:'<strong>Magellan</strong> 1520-ci ildə fırtınalı Kap Horn boğazından keçdikdən sonra bu okanda sakit hava tapdı — adı <strong>"Mar Pacífico"</strong> (Sakit dəniz) qoydu. Əslində Sakit okeanı güclü tufanları ilə məşhurdur!',i:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=900&q=80'}},
-
-{q:'Birinci Dünya Müharibəsi neçənci ildə başladı?',a:['1912','1913','1914','1915'],c:2,
-f:{t:'28 iyun 1914 — bir sui-qəsd dünyaya şər yaratdı',x:'Birinci Dünya Müharibəsi <strong>28 iyun 1914-cü ildə</strong> Arcidük Fransın öldürülməsi ilə başladı. Müharibəyə <strong>30 milyon əsgər</strong> iştirak etdi. Yeni silahlar — zəhərli qaz, tank — ilk dəfə kütləvi istifadə edildi.',i:'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=900&q=80'}},
-
-{q:'Monqol imperiyasını kim qurdu?',a:['Kublay xan','Timur','Çingiz xan','Batu xan'],c:2,
-f:{t:'Çingiz xan — ən böyük quru imperiyasının banisi',x:'<strong>Çingiz xan</strong> 1206-cı ildə Monqol imperiyasını qurdu. Nəvəsi Kublay xan dövrünə qədər imperiya <strong>24 milyon km²-ə</strong> çatdı — tarixin ən böyük quru imperiyası!',i:'https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=900&q=80'}},
-
-{q:'Dünyada ilk süni peyki hansı ölkə tərəfindən buraxıldı?',a:['ABŞ','Almaniya','Sovet İttifaqı','Fransa'],c:2,
-f:{t:'Sovet İttifaqı 1957-də Sputnik-1 ilə kosmik dövrü açdı',x:'<strong>Sovet İttifaqı</strong> 1957-ci ildə Sputnik-1-i buraxdı. ABŞ bu xəbəri eşidəndə <strong>milli şok</strong> yaşandı. Konqres fövqəladə yığıncaq keçirdi. Bu hadisə NASA-nın yaranmasına və kosmik yarışın başlamasına səbəb oldu.',i:'https://images.unsplash.com/photo-1516849677043-ef67c9557e16?w=900&q=80'}},
-
-{q:'Atatürk Türkiyə Cümhuriyyətini neçənci ildə elan etdi?',a:['1920','1921','1922','1923'],c:3,
-f:{t:'29 oktyabr 1923 — müasir Türkiyənin doğum günü',x:'<strong>Mustafa Kamal Atatürk</strong> <strong>29 oktyabr 1923-cü ildə</strong> Türkiyə Cümhuriyyətini elan etdi. Osmanlı imperiyasının 623 illik hakimiyyəti sona çatdı. Atatürk ilk prezident seçildi.',i:'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=900&q=80'}},
-
-{q:'Yaponiya İkinci Dünya Müharibəsindən neçənci ildə çıxdı?',a:['1944','1945','1946','1947'],c:1,
-f:{t:'2 sentyabr 1945 — Misuri gəmisindəki təslimçilik',x:'Yaponiya <strong>2 sentyabr 1945-ci ildə</strong> rəsmi olaraq təslim oldu. Atom bombaları Hirosimaya (6 avqust) və Naqasakiyə (9 avqust) atıldıqdan sonra. Təslimçilik sənədi ABŞ USS Missouri gəmisindəki imzalandı.',i:'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=900&q=80'}},
-
-{q:'Böyük İpək Yolu hansı şəhərləri birləşdirirdi?',a:['Çin və Roma','Hindistan və Misir','Ərəbistan və Avropa','Rusiya və Çin'],c:0,
-f:{t:'İpək Yolu 7.000 km — mədəniyyətlər körpüsü',x:'Böyük İpək Yolu <strong>Çini Roma ilə</strong> birləşdirirdi. Uzunluğu <strong>7.000 km</strong>-dən çox. Yalnız ipək deyil — xəstəliklər, dinlər, texnologiyalar da bu yolla yayıldı. <strong>Bubonlu vəba</strong> İpək Yolu ilə Avropaya gəldi.',i:'https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=900&q=80'}},
-
-{q:'Hansı dövlət dünyanın ilk demokratiyasını yaratdı?',a:['Roma','Yunanıstan-Afina','Misir','Babilon'],c:1,
-f:{t:'e.ə. 508 — Afina, Kleisfen, ilk demokratiya',x:'<strong>Afina</strong> e.ə. 508-ci ildə ilk demokratiyanı yaratdı. <strong>Kleisfen</strong> islahatları ilə. Maraqlı: o dövrdə qadınlar, kölələr, xariclilər seçkidə iştirak edə bilmirdi. Yalnız azad Afina kişiləri — bütün əhalinin ~15%-i.',i:'https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=900&q=80'}},
-
-{q:'Böyük İsgəndərin müəllimi kim olub?',a:['Sokrat','Platon','Aristotel','Eflatun'],c:2,
-f:{t:'Aristotel İsgəndəri 13 yaşından öyrədi',x:'<strong>Aristotel</strong> Makedoniyalı İsgəndərin müəllimi oldu — İsgəndər <strong>13 yaşında</strong> idi. Aristotel ona fəlsəfə, elmlər, incəsənət öyrətdi. İsgəndər ömrü boyu müəllimini ehtiramla xatırladı.',i:'https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=900&q=80'}},
-
-{q:'İkinci Dünya Müharibəsi Avropada hansı tarixdə sona çatdı?',a:['8 may 1945','2 sentyabr 1945','15 avqust 1945','6 iyun 1944'],c:0,
-f:{t:'8 may 1945 — V-E günü, Avropada qələbə',x:'Avropada II Dünya Müharibəsi <strong>8 may 1945-ci ildə</strong> — V-E (Victory in Europe) günü — sona çatdı. Almaniyanın qeyd-şərtsiz təslim olması bu günə düşdü. <strong>6 iyun 1944</strong> isə Normandiya desantı — Berlinin yolunu açdı.',i:'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=900&q=80'}},
-
-{q:'Birinci Qarabağ müharibəsi neçənci illərdə baş verdi?',a:['1988-1992','1988-1994','1990-1994','1991-1994'],c:1,
-f:{t:'1988-1994 — Birinci Qarabağ müharibəsi',x:'Birinci Qarabağ müharibəsi <strong>1988-1994-cü</strong> illərdə baş verdi. <strong>12 may 1994-cü ildə</strong> Bişkek atəşkəs protokolu imzalandı. 30.000-dən çox azərbaycanlı həyatını itirdi, 1 milyondan çox qaçqın yarandı.',i:'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=900&q=80'}},
-
-// ── RİYAZİYYAT + ƏLAVƏ ──
-{q:'İkili say sistemində 10 rəqəmi onluq sistemdə nəyə bərabərdir?',a:['2','4','8','10'],c:0,
-f:{t:'İkilik sistem — bütün kompüterlərin dili',x:'İkilik sistemdə <strong>10 = onluqda 2.</strong> Bütün kompüterlər yalnız 0 və 1 ilə işləyir — bu ikilik sistemdir. <strong>1 bayt = 8 bit</strong> — 2⁸ = 256 müxtəlif dəyər saxlaya bilər.',i:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'}},
-
-{q:'Sahəsi 36 olan kvadratın tərəfi neçədir?',a:['4','5','6','7'],c:2,
-f:{t:'Kvadrat kökü — Pifaqorun sevdiyi',x:'36-nın kvadrat kökü = <strong>6</strong>. Pifaqor 6-nı "mükəmməl ədəd" sayırdı: 1+2+3 = 6, 1×2×3 = 6. Riyaziyyatda "mükəmməl ədəd" öz bölənlərinin cəminə bərabər ədəddir.',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'Hansı ədəd 6-nın faktoriyelidir?',a:['120','720','5040','40320'],c:1,
-f:{t:'6! = 720 — 6×5×4×3×2×1',x:'6 faktoriyel = <strong>6×5×4×3×2×1 = 720.</strong> Maraqlı tətbiq: 6 nəfər neçə cür əyləşə bilər? Məhz <strong>720 cür!</strong> Faktoriyel kombinatorikanın əsasıdır.',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'Trigonometrikada sin²θ + cos²θ nəyə bərabərdir?',a:['0','1','2','θ'],c:1,
-f:{t:'sin² + cos² = 1 — Pifaqor trigonometrik kimliyidir',x:'sin²θ + cos²θ = <strong>1</strong> — bu Pifaqorun trigonometrik kimliyidir. Bütün fizika, mühəndislik, kompüter qrafika bu formula üzərindədir. Düz bucaq üçbucağındakı a²+b²=c² ilə birbaşa əlaqəlidir.',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'Kompleks ədəd i nəyə bərabərdir?',a:['√2','√(-1)','1/2','π/2'],c:1,
-f:{t:'i = √(-1) — mümkünsüz kimi görünürdü, amma elektronikaya lazım oldu',x:'<strong>i = √(-1)</strong>. XVIII əsrdə "xəyali ədəd" adlanırdı — mövcud olmadığı düşünülürdü. Lakin bu gün elektrik mühəndisliyi, kvant fizikası, siqnal emalı <strong>kompleks ədədlər olmadan işləyə bilməz!</strong>',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'Koordinat həndəsəsinin banisi kim sayılır?',a:['Eyler','Leybnits','Dekart','Qaus'],c:2,
-f:{t:'Dekart x-y oxunu yatan mövqedə düşünərkən kəşf etdi',x:'<strong>René Dekart</strong> koordinat sistemini kəşf etdi. Deyilir ki, yataqda tavanı izlərkən milçəyin mövqeyini iki rəqəmlə — x, y — ifadə etməyin mümkün olduğunu anladı. Bu kəşf həndəsəni cəbrlə birləşdirdi.',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'Hansı riyaziyyatçı "Eyler identikliyini" tapdı?',a:['Qaus','Nyuton','Eyler','Dekart'],c:2,
-f:{t:'Eyler — e^(iπ)+1=0, riyaziyyatın ən gözəl düsturu',x:'<strong>Leonhard Eyler</strong> e^(iπ)+1=0 identikliyini kəşf etdi. Bu düsturda riyaziyyatın 5 ən vacib sabiti var: <strong>e, i, π, 1, 0.</strong> Hər dövrdə riyaziyyatçılar onu "ən gözəl düstur" seçir.',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-{q:'Hansı riyaziyyat sahəsi ehtimalları öyrənir?',a:['Cəbr','Həndəsə','Statistika','Ehtimal nəzəriyyəsi'],c:3,
-f:{t:'Ehtimal nəzəriyyəsi — kumar oyunlarından doğdu',x:'<strong>Ehtimal nəzəriyyəsi</strong> XVII əsrdə Paskal və Ferma arasındakı məktublaşmada yarandı — ikisi <strong>kumar oyunlarındakı şansı</strong> hesablamaq üçün! Bu gün isə sığorta, maliyyə, süni intellekt əsas sahəsidir.',i:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=900&q=80'}},
-
-// ── MÜSTƏQİL SUALLAR ──
-{q:'Dünyada neçə dil var (təxmini)?',a:['1000','3000','7000','10000'],c:2,
-f:{t:'7.000 dil — yarısı bu əsrin sonunda yox olacaq',x:'Dünyada <strong>7.000-dən çox dil</strong> var. Dünyanın yarısından çoxu yalnız <strong>23 dillə</strong> danışır. Üzücü fakt: bu dillərin yarısından çoxu bu əsrin sonunda yox olacaq — hər 2 həftədə bir dil ölür.',i:'https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=900&q=80'}},
-
-{q:'Hansı dil dünyada ən çox ölkədə rəsmi dildir?',a:['İspan','Fransız','İngilis','Ərəb'],c:2,
-f:{t:'İngilis dili 67 ölkədə rəsmi statusa malikdir',x:'<strong>İngilis dili</strong> 67 ölkədə rəsmi statusa malikdir. Britaniya müstəmləkəçiliyinin mirası. Maraqlı: dünyada ingiliscə danışanların yarısından çoxu <strong>ikinci dil kimi öyrənmişdir</strong> — ana dil deyil!',i:'https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=900&q=80'}},
-
-{q:'Hansı dil dünyada ən çox danışılır (ana dil kimi)?',a:['İngilis','İspan','Çin (Mandarin)','Hind'],c:2,
-f:{t:'Mandarin 920 milyon ana dil danışanı ilə birincidur',x:'<strong>Çin (Mandarin)</strong> 920 milyondan çox ana dil danışanı ilə birincidir. İngilis dili ana dil baxımından 3-cüdür. Lakin ümumi danışanlar sayına görə ingilis <strong>1,5 milyardla</strong> liderdir.',i:'https://images.unsplash.com/photo-1490457843367-34b21a6e6897?w=900&q=80'}},
-
-{q:'Dünya Sağlamlıq Təşkilatının (WHO) qərargahı haradır?',a:['Nyu York','London','Cenevrə','Paris'],c:2,
-f:{t:'WHO Cenevrədədir — 194 üzv ölkə',x:'<strong>WHO</strong>-nun qərargahı İsveçrənin <strong>Cenevrə</strong> şəhərindədir. 194 üzv ölkəsi var. COVID-19 pandemiyasını <strong>11 mart 2020-ci ildə</strong> rəsmi pandemi elan etdi.',i:'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=900&q=80'}},
-
-{q:'Ağ Ev hansı şəhərdədir?',a:['Nyu York','Vaşinqton DC','Boston','Çikaqo'],c:1,
-f:{t:'Ağ Ev 1792-dən bəri tikilir — ilk prezident orada yaşamadı',x:'<strong>Ağ Ev Vaşinqton DC-dədir.</strong> 1792-ci ildə inşa başlandı. ABŞ-ın ilk prezidenti Corc Vaşinqton yeganə prezidentdir ki, orada <strong>heç vaxt yaşamadı</strong> — onun dövründə bitmişdi.',i:'https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=900&q=80'}},
-
-{q:'İnsanlığın ən qədim yazı sistemi hansıdır?',a:['Misir heroqlifi','Çin yazısı','Şumer kuneyazısı','Hind yazısı'],c:2,
-f:{t:'Şumer kuneyazısı 5.500 il əvvəl gil lövhələrə yazıldı',x:'<strong>Şumer kuneyazısı</strong> e.ə. 3.500-cü ilə aid — dünyanın ən qədim yazı sistemi! Gil lövhəyə sivri alətlə yazılırdı. İlk yazılar əsasən <strong>mühasibat uçotu</strong> idi — nə qədər buğda, qoyun, pivə var.',i:'https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=900&q=80'}},
-
-{q:'Nobel mükafatını ilk alan şəxs kimdir? (ədəbiyyat)',a:['Rudyard Kipling','Sully Pryüdom','Anatol Frans','Leonid Andreyev'],c:1,
-f:{t:'1901-ci ildə ilk ədəbiyyat Nobeli Sully Prudhom-a verildi',x:'İlk Nobel Ədəbiyyat mükafatı <strong>1901-ci ildə Sully Prudhom-a</strong> verildi. Lakin bu seçim mübahisəli idi — çoxları düşünürdü ki, mükafat <strong>Lev Tolstoya</strong> verilməlidir. Tolstoy heç vaxt Nobel almadı.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Hansı klassik musiqiçi kar olmasına baxmayaraq bəstəkarlığa davam etdi?',a:['Moçart','Şopen','Bethoven','Bax'],c:2,
-f:{t:'Beethoven — 9-cu simfoniyasını eshitmədi, amma yazdı',x:'<strong>Ludwig van Beethoven</strong> 9-cu simfoniyasını tam kar olduğu 1824-ci ildə bəstədi. Premyerada tamaşaçıların alqışını eşitmədi. Kiminsə onu <strong>çevirməsi lazım gəldi</strong> — görsün ki sevinclər var.',i:'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=900&q=80'}},
-
-
-
-{q:'Qədim Romada "Senatonun qətli" (Ides of March) hansı tarixdə baş verdi?',a:['10 mart','15 mart','20 mart','25 mart'],c:1,
-f:{t:'15 mart e.ə. 44 — Sezar 23 bıçaq yarası aldı',x:'<strong>15 mart e.ə. 44-cü ildə</strong> Yuli Sezar Romada Senatda öldürüldü — <strong>23 bıçaq yarası!</strong> "Et tu, Brute?" sözü Şekspirin ona verdiyi son sözlərdir. Bu hadisə Roma Respublikasının sonunu simvolizə edir.',i:'https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=900&q=80'}},
-
-{q:'Böyük Fransız İnqilabı nə ilə başladı?',a:['Napolonun hakimiyyətə gəlməsi','Bastiliya həbsxanasının alınması','Kraliçanın edam edilməsi','Konstitusiyanın qəbulu'],c:1,
-f:{t:'14 iyul 1789 — Bastiliya düşdü, tarix dəyişdi',x:'<strong>14 iyul 1789-cu ildə</strong> Paris xalqı Bastiliya həbsxanasına hücum etdi. Əslində içəridə cəmi <strong>7 məhbus</strong> var idi — amma bu an rejimin çöküşünü simvolizə etdi. Fransa bu günü milli bayram kimi qeyd edir.',i:'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=900&q=80'}},
-
-{q:'Osmanlı imperiyasını kim qurdu?',a:['Orxan','Osman','Süleyman','Yıldırım Bayezid'],c:1,
-f:{t:'Osman Bəy 1299 — 623 illik imperiya başladı',x:'<strong>Osman Bəy</strong> 1299-cu ildə Osmanlı imperiyasını qurdu. Adını da ondan aldı. 623 il yaşayan bu imperiya üç qitəyə yayıldı. Osman Bəyin kiçik bir bəyliyi nəhəng bir imperiyanın tohumunu əkdi.',i:'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=900&q=80'}},
-
-{q:'Qədim Misirin ən məşhur hökmdarı kim sayılır?',a:['Xefren','Tutanxamon','Ramzes II','Kleopatra'],c:2,
-f:{t:'Ramzes II 66 il hökmranlıq etdi — 200 döyüşdə qalib',x:'<strong>Ramzes II</strong> (e.ə. 1279-1213) 66 il hökmranlıq etdi. <strong>200-dən çox döyüşdə</strong> iştirak etdi. Abu Simbelə öz nəhəng heykəllərini tikdirdi. Dünya tarixinin ən uzun müddət hökmranlıq edən liderlərdən biridir.',i:'https://images.unsplash.com/photo-1609619385002-f40f1df9b7eb?w=900&q=80'}},
-
-{q:'Kommunist Çin Xalq Respublikası neçənci ildə elan edildi?',a:['1945','1947','1949','1952'],c:2,
-f:{t:'1 oktyabr 1949 — Mao Zedun Tiananmen meydanında elan etdi',x:'<strong>Çin Xalq Respublikası 1 oktyabr 1949-cu ildə</strong> Mao Zedun tərəfindən elan edildi. Bu gün Çinin milli bayramıdır. İç müharibədə Çan Kaşi öndərliyindəki millətçilər məğlub olub Tayvana çəkildi.',i:'https://images.unsplash.com/photo-1490457843367-34b21a6e6897?w=900&q=80'}},
-
-{q:'Hindistanın müstəqilliyi neçənci ildə elan edildi?',a:['1945','1946','1947','1948'],c:2,
-f:{t:'15 avqust 1947 — Nehru: "Tarixlə görüş"',x:'Hindistan <strong>15 avqust 1947-ci ildə</strong> Britaniyadan müstəqillik qazandı. Nehrunun gecə yarısı söylədiyi "Tarixlə görüş" nitqi tarixə keçdi. Eyni gündə <strong>Pakistan</strong> da yarandı — qanlı bölünmə 1 milyon insanın həyatını aldı.',i:'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=900&q=80'}},
-
-{q:'Amerikanın müstəqillik bəyannaməsi neçənci ildə qəbul edildi?',a:['1774','1775','1776','1777'],c:2,
-f:{t:'4 iyul 1776 — ABŞ-ın doğum günü',x:'<strong>4 iyul 1776-cı ildə</strong> Amerika Müstəqillik Bəyannaməsi qəbul edildi. Thomas Cefferson əsas müəllifdir. Bu gün ABŞ-ın milli bayramıdır. "Bütün insanlar bərabər yaradılmışdır" cümləsi tarixə düşdü.',i:'https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=900&q=80'}},
-
-{q:'Süveyş kanalı neçənci ildə açıldı?',a:['1859','1865','1869','1875'],c:2,
-f:{t:'17 noyabr 1869 — Süveyş açıldı, dünya kiçildi',x:'<strong>Süveyş kanalı 17 noyabr 1869-cu ildə</strong> açıldı. İnşaatı <strong>10 il</strong> sürdü, <strong>1,5 milyon</strong> işçi çalışdı. Avropadan Asiyaya dəniz yolunu <strong>7.000 km</strong> qısaltdı.',i:'https://images.unsplash.com/photo-1542361345-89e58247f2d5?w=900&q=80'}},
-
-{q:'İlk dünya müharibəsinin baş verməsinə birbaşa səbəb nə oldu?',a:['Almaniya-Fransa münaqişəsi','Avstriya Arcdükünün öldürülməsi','Rusiya-Yaponiya müharibəsi','Balkan böhranı'],c:1,
-f:{t:'28 iyun 1914 — Sarayevo suikastı dünyaya od vurdu',x:'<strong>28 iyun 1914-cü ildə</strong> Avstriya-Macarıstan Arcdükü Frans Ferdinand Sarayevoda öldürüldü. Qavrilo Printsip adlı serb millətçisi tərəfindən. Bu hadisə domino kimi ittifaqları hərəkətə gətirdi — <strong>6 həftədə</strong> böyük müharibə başladı.',i:'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=900&q=80'}},
-
-// ── ƏLAVƏ 100 SUAL ──
-{q:'Hansı ölkə "Şərqin İsveçrəsi" adlanır?',a:['Tailand','Nepal','Livan','Buttan'],c:2,
-f:{t:'Livan — Orta Şərqin ən çoxmədəniyyətli ölkəsi',x:'<strong>Livan</strong> "Şərqin İsveçrəsi" adlanır — möhtəşəm dağlar, xristian-müsəlman müxtəlifliyi və Beyrut şəhərinin kosmopolit həyatı səbəbindən. Paytaxt Beyrut bir vaxtlar "Orta Şərqin Parisi" idi.',i:'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=900&q=80'}},
-
-{q:'Dünyada ən çox danışılan dil hansıdır (ümumi danışanlar)?',a:['Çin dili','İspan dili','İngilis dili','Hind dili'],c:2,
-f:{t:'İngilis dili 1,5 milyard danışan ilə liderdir',x:'Ümumi danışanlar sayına görə <strong>İngilis dili</strong> 1,5 milyard nəfərlə birincidır. Bunların çoxu onu ikinci dil kimi öyrənib. Bu gün dünyanın hər yerindən insanlar ingilis dili vasitəsilə ünsiyyət qurur.',i:'https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=900&q=80'}},
-
-{q:'Hansı vitamin çatışmazlığı "skorbut" xəstəliyinə səbəb olur?',a:['A vitamini','B12 vitamini','C vitamini','D vitamini'],c:2,
-f:{t:'Skorbut — dənizçilərin qədim xəstəliyi',x:'<strong>C vitamini</strong> çatışmazlığı skorbuta səbəb olur. Keçmişdə dənizçilər uzun səfərlərdə təzə meyvə yeyə bilmədikləri üçün bu xəstəlikdən ölürdülər. British dəniz donanması problemi <strong>limon verməklə</strong> həll etdi.',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Ən böyük dinozavr növü hansı idi?',a:['T-Rex','Brontosavr','Arxentinozavr','Triseratops'],c:2,
-f:{t:'Arxentinozavr 40 metr, 80 ton — tarihin ən böyük canlısı',x:'<strong>Arxentinozavr</strong> 40 m uzunluğu, 80 ton kütləsi ilə tarihin ən böyük quru heyvanıdır. Argentinada tapılıb. T-Rex isə ən məşhur dinozavr olsa da, Arxentinozavr yanında <strong>balaca görünür!</strong>',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Hansı ölkə dünyada ən çox ada ehtiva edir?',a:['İndoneziya','Filippin','Yaponiya','Norveç'],c:0,
-f:{t:'İndoneziya 17.508 ada — dünyanın ən böyük ada ölkəsi',x:'<strong>İndoneziya</strong> 17.508 adası ilə dünyanın ən çox adalı ölkəsidir. Bunların yalnız 6.000-i məskundur. 700-dən çox dil danışılır. Dünyanın 4-cü ən çox əhalili ölkəsidir.',i:'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=900&q=80'}},
-
-{q:'Çinin böyük səddi hansı məqsədlə inşa edildi?',a:['Ticarəti inkişaf etdirmək üçün','Şimali köçərilərdən qorunmaq üçün','Su kanalı kimi','Yollar üçün'],c:1,
-f:{t:'Çin Səddi 2.000 ildən çox inşa edilib',x:'<strong>Çin Səddi</strong> şimaldan gələn köçəri tayfalardan — xüsusilə Hunlardan — qorunmaq üçün inşa edildi. İlk hissələr e.ə. VII əsrdə tikildi. Ən çox bilinen hissəsi <strong>Ming sülaləsi</strong> dövrünə aiddir.',i:'https://images.unsplash.com/photo-1490457843367-34b21a6e6897?w=900&q=80'}},
-
-{q:'Hansı ixtiraçı "Tesla" elektrik şirkətinin adını daşıyır?',a:['Tomas Edison','Nikola Tesla','Albert Eynşteyn','Qulyelmo Markoni'],c:1,
-f:{t:'Nikola Tesla — alternativ cərəyanın dahisi',x:'<strong>Nikola Tesla</strong> alternativ cərəyan (AC) sistemini ixtira etdi. Edison-la böyük rəqabət yaşadı — "Cərəyan müharibəsi"! Tesla patentsiz öldü, kasıb halda. Müasir elektrik şəbəkəsi onun icadına əsaslanır.',i:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'}},
-
-{q:'Günəş tutulması nə zaman baş verir?',a:['Ay Günəş ilə Yer arasına girəndə','Yer Ay ilə Günəş arasına girəndə','Günəş Ay arxasında gizlənəndə','Bulud Günəşi örtəndə'],c:0,
-f:{t:'Günəş tutulması — Ay, Yer və Günəş eyni xəttdə',x:'<strong>Günəş tutulması</strong> Ay Günəş ilə Yer arasına girəndə baş verir. Tam tutulmada Ay Günəşi tam örtür. Maraqlı təsadüf: Ay Günəşdən <strong>400 dəfə kiçik</strong>, amma Yerə <strong>400 dəfə yaxın</strong> — ölçüləri eyni görünür!',i:'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=900&q=80'}},
-
-{q:'Hansı bitki dünyada ən sürətli böyüyür?',a:['Bambuk','Eucalyptus','Sequoia','Palma'],c:0,
-f:{t:'Bambuk gündə 91 sm böyüyə bilir',x:'<strong>Bambuk</strong> gündə <strong>91 sm</strong> böyüyə bilir — ən sürətli böyüyən bitki! Texniki olaraq ot növüdür, ağac deyil. Çox möhkəmdir — bəzi növlər poladdan <strong>daha güclüdür.</strong>',i:'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=900&q=80'}},
-
-{q:'İnsan gözü neçə rəng ayırd edə bilir?',a:['1 milyon','10 milyon','100 milyon','1 milyard'],c:1,
-f:{t:'İnsan gözü 10 milyon rəng ayırd edir',x:'İnsan gözü <strong>10 milyona qədər</strong> fərqli rəng tonunu ayırd edə bilir. Lakin beyin bunları hamısını eyni vaxtda işləyə bilmir. Maraqlı: qadınlar orta hesabla kişilərdən <strong>daha çox rəng görür!</strong>',i:'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=900&q=80'}},
-
-{q:'Dünyada ən çox işlənən antibiotik hansıdır?',a:['Penisilin','Amoksisilin','Tetrasiklin','Streptomisin'],c:1,
-f:{t:'Amoksisilin — dünyada ən çox yazılan antibiotik',x:'<strong>Amoksisilin</strong> dünyada ən çox yazılan antibiotikdir. Penisilinin inkişaf etdirilmiş formasıdır. Uşaqlarda qulaq infeksiyasından başlayaraq çox geniş istifadə edilir. <strong>1972-ci ildə</strong> sintez edildi.',i:'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=900&q=80'}},
-
-{q:'Hansı ölkə "Tulipanların vətəni" sayılır?',a:['Hollandiya','Türkiyə','İran','Belçika'],c:1,
-f:{t:'Lale Türkiyədən Avropaya getdi — Hollandiya deyil!',x:'Laləni Avropaya <strong>Türkiyədən</strong> gətirdilər — XVI əsrdə Osmanlı diplomatları vasitəsilə. Hollandiya isə onu ticariləşdirdi. "Lale" sözü türkcə <strong>sarıq</strong> mənasına gəlir — çiçəyin formasına görə.',i:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=900&q=80'}},
-
-{q:'Hansı element ən çox elektrik keçiriciliyinə malikdir?',a:['Mis','Qızıl','Gümüş','Alüminium'],c:2,
-f:{t:'Gümüş — ən yaxşı elektrik keçiricisi, amma bahalıdır',x:'<strong>Gümüş</strong> ən yüksək elektrik keçiriciliyinə malik metaldir. Lakin bahalı olduğu üçün elektrik naqillərində əsasən <strong>mis</strong> istifadə edilir. Gümüş yalnız xüsusi texnologiyalarda işlənir.',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Yer kürəsinin daxili nüvəsi əsasən nədən ibarətdir?',a:['Daş və qranit','Dəmir və nikel','Maqma','Silisium'],c:1,
-f:{t:'Yerin nüvəsi 5.700°C — Günəşin səthi qədər isti',x:'Yerin daxili nüvəsi əsasən <strong>dəmir və nikeldən</strong> ibarətdir. Temperaturu <strong>5.700°C-dir</strong> — Günəşin səthi ilə eyni! Möhkəm qatdır — yüksək təzyiq sayəsində əriməyib.',i:'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=900&q=80'}},
-
-{q:'Hansı heyvanın yaddaşı ən güclüdür?',a:['İt','Şimpanze','Fil','Delfin'],c:2,
-f:{t:'Fil — həyatı boyunca hər şeyi xatırlayır',x:'<strong>Fil</strong> olduqca güclü yaddaşa malikdir — onillər öncəki hadisələri, insanları, yolları xatırlayır. "Fil heç unutmaz" ifadəsi elmi əsasa malikdir. Ölmüş yoldaşlarının sümüklərini tanıyırlar!',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Hansı ölkə "Günəşin çıxdığı yer" mənasını daşıyır?',a:['Çin','Koreya','Yaponiya','Vyetnam'],c:2,
-f:{t:'Yaponiya — Nippon — "Günəşin mənşəyi"',x:'<strong>Yaponiya</strong>nın Yaponca adı "Nippon" — <strong>"Günəşin mənşəyi"</strong> deməkdir. Çin imperatorları Yaponiyanı Çinin şərqindəki — günəş çıxan tərəfdəki — ölkə kimi adlandırırdı.',i:'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=900&q=80'}},
-
-{q:'Oksfordun Bodleian kitabxanası neçənci ildə açılmışdır?',a:['1450','1520','1602','1650'],c:2,
-f:{t:'Bodleian 1602 — Oksfordun qədim kitabxanası',x:'<strong>Bodleian kitabxanası</strong> 1602-ci ildə açıldı. Dünyanın ən qədim kitabxanalarından biridir. <strong>12 milyondan çox</strong> kitab saxlayır. Hər il İngiltərədə nəşr olunan hər kitabın bir nüsxəsi buraya göndərilməlidir.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Ən uzun ömürlü heyvan hansıdır?',a:['Tısbağa','Balina','Timsah','Quş'],c:0,
-f:{t:'Aldabra tısbağası 255+ il yaşayır',x:'<strong>Tısbağalar</strong> ən uzun ömürlü heyvanlardandır. Aldabra tısbağası <strong>255 ildən çox</strong> yaşaya bilir. Amma ən uzun ömürlü heyvan texniki olaraq bəzi dəniz istiridyəlaridir — <strong>500 ilə qədər!</strong>',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Hansı planet "Qırmızı Planet" adlanır?',a:['Venera','Yupiter','Mars','Saturn'],c:2,
-f:{t:'Mars qırmızıdır — səthi dəmir oksidlə örtülüdür',x:'<strong>Mars</strong> "Qırmızı Planet" adlanır. Səthi <strong>dəmir oksid</strong> — pas — ilə örtülüdür. NASA-nın Mars missiyaları orada qədim çay yataqları kəşf etdi. Bəlkə bir gün insanlar orada yaşayacaq!',i:'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=900&q=80'}},
-
-{q:'Hansı ixtira Ceyms Uattın adı ilə bağlıdır?',a:['Telefon','Buxar maşını','Radio','Elektrik lampası'],c:1,
-f:{t:'Uatt buxar maşınını 1769-da patentləşdirdi',x:'<strong>Ceyms Uatt</strong> buxar maşınını 1769-da patentləşdirdi. Sənaye inqilabının əsas hərəkətverici qüvvəsi oldu. Güc ölçü vahidi olan <strong>"vatt"</strong> onun şərəfinə adlandırılıb.',i:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'}},
-
-{q:'Ay Yerə neçə km məsafədədir?',a:['184.000 km','284.000 km','384.000 km','484.000 km'],c:2,
-f:{t:'Ay 384.000 km — işıq 1,3 saniyədə çatır',x:'Ay orta hesabla Yerdən <strong>384.000 km</strong> uzaqdadır. İşıq bu məsafəni <strong>1,3 saniyəyə</strong> keçir. Hər il Ay Yerdən <strong>3,8 sm</strong> uzaqlaşır — milyard ildə çox fərq yaradacaq!',i:'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=900&q=80'}},
-
-{q:'Hansı Azərbaycan şairi "Anam" şeirini yazmışdır?',a:['Səməd Vurğun','Rəsul Rza','Bəxtiyar Vahabzadə','Mirvarid Dilbazi'],c:0,
-f:{t:'Səməd Vurğun — Azərbaycan şeirinin korifeyidir',x:'<strong>Səməd Vurğun</strong> (1906-1956) Azərbaycan sovet şeirinin ən böyük nümayəndəsidir. "Anam" şeiri onun ən məşhur əsərlərindən biridir. "Vaqif" pyesi Azərbaycan dramaturgiyasının incisidir.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Hansı ölkədə "Fiyord" adlanan ensiz dəniz körfəzləri çoxdur?',a:['İslandiya','Danimarka','Norveç','İsveç'],c:2,
-f:{t:'Norveç fiyordları — buzlaqların 10.000 illik əsəri',x:'<strong>Norveç</strong> fiyordları ilə məşhurdur. Fiyordlar buzlaqların dağ vadilərini aşındırması və sonra dəniz suyunun dolması ilə yaranır. Ən uzun fiyord <strong>Sognefjord</strong> — 204 km uzunluğundadır.',i:'https://images.unsplash.com/photo-1559825481-12a05cc00344?w=900&q=80'}},
-
-{q:'Dünyanın ən böyük sümüksüz heyvanı hansıdır?',a:['Nəhəng kalmar','Ahtapot','Dəniz ulduzu','Meduza'],c:0,
-f:{t:'Nəhəng kalmar 13 metr — dənizin mistik canavarı',x:'<strong>Nəhəng kalmar (Architeuthis)</strong> 13 metrdən uzun ola bilir. Ölü nümunələri tapılmış, lakin canlı halda dərindən çəkilən görüntülər çox azdır. Sperma balinasının mədəsindən tapılan kalmar qalıqları <strong>18 metrlik</strong> fərdlərə işarə edir.',i:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=900&q=80'}},
-
-{q:'Hansı qitədə vulkan fəaliyyəti ən çoxdur?',a:['Afrika','Asiya','Cənubi Amerika','Antarktida'],c:1,
-f:{t:'Asiyada "Atəş Həlqəsi" ən aktiv vulkan zonasıdır',x:'Vulkan fəaliyyəti ən çox <strong>Sakit okean ətrafında — "Atəş Həlqəsi"ndə</strong> baş verir. Bu zona Asiyanın şərq sahillərini, Okeaniyanı, Amerikanın qərb sahillərini əhatə edir. Dünyanın <strong>75%</strong> vulkanı buradadır.',i:'https://images.unsplash.com/photo-1529400971008-f566de0e6dfc?w=900&q=80'}},
-
-{q:'Hansı element radioaktivdir və müalicədə istifadə edilir?',a:['Radium','Yod-131','Texnesiум-99m','Hamısı'],c:3,
-f:{t:'Radioaktiv izotoplar xərçəngi müalicə edir',x:'<strong>Bir çox radioaktiv izotop</strong> müalicədə işlənir. Texnesium-99m diaqnostikada, Yod-131 qalxanabənzər vəz müalicəsində istifadə edilir. Radium isə tarixi baxımdan xərçəng müalicəsinin ilk nümunəsidir.',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Hansı ölkənin bayrağı üçbucaq formasındadır?',a:['Nepal','Buttan','Maldiv','Tonga'],c:0,
-f:{t:'Nepal — dünyanın yeganə qeyri-düzbucaqlı bayrağı',x:'<strong>Nepal</strong> dünyanın yeganə ölkəsidir ki, bayrağı düzbucaqlı deyil. İki üçbucağın birləşməsindən ibarətdir. Bu forma <strong>Himalay dağlarını</strong> simvolizə edir. 1962-ci ildən rəsmi olaraq bu formadadır.',i:'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=900&q=80'}},
-
-{q:'Yer atmosferinin neçə qatı var?',a:['3','4','5','6'],c:2,
-f:{t:'5 atmosfer qatı — troposferdən ekzosferə',x:'Yer atmosferinin <strong>5 əsas qatı</strong> var: troposfer (biz burada yaşayırıq), stratofer (ozon qatı), mezofer, termofer, ekzofer. Beynəlxalq Kosmik Stansiya <strong>termosferdə</strong> uçur.',i:'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=900&q=80'}},
-
-{q:'Hansı Azərbaycan yazıçısı "Müfəttiş" əsərini yazmışdır?',a:['Cəlil Məmmədquluzadə','Mirzə Fətəli Axundov','Hüseyn Cavid','Əbdürrəhim bəy Haqverdiyev'],c:1,
-f:{t:'Mirzə Fətəli Axundov — Azərbaycan dramaturgiyasının atası',x:'<strong>Mirzə Fətəli Axundov</strong> (1812-1878) Azərbaycan dramaturgiyasının atasıdır. Altı komediya yazdı — Şərq ədəbiyyatında ilk pyeslər! "Müfəttiş" onun məşhur komediyalarından biridir.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Neft neçənci dövrdə yaranmışdır?',a:['10 milyon il əvvəl','50 milyon il əvvəl','300-400 milyon il əvvəl','1 milyard il əvvəl'],c:2,
-f:{t:'Neft 300-400 milyon il əvvəlki canlıların qalıqlarıdır',x:'<strong>Neft</strong> 300-400 milyon il əvvəl yaşamış dəniz canlılarının üzvi maddələrinin yüksək təzyiq və istilik altında çevrilməsi ilə əmələ gəlmişdir. Buna görə <strong>"fosil yanacağı"</strong> adlanır.',i:'https://images.unsplash.com/photo-1511884642898-4c92249e20b6?w=900&q=80'}},
-
-{q:'Dünyada ən çox istehsal edilən içki hansıdır?',a:['Su','Çay','Pivə','Kola'],c:1,
-f:{t:'Çay — gündə 3 milyard fincan içilir',x:'<strong>Çay</strong> sudan sonra dünyada ən çox içilən içkidir. Gündə <strong>3 milyard fincan!</strong> e.ə. 2737-ci ildə Çin imperatoru Şen Nong çayı kəşf etdi — əfsanəyə görə yarpaq qazana düşdü.',i:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=900&q=80'}},
-
-{q:'Hansı planet öz oxu ətrafında ən sürətli fırlanır?',a:['Yer','Saturn','Yupiter','Mars'],c:2,
-f:{t:'Yupiter 10 saatda bir dövrə vurur',x:'<strong>Yupiter</strong> öz oxu ətrafında cəmi <strong>10 saata</strong> bir dönüş edir — günü 10 saatdır! Bu sürətli fırlanma Yupiterin ekvatorunda <strong>şişkinliyə</strong> səbəb olub — planet yastılanmışdır.',i:'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=900&q=80'}},
-
-{q:'Yer kürəsində neçə okean var?',a:['3','4','5','6'],c:2,
-f:{t:'5 okean — 2000-ci ildə Cənub okeanı əlavə edildi',x:'Rəsmi olaraq <strong>5 okean</strong> var: Sakit, Atlantik, Hind, Arktik (Şimal Buz) və <strong>Cənub okeanı</strong>. Cənub okeanı 2000-ci ildə rəsmi olaraq tanındı. Əvvəllər 4 okean sayılırdı.',i:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=900&q=80'}},
-
-{q:'Hansı Azərbaycan şəhəri "Qızlar şəhəri" adı ilə tanınır?',a:['Gəncə','Lənkəran','Şamaxı','Naxçıvan'],c:2,
-f:{t:'Şamaxı — qədim ipək yolunun mərkəzi',x:'<strong>Şamaxı</strong> tarixən Azərbaycanın ən mühüm şəhərlərindən biri olub. Şirvanşahlar dövlətinin paytaxtı idi. Böyük İpək Yolu bu şəhərdən keçirdi. "Şamaxılı Gözəl" obrazı Azərbaycan ədəbiyyatında çox işlənir.',i:'https://images.unsplash.com/photo-1538300342682-cf57afb97285?w=900&q=80'}},
-
-{q:'Hansı heyvan dişsiz doğulur?',a:['Balina','At','Fil','Delfin'],c:2,
-f:{t:'Fil körpəsi dişsiz doğulur — sonra 6 dəfə dəyişir',x:'<strong>Fil</strong> dişsiz doğulur. Həyatı boyunca dişlərini <strong>6 dəfə dəyişir!</strong> Son dişlər bitəndə köhnə fillər yeməyə çətinlik çəkir. Fil süd dişlərini itirdikdən sonra uzun yaşamağa davam edir.',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'"Faust" əsərinin müəllifi kimdir?',a:['Şiller','Höte','Lessing','Kleist'],c:1,
-f:{t:'Höte "Faust"u 60 il boyunca yazdı',x:'<strong>Yohann Volfqanq von Höte</strong> "Faust"u <strong>60 ildən çox</strong> yazdı — ömrünün böyük hissəsi! 1808-ci ildə birinci hissəsi çıxdı. İblis ilə sazişin — ruhunu satmağın — ən məşhur ədəbi təsviridir.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Hansı vitaminlər yağda həll olur?',a:['B və C','A, D, E, K','Yalnız A','Yalnız D'],c:1,
-f:{t:'A, D, E, K — yağda həll olan vitaminlər',x:'<strong>A, D, E, K vitaminləri</strong> yağda həll olur — buna görə orqanizmdə toplanır. B və C vitaminləri isə suda həll olur — artığı sidiklə çıxır. Yağda həll olan vitaminlərin həddindən artıq qəbulu <strong>toksik ola bilər!</strong>',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Hansı ölkə ən çox dəmir-polad istehsal edir?',a:['ABŞ','Yaponiya','Çin','Hindistan'],c:2,
-f:{t:'Çin dünya polad istehsalının 54%-ni verir',x:'<strong>Çin</strong> dünya polad istehsalının <strong>54%-ini</strong> həyata keçirir. İldə 1 milyard tondan çox polad istehsal edir — bütün dünyanın qalan hissəsindən çox! Bu güclü infrastruktur inkişafının nəticəsidir.',i:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'}},
-
-{q:'Görmə qabiliyyəti ən güclü heyvan hansıdır?',a:['Qartal','İt','Pişik','Delfin'],c:0,
-f:{t:'Qartal 3 km məsafədən siçan görür',x:'<strong>Qartal</strong> insandan <strong>4-8 dəfə daha kəskin</strong> görür. 3 km məsafədən kiçik bir siçanı görə bilir! Həm də <strong>ultrabənövşəyi şüaları</strong> görür — insan gözünün görmə spektrindən kənarda.',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Hansı ölkədə "Stonehenge" abidəsi yerləşir?',a:['Fransa','İrlandiya','İskoçlandiya','İngiltərə'],c:3,
-f:{t:'Stonehenge 5.000 il yaşında — hələ sirr',x:'<strong>Stonehenge</strong> İngiltərənin Solsberi düzündədir. <strong>5.000 ildən çox</strong> yaşı var. Daşlar 250 km uzaqdan gətirilmişdir. Hələ də nə məqsədlə tikildiyi tam bilinmir — günəş observatoriyası, məbəd, qəbiristanlıq?',i:'https://images.unsplash.com/photo-1513026705753-bc3fffca8bf4?w=900&q=80'}},
-
-{q:'Hansı element ən yüksək ərimə nöqtəsinə malikdir?',a:['Dəmir','Platin','Volfram','Titan'],c:2,
-f:{t:'Volfram 3.422°C — ən yüksək ərimə nöqtəsi',x:'<strong>Volfram</strong> <strong>3.422°C</strong> ərimə nöqtəsi ilə bütün metallar arasında rekordçudur. Buna görə elektrik lampalarının teli volfram simindən hazırlanır — yüksək temperaturda əriməyərək parıldayır.',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Hansı ölkə dünyada ən çox turist qəbul edir?',a:['ABŞ','İspaniya','Fransa','İtaliya'],c:2,
-f:{t:'Fransa ildə 90 milyon turist — dünya rekordçusu',x:'<strong>Fransa</strong> ildə <strong>90 milyona yaxın</strong> turist qəbul edir — dünya rekordçusu! Paris, Luvr, Eyfel qülləsi, Fransız Rivierası əsas cəzbedici məkanlardır. Turizm ölkə iqtisadiyyatının <strong>9%-ni</strong> təşkil edir.',i:'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=900&q=80'}},
-
-{q:'Hansı heyvan yalnız bambuкla qidalanır?',a:['Koala','Panda','Kənguru','Lemur'],c:1,
-f:{t:'Panda gündə 12-38 kq bambuk yeyir',x:'<strong>Nəhəng panda</strong> qidasının <strong>99%-ni bambuкdan</strong> alır. Gündə <strong>12-38 kq</strong> bambuk yeyir! Buna baxmayaraq, əcdadları ət yeyən idi — mədəsi hələ ət üçün uyğunlaşmışdır, lakin davranışı dəyişib.',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Hansı ölkənin əhalisi ən uzun ömürlüdür?',a:['İsveç','Yaponiya','İsveçrə','Sinqapur'],c:1,
-f:{t:'Yaponiya — orta ömür 84 il, 80.000 yüzillikdən çox',x:'<strong>Yaponiya</strong> orta ömür uzunluğuna görə liderdir — <strong>84 il.</strong> Ölkədə <strong>80.000-dən çox</strong> yüz yaşlı insan yaşayır! Sağlam qidalanma (balıq, yaşıl çay, tərəvəz) və aktiv həyat sirrin açarıdır.',i:'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=900&q=80'}},
-
-{q:'Plankton nədir?',a:['Kiçik balıq növü','Su bitkiləri','Suda üzən mikroskopik orqanizmlər','Dəniz yosunu'],c:2,
-f:{t:'Plankton Yerdəki oksigenin 50%-ni istehsal edir',x:'<strong>Plankton</strong> suda üzən mikroskopik canlılardır. Fitoplankton fotosintez edərək Yerdəki oksigenin <strong>50%-ni</strong> istehsal edir! Dəniz qida zəncirinin əsasını təşkil edir. Mavi balina kimi nəhənglər planktonla qidalanır.',i:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=900&q=80'}},
-
-{q:'Hansı ölkə dünyada ən çox qəhvə istehsal edir?',a:['Kolumbiya','Etiоpiya','Braziliya','Vyetnam'],c:2,
-f:{t:'Braziliya dünya qəhvəsinin 40%-ni verir',x:'<strong>Braziliya</strong> dünya qəhvə istehsalının <strong>40%-ini</strong> həyata keçirir. İkinci yerdə Vyetnam, üçüncüdə Kolumbiya. Maraqlı: qəhvənin vətəni <strong>Efiopiya</strong>dır — Kaffa bölgəsindən adını almışdır.',i:'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=900&q=80'}},
-
-{q:'Yer kürəsinin maqnit qütbləri neçə ildən bir dəyişir?',a:['Heç vaxt dəyişmir','Hər 100 ildə','200.000-300.000 ildə bir','Hər milyon ildə'],c:2,
-f:{t:'Maqnit qütblər 200.000-300.000 ildə bir yer dəyişir',x:'Yerin maqnit qütbləri orta hesabla <strong>200.000-300.000 ildə bir</strong> yer dəyişir. Son dəfə <strong>780.000 il əvvəl</strong> baş verib — yəni bir dəyişim gecikib! Bu baş verəndə kompaslar müvəqqəti işləməyəcək.',i:'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=900&q=80'}},
-
-{q:'Hansı üzvi birləşmə şəkərin əsas növüdür?',a:['Laktoza','Fruktoza','Qlükoza','Saxaroza'],c:2,
-f:{t:'Qlükoza — beyinin əsas yanacağı',x:'<strong>Qlükoza</strong> bütün canlıların əsas enerji mənbəyidir. Beyin demək olar ki, <strong>yalnız qlükoza</strong> ilə işləyir. Qan şəkəri dedikdə əsasən qlükoza nəzərdə tutulur. Fotosintezdə bitkilər qlükoza istehsal edir.',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Hansı planet Günəş sisteminin ən gözəl halqalarına malikdir?',a:['Yupiter','Saturn','Uranüs','Neptun'],c:1,
-f:{t:'Saturnun halqaları əsasən buz parçalarıdır',x:'<strong>Saturn</strong>un halqaları ən geniş və görünənlərdir. Əsasən <strong>buz parçaları və daşlardan</strong> ibarətdir. Eni 282.000 km olsa da, qalınlığı cəmi <strong>1 km!</strong> Yupiter, Uranüs və Neptunun da halqaları var.',i:'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=900&q=80'}},
-
-{q:'Hansı ölkə "Yel dəyirmanları ölkəsi" adlanır?',a:['Belçika','Almaniya','Hollandiya','Danimarka'],c:2,
-f:{t:'Hollandiyada 1.000-dən çox tarixi yel dəyirmanı var',x:'<strong>Hollandiya</strong> yel dəyirmanları ilə məşhurdur. Ölkənin böyük hissəsi dəniz səviyyəsindən aşağıdadır — yel dəyirmanları su pompalamasında istifadə edilirdi. <strong>Kinderdijk</strong> kəndi UNESCO mirası siyahısındadır.',i:'https://images.unsplash.com/photo-1559825481-12a05cc00344?w=900&q=80'}},
-
-{q:'Hansı kimyəvi element "Alüminium" adını daşıyır?',a:['Al','Am','Au','Az'],c:0,
-f:{t:'Al — 1825-də kəşf edildi, bir vaxtlar qızıldan bahalı idi',x:'Alüminiumun simvolu <strong>Al</strong>. 1825-ci ildə Hans Kristian Ørsted tərəfindən kəşf edildi. Maraqlı: kəşfindən sonra bir müddət <strong>qızıldan bahalı idi!</strong> Napoleon III qonaqlara qızıl əvəzinə alüminium qab verirdi.',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Hansı ölkə "Çəltik padşahlığı" adlanır?',a:['Tailand','Kamboca','Vyetnam','Myanma'],c:0,
-f:{t:'Tailand dünya düyü ixracatının liderlərindəndir',x:'<strong>Tailand</strong> "Dünya çəltik anbarı" adlanır. Dünya düyü ixracatında hər zaman ilk beşdə olur. Ölkə əhalisinin böyük hissəsi kənd təsərrüfatı ilə məşğuldur. Düyü Tailand mədəniyyətinin ayrılmaz hissəsidir.',i:'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=900&q=80'}},
-
-{q:'Hansı element bütün canlılarda var?',a:['Dəmir','Karbon','Fosfor','Kükürd'],c:1,
-f:{t:'Karbon — həyatın əsas elementi',x:'<strong>Karbon</strong> bütün canlılarda mövcuddur — buna görə üzvi kimya "karbon kimyası" adlanır. İnsan bədəninin <strong>18%-i</strong> karbondur. Almaz da, kömür də karbondur — sadəcə atom düzülüşü fərqlidir!',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Hansı Azərbaycan şəhərinin adı "şərab çayı" mənasını verir?',a:['Gəncə','Şirvan','Şamaxı','Mingəçevir'],c:1,
-f:{t:'Şirvan — qədim şərab istehsal mərkəzi',x:'<strong>Şirvan</strong> adının mənşəyi mübahisəlidir, amma bəzi tədqiqatçılar "şər" (şərab) sözü ilə bağlayır. Şirvan tarixi olaraq üzümçülük və şərabçılıq mərkəzi olub. Bu gün Şirvan Milli Parkı ilə tanınır.',i:'https://images.unsplash.com/photo-1538300342682-cf57afb97285?w=900&q=80'}},
-
-{q:'Hansı heyvan sualtı ən dərin dalır?',a:['Mavi balina','Sperma balinası','Adi delfin','Ağ köpəkbalığı'],c:1,
-f:{t:'Sperma balinası 3 km dərinliyə dalır',x:'<strong>Sperma balinası</strong> <strong>3.000 m</strong> dərinliyə dalır — rekorddur! Orada böyük kalamarlarla döyüşür. Dalmaq üçün nəfəsini <strong>90 dəqiqəyə</strong> qədər saxlaya bilir. Dişlərindən ibarət yeganə böyük balina növüdür.',i:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=900&q=80'}},
-
-{q:'Hansı ölkə dünyada ən çox buğda ixrac edir?',a:['ABŞ','Rusiya','Kanada','Ukrayna'],c:1,
-f:{t:'Rusiya dünya buğda ixracatının 18%-i',x:'<strong>Rusiya</strong> son illərdə dünya buğda ixracatında liderlik edir — <strong>18% pay</strong> ilə. Sonra ABŞ, Kanada, Fransa gəlir. Ukraynanın ixracatı müharibə ucbatından ciddi azalmışdır.',i:'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=900&q=80'}},
-
-{q:'Hansı dövr "Dinazavrlar dövrü" adlanır?',a:['Paleozoy','Mezozoy','Senozoy','Arxey'],c:1,
-f:{t:'Mezozoy — 252-66 milyon il əvvəl',x:'<strong>Mezozoy erası</strong> (252-66 milyon il əvvəl) dinazavrların dövrüdür. Trias, Yura, Təbaşir dövrlərini əhatə edir. <strong>66 milyon il əvvəl</strong> böyük bir meteorit vurması dinazavrların böyük hissəsini məhv etdi.',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Hansı ölkə "Lalə İnqilabı" adlanan hadisəni yaşamışdır?',a:['Ukrayna','Gürcüstan','Qırğızıstan','Belarusiya'],c:2,
-f:{t:'Qırğızıstan 2005 — Lalə İnqilabı',x:'<strong>Qırğızıstan</strong> 2005-ci ildə "Lalə İnqilabı" adlanan etirazlar nəticəsində hökumət dəyişikliyini yaşadı. Bu, keçmiş sovet respublikalarındakı "rəngli inqilablar" silsiləsinin bir hissəsi idi.',i:'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=900&q=80'}},
-
-{q:'Hansı kimyəvi reaksiya istilik buraxır?',a:['Endotermik','Ekzotermik','Neytral','Katalitik'],c:1,
-f:{t:'Ekzotermik reaksiya — istilik buraxır',x:'<strong>Ekzotermik reaksiyalar</strong> istilik buraxır — yanma, partlama, bir çox oksidləşmə. <strong>Endotermik reaksiyalar</strong> isə istilik udur — fotosintez, buz əriyərkən. Soyuducu içkilərdəki "soyuq paketlər" endotermik reaksiyadan istifadə edir.',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Hansı ölkə tarixdə ən çox Nobel mükafatı qazanmışdır?',a:['Almaniya','Böyük Britaniya','ABŞ','İsveç'],c:2,
-f:{t:'ABŞ 400-dən çox Nobel mükafatı — dünya rekordçusu',x:'<strong>ABŞ</strong> tarixdə <strong>400-dən çox Nobel mükafatı</strong> ilə dünya rekordçusudur. Bunun böyük hissəsi Fizika, Kimya və Tibb sahələrindədir. Güclü universitetlər sistemi bu uğurun açarıdır.',i:'https://images.unsplash.com/photo-1461360228754-6e81c478b882?w=900&q=80'}},
-
-{q:'Hansı ölkə "Macarıstan" adının mənası nədir?',a:['Güclü insanlar','On oxlar','Dağ xalqı','Su insanları'],c:1,
-f:{t:'Hunqariya — "On oxlar" — 10 qəbilənin ittifaqı',x:'<strong>Macarıstanın</strong> latınca adı "Hunqariya" — <strong>"On oxlar"</strong> mənasını verir. Magyar qəbilələrinin ittifaqından yaranmışdır. IX əsrdə Orta Avropaya köçmüşlər. Dili Avropa dillərindən tamamilə fərqlidir.',i:'https://images.unsplash.com/photo-1500462918058-0ef8a7b3e550?w=900&q=80'}},
-
-{q:'Dünyada ən çox qan donoru olan ölkə hansıdır?',a:['ABŞ','Çin','Hindistan','Almaniya'],c:0,
-f:{t:'ABŞ ildə 14 milyon qan donasyonu',x:'<strong>ABŞ</strong> ildə <strong>14 milyondan çox</strong> qan donasyonu ilə dünyada liderdir. Maraqlı fakt: <strong>James Harrison</strong> adlı avstralyalı 1.173 dəfə qan vermiş — qanındakı xüsusi antikorlar milyonlarla körpəni xilas etmişdir.',i:'https://images.unsplash.com/photo-1579154204601-01588f351e67?w=900&q=80'}},
-
-{q:'Hansı ölkə "Şəkər adası" adlanır?',a:['Kuba','Puerto-Riko','Barbados','Haydı'],c:0,
-f:{t:'Kuba — XIX əsrdə dünya şəkərinin 1/3-ini verirdi',x:'<strong>Kuba</strong> "Şəkər adası" adlanır. XIX əsrdə dünya şəkər istehsalının <strong>1/3-ini</strong> verirdi. Şəkər plantasiyaları üçün Afrika köləliyi Kubaya gətirilmişdi. Bu gün hələ də şəkər əsas ixrac məhsullarındandır.',i:'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=900&q=80'}},
-
-{q:'Hansı ölkə ən çox olimpiya medalı qazanmışdır (tarix boyunca)?',a:['Rusiya','Çin','ABŞ','Almaniya'],c:2,
-f:{t:'ABŞ 2.600-dən çox olimpiya medalı — dünya rekordçusu',x:'<strong>ABŞ</strong> tarix boyunca <strong>2.600-dən çox</strong> olimpiya medalı ilə dünya rekordçusudur. Sovet İttifaqı dağılmadan əvvəl güclü rəqib idi. ABŞ xüsusilə üzgüçülük, atletizm və idman gimnastikasında üstündür.',i:'https://images.unsplash.com/photo-1569517282132-25d22f4573e6?w=900&q=80'}},
-
-{q:'Hansı ölkədə ən çox Dünya İrsi saytı var?',a:['Çin','İtaliya','İspaniya','Fransa'],c:1,
-f:{t:'İtaliya 58 UNESCO saytı ilə dünya rekordçusu',x:'<strong>İtaliya</strong> <strong>58 UNESCO Dünya İrsi saytı</strong> ilə rekordçudur. Çin 57 ilə ikincidır. İtaliyada Kolosseum, Pompei, Florensiya tarixi mərkəzi, Venesiya, Sikstina şapeli və daha çoxu var.',i:'https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=900&q=80'}},
-
-{q:'Hansı heyvan yeganə uçan məməlidir?',a:['Dələ','Yarasa','Süni quş','Zığ-zığ'],c:1,
-f:{t:'Yarasa — yeganə uçan məməli, sonar sistemi var',x:'<strong>Yarasa</strong> həqiqətən uçan yeganə məməlidir. Digərləri (uçan sincab, uçan dələ) yalnız süzür. Yarasalar <strong>ekolokasiya</strong> — sonar sistemi — istifadə edir. Dünyanın ən çox növlü məməli qruplarından biridir.',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Hansı Azərbaycan şairi "Leyli və Məcnun" poemasını yazmışdır?',a:['Füzuli','Nizami Gəncəvi','Xaqani','Nəsimi'],c:0,
-f:{t:'Füzuli "Leyli və Məcnun"u 1535-də yazdı',x:'<strong>Məhəmməd Füzuli</strong> (1494-1556) "Leyli və Məcnun" poemasını <strong>1535-ci ildə</strong> yazdı. Nizami Gəncəvinin eyni adlı əsərindən ilham alaraq yaradan Füzuli, onu üç dildə — Azərbaycan, ərəb, fars — yazmışdır.',i:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=900&q=80'}},
-
-{q:'Hansı okean suyunun temperaturu ən yüksəkdir?',a:['Sakit','Atlantik','Hind','Arktik'],c:2,
-f:{t:'Hind okeanı ən isti okean — 22-28°C',x:'<strong>Hind okeanı</strong> ən isti okean hesab edilir. Orta temperatura <strong>22-28°C</strong> arasındadır. Əhatə etdiyi tropik coğrafiya buna səbəbdir. Buna görə Hind okeanında buxarlanma daha intensivdir.',i:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=900&q=80'}},
-
-{q:'Hansı ölkə dünyanın ən böyük səhrasından keçən çayına malikdir?',a:['Misir','Əlcəzair','Sudan','Liviya'],c:0,
-f:{t:'Nil Saxara səhrasından keçir — həyat verir',x:'<strong>Misirin</strong> Nil çayı dünyanın ən böyük quru səhrası olan <strong>Saxaradan</strong> keçir. Nil olmadan Misir sivilizasiyası mümkün olmaz idi. Nil vadisi Saxaranın ortasında yaşıl bir xətt kimi uzanır.',i:'https://images.unsplash.com/photo-1609619385002-f40f1df9b7eb?w=900&q=80'}},
-
-{q:'Hansı ölkə "Kivi quşu"nun vətənidir?',a:['Avstraliya','Papua Yeni Qvineya','Yeni Zelandiya','Solomon adaları'],c:2,
-f:{t:'Kivi — uçmayan quş, Yeni Zelandiyanın simvolu',x:'<strong>Kivi</strong> quşu <strong>Yeni Zelandiyanın</strong> milli simvoludur. Uça bilmir, gecə aktiv olur, iy hissi çox güclüdür. Yeni Zelandiyalılar özlərini "Kiwi" adlandırır. Yumurtası bədəninə nisbətən <strong>ən böyük quş yumurtasıdır.</strong>',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Hansı çay dünyanın ən geniş çayıdır (eni baxımından)?',a:['Amazon','Nil','La Plata','Missisipi'],c:2,
-f:{t:'La Plata 220 km — dünyanın ən geniş çayı',x:'<strong>La Plata</strong> (Río de la Plata) Argentinada <strong>220 km</strong> eni ilə dünyanın ən geniş çayıdır. Dənizə tökülən yerdə o qədər genişdir ki, "dəniz" kimi görünür. Parana və Uruguay çaylarının məcmasıdır.',i:'https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=900&q=80'}},
-
-{q:'Hansı ölkə "Fiordlar ölkəsi" adlanır?',a:['İslandiya','Norveç','Yeni Zelandiya','Çili'],c:1,
-f:{t:'Norveç sahilinin uzunluğu düzləşdirilsə 100.000 km olur',x:'<strong>Norveç</strong> fiyordları ilə dünyaca tanınır. Sahil xəttinin uzunluğu fiordlarla birlikdə <strong>100.000 km-dən çoxdur!</strong> Bu, Ekvatorun 2,5 dəfəsindən böyükdür. Sognefjord ən uzunu — 204 km.',i:'https://images.unsplash.com/photo-1559825481-12a05cc00344?w=900&q=80'}},
-
-{q:'Hansı heyvan dünyanın ən güclü dişlərə malikdir?',a:['Timsah','Hippopotam','Dəniz samuru','Köpəkbalığı'],c:2,
-f:{t:'Dəniz samuru diş gücü: 244 Newton/mm²',x:'<strong>Dəniz samuru (deniz salyangozçusu)</strong> dünyanın ən güclü dişlərə malikdir — <strong>244 N/mm²!</strong> Dəmir mineralı olan "qoetit"dən ibarət dişlər. Qayaların üzərindəki yosunları sovurur.',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Hansı ölkə "Elə bil dünya xəritəsindən cırılmış" adlandırılır?',a:['Monqoliya','Qazaxıstan','Türkmənistan','Özbəkistan'],c:0,
-f:{t:'Monqoliya — dünya nüfusunun 0,04%-i, dünyanın 1%-i',x:'<strong>Monqoliya</strong> ən az sıxlıqlı ölkədir — km²-ə 2 nəfər! Əhali 3 milyon, sahə 1,5 milyon km². Çingiz xanın imperiyanın qurulduğu torpaqlar bu gün boş çöllərdən ibarətdir.',i:'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?w=900&q=80'}},
-
-{q:'Hansı element ən güclü maqnet xassəsinə malikdir?',a:['Dəmir','Nikel','Neodimium','Kobalt'],c:2,
-f:{t:'Neodimium — dünyanın ən güclü daimi maqneti',x:'<strong>Neodimium</strong> əsaslı maqnetlər dünyanın ən güclü daimi maqnetlərdir. Elektrik mühərrikləri, qulaqlıqlar, sabit disklərdə istifadə edilir. Kiçik bir neodimium maqnet <strong>öz çəkisinin 1.300 qatını</strong> qaldıra bilər!',i:'https://images.unsplash.com/photo-1532094349884-543559451726?w=900&q=80'}},
-
-{q:'Hansı dövlət dünyanın ən qədim respublikasıdır?',a:['ABŞ','San-Marino','Fransa','İsveçrə'],c:1,
-f:{t:'San-Marino 301-ci ildə qurulub — 1.700 il yaşlı respublika',x:'<strong>San-Marino</strong> <strong>301-ci ildə</strong> qurulub — dünyanın ən qədim respublikasıdır. İtaliya ilə əhatə olunmuş bu mini-dövlət heç vaxt işğal edilməyib. Əhalisi cəmi <strong>34.000 nəfərdir.</strong>',i:'https://images.unsplash.com/photo-1531572753322-ad063cecc140?w=900&q=80'}},
-
-{q:'Hansı ölkə dünyada ən çox dil işlədir?',a:['Hindistan','Çin','Papua Yeni Qvineya','Nigeriya'],c:2,
-f:{t:'Papua Yeni Qvineya — 840 dil, 8 milyonluq ölkə',x:'<strong>Papua Yeni Qvineya</strong> cəmi 8 milyon əhalisinə baxmayaraq <strong>840-dan çox dil</strong> mövcuddur — dünyanın ən çox dilli ölkəsi! Bu, dünyanın bütün dillərinin <strong>12%-ni</strong> əhatə edir.',i:'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=900&q=80'}},
-
-{q:'Hansı ölkə "Bakir meşələr ölkəsi" adlanır?',a:['Kanada','Braziliya','Rusiya','Kongo'],c:0,
-f:{t:'Kanada dünyanın ən böyük bakir meşəsinə malikdir',x:'<strong>Kanada</strong> dünyanın ən böyük intakt (toxunulmamış) meşəsinə malikdir — <strong>Boreal meşəsi.</strong> 1 milyard hektar meşə! Dünyada hər 4 bakir meşə hektarından biri Kanadadadır.',i:'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=900&q=80'}},
-
-{q:'Hansı ölkə "Sarı çay" (Sarı dəniz) sahilindədir?',a:['Çin və Koreya','Yaponiya','Vyetnam','Filippin'],c:0,
-f:{t:'Sarı dəniz — Çin və Korey yarımadası arasında',x:'<strong>Sarı dəniz</strong> Çin, Şimali Koreya və Cənubi Koreyaın sahillərini yuyur. Adını Çinin sarı lösslü torpaqlarının bu dənizə tökülən çaylar vasitəsilə rəng verməsindən almışdır.',i:'https://images.unsplash.com/photo-1490457843367-34b21a6e6897?w=900&q=80'}},
-
-{q:'Hansı ölkə "Dünyanın çəltik anbarı" adlanır?',a:['Vyetnam','Tailand','Myanma','Kamboca'],c:1,
-f:{t:'Tailand dünya düyü ixracatının 15%-i',x:'<strong>Tailand</strong> "Dünyanın çəltik anbarı" adlanır. Dünya düyü ixracatının <strong>15%-ni</strong> verir. Ölkənin iqtisadiyyatının tarixi əsasını kənd təsərrüfatı, xüsusilə düyü əkinçiliyi təşkil edir.',i:'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=900&q=80'}},
-
-{q:'Hansı heyvan rəngli görür?',a:['İt','Pişik','Arı','Balıq'],c:2,
-f:{t:'Arı ultrabənövşəyi görür — insanın görmədiyini görür',x:'<strong>Arılar</strong> rəng görür — hətta <strong>ultrabənövşəyi</strong> şüaları da! İnsanın görmədiyi çiçək naxışlarını görürlər. İtlər isə yalnız mavi-sarı tonları görür — qırmızı onlara boz görünür.',i:'https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=900&q=80'}},
-
-{q:'Hansı kəşfiyyat missiyası ilk dəfə Marsı orbit etdi?',a:['Viking 1','Mariner 9','Mars Odyssey','Curiosity'],c:1,
-f:{t:'Mariner 9 1971 — ilk dəfə Marsa orbit',x:'<strong>Mariner 9</strong> 1971-ci ildə ilk dəfə Mars orbitinə çıxan kosmik aparatdır. <strong>7.329 şəkil</strong> göndərdi — Olympus Mons (Günəş sisteminin ən böyük vulkanı) bu missiyanın kəşfidir.',i:'https://images.unsplash.com/photo-1516849677043-ef67c9557e16?w=900&q=80'}},
-
-{q:'Hansı texnologiya "Bluetooth" adını haradan almışdır?',a:['Bir kompüter mühəndisinin adından','X əsrlik Danimarka kralından','Göy rəngindən','Bir heyvan növündən'],c:1,
-f:{t:'Bluetooth — Harald Bluetooth — X əsrlik Danimarka kralı',x:'<strong>Bluetooth</strong> adı X əsrdə yaşamış Danimarka kralı <strong>Harald Bluetooth</strong>un şərəfinədir. O, müxtəlif skandinav qəbilələrini birləşdirdi — tıpkı Bluetooth texnologiyasının fərqli cihazları birləşdirdiyi kimi!',i:'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=900&q=80'}},
-
-{q:'Yer kürəsinin ən qədim süxuru neçə yaşındadır?',a:['1 milyard il','2 milyard il','3,8 milyard il','4,5 milyard il'],c:2,
-f:{t:'Kanadadakı Acasta qneysi 4 milyard illik',x:'Yer kürəsindəki ən qədim süxurlar <strong>3,8-4 milyard il</strong> yaşındadır. Kanadanın Şimal-Qərb Ərazilərindəki <strong>Acasta qneysi</strong> ~4 milyard illik. Yerin özü 4,5 milyard yaşlıdır.',i:'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=900&q=80'}},
+{q:'Bütün canlı orqanizmlərin enerji valyutası hansı molekuldur?',a:['ADP','GTP','ATP','NAD'],c:2,
+ f:{t:'ATP hüceyrənin enerji pulu sayılır',x:'<strong>Adenozin trifosfat (ATP)</strong> bütün canlı orqanizmlərdə enerjinin daşıyıcısıdır. İnsan gün ərzində öz bədən çəkisindən artıq ATP sintez edib xərcləyir.',i:'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=900&q=80'}},
 ];
-
 
 // ══════════════════════════════════════════
 //  GAME FLOW
 // ══════════════════════════════════════════
-function startGame(){
+async function startGame(){
   currentPlayer=document.getElementById('playerName').value.trim();
-  if(currentPlayer.length<2)return;
+  currentCode=document.getElementById('playerCode').value.trim();
+  if(currentPlayer.length<2||currentCode.length<2)return;
+  var err=document.getElementById('codeError');
+  var btn=document.getElementById('startBtn');
+  btn.textContent='Yoxlanılır...';
+  btn.classList.remove('active');
+  var result=await validateCode(currentCode);
+  if(!result.ok){
+    err.textContent=result.msg;
+    err.style.display='block';
+    btn.textContent='Oyunu Başlat →';
+    btn.classList.add('active');
+    return;
+  }
+  err.style.display='none';
   document.getElementById('playerBadge').textContent='👤 '+currentPlayer;
   pool=shuffle(ALL_QUESTIONS);
   gameQ=pool.slice(0,12);
@@ -1638,10 +646,12 @@ function endGame(finished){
   var xal=hesablaXal(score);
   document.getElementById('endPoints').textContent=formatXal(xal)+' xal';
 
-  // Save to shared leaderboard
+  // Mark code used + Save to Firebase leaderboard
   var sav=document.getElementById('savingState');
   sav.style.display='inline-flex';
-  saveScore(currentPlayer,score,xal).then(function(lb){
+  markCodeUsed(currentCode,currentPlayer).then(function(){
+    return saveScore(currentPlayer,score,xal);
+  }).then(function(lb){
     sav.style.display='none';
     renderLb(lb,'endLbBody','endLbTable','endLbLoading',null,currentPlayer);
   });
