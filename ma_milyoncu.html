@@ -239,7 +239,7 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
     <div class="fc-body">
       <div class="fc-accent"><div class="fc-dot"></div><div class="fc-line"></div><div class="fc-dot"></div></div>
       <div class="fc-text" id="fcText"></div>
-      <button class="fc-btn" id="fcBtn" onclick="closeFact()">
+      <button class="fc-btn" id="fcBtn">
         Növbəti suala keç
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </button>
@@ -274,15 +274,39 @@ function shuffle(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math
 // ══════════════════════════════════════════
 //  STORAGE  — shared leaderboard
 // ══════════════════════════════════════════
+// Storage: window.storage (Claude artifact) → localStorage fallback
+async function storageGet(key){
+  // Try Claude artifact shared storage first
+  if(typeof window.storage !== 'undefined'){
+    try{
+      var r=await window.storage.get(key,true);
+      return r?r.value:null;
+    }catch(e){}
+  }
+  // Fallback: localStorage (per-device only)
+  try{ return localStorage.getItem(key); }catch(e){ return null; }
+}
+
+async function storageSet(key,val){
+  if(typeof window.storage !== 'undefined'){
+    try{
+      await window.storage.set(key,val,true);
+      return true;
+    }catch(e){}
+  }
+  try{ localStorage.setItem(key,val); return true; }catch(e){ return false; }
+}
+
 async function getLeaderboard(){
   try{
-    var r=await window.storage.get(LB_KEY,true);
-    return r?JSON.parse(r.value):[];
-  }catch(e){return[];}
+    var raw=await storageGet(LB_KEY);
+    if(!raw)return[];
+    var parsed=JSON.parse(raw);
+    return Array.isArray(parsed)?parsed:[];
+  }catch(e){ return[]; }
 }
 
 async function saveScore(name,correct,xal){
-  // retry loop to handle concurrent writes
   for(var attempt=0;attempt<3;attempt++){
     try{
       var lb=await getLeaderboard();
@@ -293,15 +317,13 @@ async function saveScore(name,correct,xal){
         date:new Date().toLocaleDateString('az-AZ',{day:'2-digit',month:'2-digit',year:'2-digit'})
       });
       lb.sort(function(a,b){return b.xal-a.xal||b.correct-a.correct;});
-      lb=lb.slice(0,100); // keep top 100
-      await window.storage.set(LB_KEY,JSON.stringify(lb),true);
-      return lb;
-    }catch(e){
-      if(attempt===2)return[];
-      await new Promise(function(r){setTimeout(r,200);});
-    }
+      lb=lb.slice(0,100);
+      var ok=await storageSet(LB_KEY,JSON.stringify(lb));
+      if(ok)return lb;
+    }catch(e){}
+    await new Promise(function(res){setTimeout(res,300);});
   }
-  return[];
+  return await getLeaderboard();
 }
 
 // ══════════════════════════════════════════
@@ -343,8 +365,10 @@ function renderLb(lb,tbodyId,tableId,loadingId,emptyId,highlightName){
 async function loadStartLb(){
   var loading=document.getElementById('lbLoading');
   var table=document.getElementById('lbTable');
+  var empty=document.getElementById('lbEmpty');
   if(loading){loading.style.display='flex';loading.innerHTML='<div class="spinner"></div> Yüklənir...';}
   if(table)table.style.display='none';
+  if(empty)empty.style.display='none';
   var lb=await getLeaderboard();
   renderLb(lb,'lbBody','lbTable','lbLoading','lbEmpty','');
 }
@@ -1457,8 +1481,6 @@ f:{t:'Bluetooth — Harald Bluetooth — X əsrlik Danimarka kralı',x:'<strong>
 {q:'Yer kürəsinin ən qədim süxuru neçə yaşındadır?',a:['1 milyard il','2 milyard il','3,8 milyard il','4,5 milyard il'],c:2,
 f:{t:'Kanadadakı Acasta qneysi 4 milyard illik',x:'Yer kürəsindəki ən qədim süxurlar <strong>3,8-4 milyard il</strong> yaşındadır. Kanadanın Şimal-Qərb Ərazilərindəki <strong>Acasta qneysi</strong> ~4 milyard illik. Yerin özü 4,5 milyard yaşlıdır.',i:'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=900&q=80'}},
 ];
-
-
 
 
 // ══════════════════════════════════════════
