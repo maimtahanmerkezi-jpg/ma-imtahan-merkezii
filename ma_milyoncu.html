@@ -11,7 +11,6 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .bg1{position:fixed;width:600px;height:600px;background:radial-gradient(circle,rgba(24,82,240,0.12)0%,transparent 70%);top:-200px;right:-150px;pointer-events:none;z-index:0}
 .bg2{position:fixed;width:500px;height:500px;background:radial-gradient(circle,rgba(24,82,240,0.08)0%,transparent 70%);bottom:-150px;left:-100px;pointer-events:none;z-index:0}
 .wrap{width:100%;max-width:720px;padding:24px 16px;position:relative;z-index:1}
-/* AUTH */
 #authScreen{text-align:center;padding:40px 20px}
 .logo-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(24,82,240,0.1);border:1px solid rgba(24,82,240,0.3);color:#1852f0;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:7px 18px;border-radius:100px;margin-bottom:20px}
 .game-title{font-size:clamp(28px,6vw,54px);font-weight:800;letter-spacing:-.03em;line-height:1.05;margin-bottom:8px;color:#0a1e50}
@@ -33,7 +32,6 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .auth-success{background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);color:#15803d;font-size:13px;font-weight:600;padding:10px 14px;border-radius:10px;text-align:left;display:none}
 .chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:24px}
 .chip{background:rgba(24,82,240,0.06);border:1px solid rgba(24,82,240,0.15);color:rgba(10,30,80,0.65);font-size:12px;padding:6px 14px;border-radius:100px}
-/* LEADERBOARD */
 .lb-section{margin-top:22px;text-align:left;background:#fff;border:1.5px solid rgba(24,82,240,0.12);border-radius:16px;padding:18px}
 .lb-title{font-size:12px;font-weight:700;color:#1852f0;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .lb-table{width:100%;border-collapse:collapse;font-size:13px}
@@ -51,14 +49,13 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .lb-me-row{background:rgba(24,82,240,0.06)!important}
 .lb-me-row td{font-weight:700!important}
 .lb-you-tag{display:inline-block;background:#1852f0;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:100px;margin-left:4px;vertical-align:middle}
-/* START */
+.lb-best-tag{display:inline-block;background:#f5a623;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:100px;margin-left:4px;vertical-align:middle}
 #startScreen{display:none;text-align:center;padding:40px 20px}
 .welcome-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.3);color:#15803d;font-size:13px;font-weight:700;padding:7px 18px;border-radius:100px;margin-bottom:16px}
 .start-btn{height:54px;padding:0 48px;background:#1852f0;border:none;border-radius:14px;font-size:17px;font-weight:700;color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .2s,transform .15s;box-shadow:0 4px 28px rgba(24,82,240,0.3)}
 .start-btn:hover{background:#2d6aff;transform:translateY(-2px)}
 .logout-btn{background:none;border:none;font-size:12px;color:rgba(10,30,80,0.35);cursor:pointer;font-family:'Outfit',sans-serif;margin-top:12px;text-decoration:underline;display:block;margin-left:auto;margin-right:auto}
 .pool-info{font-size:11px;color:rgba(10,30,80,0.3);margin-top:10px}
-/* GAME */
 #gameScreen{display:none}
 .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:0 4px}
 .tb-logo{font-size:13px;font-weight:700;color:#1852f0}
@@ -96,7 +93,6 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .ans-btn[disabled]{cursor:default}
 .ans-letter{font-size:11px;font-weight:800;color:#1852f0;flex-shrink:0;margin-top:2px;min-width:14px}
 .ans-btn.correct .ans-letter{color:#16a34a}.ans-btn.wrong .ans-letter{color:#dc2626}
-/* FACT OVERLAY */
 .fo{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(4,10,36,0.85);backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .38s ease}
 .fo.on{opacity:1;pointer-events:all}
 .fc{width:100%;max-width:500px;border-radius:22px;overflow:hidden;box-shadow:0 40px 100px rgba(4,10,36,0.6);transform:scale(0.9) translateY(24px);transition:transform .44s cubic-bezier(.34,1.45,.64,1)}
@@ -115,7 +111,6 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .fc-text strong{color:#0a1e50;font-weight:700}
 .fc-btn{width:100%;height:48px;background:#1852f0;border:none;border-radius:13px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .18s,transform .15s}
 .fc-btn:hover{background:#2d6aff;transform:translateY(-2px)}
-/* END */
 #endScreen{display:none;text-align:center;padding:40px 20px}
 .end-emoji{font-size:64px;margin-bottom:16px}
 .end-title{font-size:30px;font-weight:800;margin-bottom:8px;letter-spacing:-.02em;color:#0a1e50}
@@ -132,24 +127,24 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .again-btn:hover{background:#1852f0;color:#fff}
 .end-lb{background:#fff;border:1.5px solid rgba(24,82,240,0.15);border-radius:16px;padding:20px;text-align:left;max-width:520px;margin:0 auto}
 .end-lb-title{font-size:12px;font-weight:700;color:#1852f0;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+/* NEW: best-score notice */
+.best-notice{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#15803d;padding:7px 16px;background:rgba(22,163,74,0.09);border:1px solid rgba(22,163,74,0.25);border-radius:100px;margin-bottom:14px}
+.no-best-notice{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:rgba(10,30,80,0.4);padding:7px 16px;background:rgba(10,30,80,0.04);border:1px solid rgba(10,30,80,0.1);border-radius:100px;margin-bottom:14px}
 </style>
 </head>
 <body>
 <div class="bg1"></div><div class="bg2"></div>
 <div class="wrap">
 
-<!-- ════ AUTH ════ -->
+<!-- AUTH -->
 <div id="authScreen">
   <div class="logo-badge">MA İmtahan Mərkəzi</div>
   <div class="game-title">Biliyin<br><span class="blue">Milyon</span> <span class="amber">Dəyəri</span></div>
   <div class="game-sub">Dünyagörüş sualları · 12 mərhələ · 3 joker</div>
-
   <div class="auth-tabs">
     <button class="auth-tab active" id="tabReg" onclick="switchTab('reg')">📝 Qeydiyyat</button>
     <button class="auth-tab" id="tabLog" onclick="switchTab('log')">🔑 Daxil ol</button>
   </div>
-
-  <!-- REGISTER -->
   <div class="auth-form" id="regForm">
     <input class="auth-input" id="regName" type="text" placeholder="Ad Soyad (unikal)" maxlength="30" oninput="chk()">
     <input class="auth-input" id="regPass" type="password" placeholder="Şifrənizi yaradın" maxlength="40" oninput="chk()">
@@ -159,21 +154,17 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
     <div class="auth-success" id="regOk"></div>
     <button class="auth-btn" id="regBtn" onclick="doReg()" disabled>Qeydiyyatdan keç →</button>
   </div>
-
-  <!-- LOGIN -->
   <div class="auth-form hidden" id="logForm">
     <input class="auth-input" id="logName" type="text" placeholder="Ad Soyad" maxlength="30" oninput="chk()">
     <input class="auth-input" id="logPass" type="password" placeholder="Şifrəniz" maxlength="40" oninput="chk()" onkeydown="if(event.key==='Enter')doLog()">
     <div class="auth-error" id="logErr"></div>
     <button class="auth-btn" id="logBtn" onclick="doLog()" disabled>Daxil ol →</button>
   </div>
-
   <div class="chips">
     <span class="chip">12 sual</span><span class="chip">50/50 joker</span>
     <span class="chip">⏱ Vaxt sayğacı</span><span class="chip">💡 Faktlar</span>
     <span class="chip">🏆 Canlı reytinq</span>
   </div>
-
   <div class="lb-section">
     <div class="lb-title">🏆 Canlı Reytinq</div>
     <div id="aLbLoad" class="lb-loading"><div class="spinner"></div> Yüklənir...</div>
@@ -183,7 +174,7 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
   </div>
 </div>
 
-<!-- ════ START ════ -->
+<!-- START -->
 <div id="startScreen">
   <div class="logo-badge">MA İmtahan Mərkəzi</div>
   <div class="game-title">Biliyin<br><span class="blue">Milyon</span> <span class="amber">Dəyəri</span></div>
@@ -192,7 +183,6 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
   <button class="start-btn" onclick="startGame()">Oyunu Başlat →</button>
   <div class="pool-info" id="poolInfo"></div>
   <button class="logout-btn" onclick="doLogout()">↩ Çıxış / Digər hesab</button>
-
   <div class="lb-section">
     <div class="lb-title">🏆 Canlı Reytinq</div>
     <div id="sLbLoad" class="lb-loading"><div class="spinner"></div> Yüklənir...</div>
@@ -202,7 +192,7 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
   </div>
 </div>
 
-<!-- ════ GAME ════ -->
+<!-- GAME -->
 <div id="gameScreen">
   <div class="top-bar">
     <div class="tb-logo">MA · Milyon Dəyəri</div>
@@ -225,13 +215,14 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
   <div class="answers" id="answers"></div>
 </div>
 
-<!-- ════ END ════ -->
+<!-- END -->
 <div id="endScreen">
   <div class="end-emoji" id="endEmoji"></div>
   <div class="end-title" id="endTitle"></div>
   <div class="end-score" id="endScore"></div>
   <div class="end-points-badge" id="endPoints"></div>
   <div id="savingState" class="saving-badge" style="display:none"><div class="spinner"></div> Nəticə saxlanılır...</div>
+  <div id="bestNotice" style="display:none"></div>
   <div class="end-msg" id="endMsg"></div>
   <div class="end-btns">
     <a href="https://wa.me/994704945094" target="_blank" class="wa-btn">
@@ -283,9 +274,8 @@ function nkey(n){return n.trim().replace(/[.#$\[\]\/\s]/g,'_').toLowerCase();}
 // Firebase REST
 async function fbGet(p){try{var r=await fetch(FB+p+'.json');if(!r.ok)return null;return await r.json();}catch(e){return null;}}
 async function fbSet(p,d){try{var r=await fetch(FB+p+'.json',{method:'PUT',body:JSON.stringify(d),headers:{'Content-Type':'application/json'}});return r.ok;}catch(e){return false;}}
-async function fbPush(p,d){try{var r=await fetch(FB+p+'.json',{method:'POST',body:JSON.stringify(d),headers:{'Content-Type':'application/json'}});return r.ok;}catch(e){return false;}}
 
-// ── AUTH UI ──
+// AUTH UI
 function switchTab(t){
   document.getElementById('tabReg').classList.toggle('active',t==='reg');
   document.getElementById('tabLog').classList.toggle('active',t==='log');
@@ -362,12 +352,13 @@ function enterStart(){
   loadLb('sLbBody','sLbTbl','sLbLoad','sLbEmpty',currentPlayer);
 }
 
-// ── LEADERBOARD ──
+// LEADERBOARD
+// Now reads from /leaderboard (keyed by player), not array
 async function getLb(){
   var d=await fbGet('/leaderboard');
   if(!d)return[];
   var a=Object.values(d);
-  a.sort(function(x,y){return y.xal-x.xal||y.correct-x.correct;});
+  a.sort(function(x,y){return y.correct-x.correct||y.xal-x.xal;});
   return a.slice(0,50);
 }
 
@@ -401,10 +392,11 @@ function renderLb(lb,tbId,tblId,ldId,emId,hi){
     else if(i===2)tr.className='rank-3';
     var ri=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
     var tag=me?'<span class="lb-you-tag">SİZ</span>':'';
+    var bestTag=me?'<span class="lb-best-tag">ƏN YAXŞI</span>':'';
     tr.innerHTML='<td class="lb-rank">'+ri+'</td>'
       +'<td>'+esc(e.name)+tag+'</td>'
       +'<td style="color:#16a34a;font-weight:700">'+e.correct+'/12</td>'
-      +'<td style="color:#1852f0;font-weight:700;font-size:12px">'+fmt(e.xal)+' <span style="font-weight:400;font-size:10px;color:rgba(10,30,80,0.35)">xal</span></td>'
+      +'<td style="color:#1852f0;font-weight:700;font-size:12px">'+fmt(e.xal)+' <span style="font-weight:400;font-size:10px;color:rgba(10,30,80,0.35)">xal</span>'+bestTag+'</td>'
       +'<td style="font-size:11px;color:rgba(10,30,80,0.35)">'+e.date+'</td>';
     tb.appendChild(tr);
   });
@@ -419,7 +411,7 @@ setInterval(function(){
 
 loadLb('aLbBody','aLbTbl','aLbLoad','aLbEmpty','');
 
-// ── QUESTIONS ──
+// QUESTIONS
 var ALL_Q=[
   {q:'Yer kürəsinin ən böyük okeanı hansıdır?',a:['Atlantik','Sakit okean','Hind','Şimal Buz'],c:1,f:{t:'Sakit okean bütün qurulardan böyükdür',x:'<strong>Sakit okean</strong> 165 milyon km² sahəsi ilə Yerin bütün quru ərazilərini üstələyir. Ən dərin nöqtəsi <strong>Mariana çuxuru</strong> — 10.994 m.',i:'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=900&q=80'}},
   {q:'Dünyada ən uzun çay hansıdır?',a:['Amazon','Nil','Yangtze','Misisipi'],c:1,f:{t:'Nil 6.650 km uzunluğu ilə liderdir',x:'<strong>Nil çayı</strong> 6.650 km uzunluğu ilə dünyada ən uzun çay sayılır. Afrika qitəsinin 11 ölkəsindən keçərək Aralıq dənizinə tökülür.',i:'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=900&q=80'}},
@@ -438,7 +430,7 @@ var ALL_Q=[
   {q:'Sakit okean hövzəsindəki "Atəş Halqası" nədir?',a:['Tropik qurşaq','Vulkanik-seysmik zona','Okean cərəyanı','Maqnit anomaliyası'],c:1,f:{t:'Atəş Halqası — yer qabığının aktiv zonası',x:'<strong>Sakit okeanın Atəş Halqası</strong> 40.000 km uzunluğunda vulkan və zəlzələ zonasıdır. Dünyanın 75% vulkanı burada baş verir.',i:'https://images.unsplash.com/photo-1562774053-701939374585?w=900&q=80'}},
 ];
 
-// ── GAME ──
+// GAME
 function startGame(){
   pool=shuf(ALL_Q); gameQ=pool.slice(0,12);
   cur=0; score=0; j50u=false; jSku=false; jAuu=false; pNext=false;
@@ -524,23 +516,63 @@ function showFact(ok){
   document.getElementById('fo').classList.add('on');
 }
 
-function endGame(){
+// ══════════════════════════════════════════
+// END GAME — unikal reytinq (hər oyunçudan 1 giriş, ən yaxşı nəticə saxlanır)
+// ══════════════════════════════════════════
+async function endGame(){
   clearInterval(tInt);
   document.getElementById('gameScreen').style.display='none';
   document.getElementById('endScreen').style.display='block';
+
   var pct=score/12;
   var ei=pct<0.25?0:pct<0.42?1:pct<0.58?2:pct<0.75?3:pct<1?4:5;
   document.getElementById('endEmoji').textContent=['😔','🙂','😊','😃','🌟','🏆'][ei];
   document.getElementById('endTitle').textContent=['Növbəti dəfə daha yaxşı!','Pis deyil!','Yaxşı cəhd!','Əla nəticə!','Təbriklər!','Mükəmməl!'][ei];
   document.getElementById('endScore').textContent=score+'/12 düzgün cavab — '+LLAB[score];
   document.getElementById('endMsg').textContent=['Hər sualın arxasında bir dünya var. Öyrənmək davam edir!','Yaxşı başlanğıc! Hər oyunla biliklərin artır.','Orta nəticə — amma potensialın çoxdur!','Əla iş! Bir neçə suala az qaldı mükəmmələ.','Demək olar ki, zirvəyə çatdın! Bir daha cəhd et!','Bütün suallara düzgün cavab verdin! MA İmtahan Mərkəzinə qeydiyyat üçün bizimlə əlaqə sax!'][ei];
+
   var xal=sum(score);
   document.getElementById('endPoints').textContent=fmt(xal)+' xal';
-  var sav=document.getElementById('savingState'); sav.style.display='inline-flex';
-  fbPush('/leaderboard',{name:currentPlayer,correct:score,xal:xal,date:new Date().toLocaleDateString('az-AZ',{day:'2-digit',month:'2-digit',year:'2-digit'})}).then(function(){
+
+  // ── YENİLİK: hər oyunçudan yalnız 1 giriş, yalnız ən yaxşı nəticə ──
+  var sav=document.getElementById('savingState');
+  var noticeEl=document.getElementById('bestNotice');
+  sav.style.display='inline-flex';
+  noticeEl.style.display='none';
+
+  var lbKey='/leaderboard/'+nkey(currentPlayer);
+  var existing=await fbGet(lbKey);
+  var isBetter=false;
+
+  if(!existing){
+    // İlk dəfə oynayır — birbaşa yaz
+    isBetter=true;
+  } else {
+    // Artıq var — yalnız daha yaxşıdırsa yaz
+    if(score>existing.correct||(score===existing.correct&&xal>existing.xal)){
+      isBetter=true;
+    }
+  }
+
+  if(isBetter){
+    await fbSet(lbKey,{
+      name:currentPlayer,
+      correct:score,
+      xal:xal,
+      date:new Date().toLocaleDateString('az-AZ',{day:'2-digit',month:'2-digit',year:'2-digit'})
+    });
     sav.style.display='none';
-    loadLb('eLbBody','eLbTbl','eLbLoad',null,currentPlayer);
-  });
+    noticeEl.className='best-notice';
+    noticeEl.innerHTML='🏅 Yeni rekord! Bu nəticə reytinqə əlavə edildi.';
+    noticeEl.style.display='inline-flex';
+  } else {
+    sav.style.display='none';
+    noticeEl.className='no-best-notice';
+    noticeEl.innerHTML='📊 Əvvəlki nəticəniz daha yaxşı idi — reytinqdə köhnə nəticə qalır.';
+    noticeEl.style.display='inline-flex';
+  }
+
+  loadLb('eLbBody','eLbTbl','eLbLoad',null,currentPlayer);
 }
 
 function playAgain(){
@@ -549,7 +581,7 @@ function playAgain(){
   loadLb('sLbBody','sLbTbl','sLbLoad','sLbEmpty',currentPlayer);
 }
 
-// ── JOKERS ──
+// JOKERS
 function use5050(){
   if(j50u)return; j50u=true; document.getElementById('j50').disabled=true;
   var bs=Array.from(document.getElementById('answers').querySelectorAll('.ans-btn'));
