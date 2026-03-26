@@ -380,7 +380,18 @@ async function getLb(){
   var d=await fbGet('/leaderboard');
   if(!d)return[];
   var a=Object.values(d);
-  // Sıralama: ümumi yığılan xala görə (azalan), bərabərlikdə ən yaxşı düzgün cavab sayına görə
+  // Köhnə qeydləri normallaşdır: xal → totalXal, correct → bestCorrect
+  a=a.map(function(e){
+    return {
+      name: e.name||'',
+      totalXal: typeof e.totalXal==='number' ? e.totalXal : (typeof e.xal==='number' ? e.xal : 0),
+      bestCorrect: typeof e.bestCorrect==='number' ? e.bestCorrect : (typeof e.correct==='number' ? e.correct : 0),
+      bestXal: typeof e.bestXal==='number' ? e.bestXal : (typeof e.xal==='number' ? e.xal : 0),
+      games: e.games||1,
+      date: e.date||''
+    };
+  });
+  // Sıralama: ümumi yığılan xala görə azalan, bərabərlikdə ən yaxşı düzgün cavab sayına görə
   a.sort(function(x,y){return y.totalXal-x.totalXal||y.bestCorrect-x.bestCorrect;});
   return a.slice(0,50);
 }
