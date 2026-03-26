@@ -50,6 +50,9 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .lb-me-row td{font-weight:700!important}
 .lb-you-tag{display:inline-block;background:#1852f0;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:100px;margin-left:4px;vertical-align:middle}
 .lb-best-tag{display:inline-block;background:#f5a623;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:100px;margin-left:4px;vertical-align:middle}
+/* total xal badge in leaderboard */
+.lb-total-xal{color:#1852f0;font-weight:800;font-size:12px}
+.lb-games-tag{font-size:10px;color:rgba(10,30,80,0.35);font-weight:400}
 #startScreen{display:none;text-align:center;padding:40px 20px}
 .welcome-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.3);color:#15803d;font-size:13px;font-weight:700;padding:7px 18px;border-radius:100px;margin-bottom:16px}
 .start-btn{height:54px;padding:0 48px;background:#1852f0;border:none;border-radius:14px;font-size:17px;font-weight:700;color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .2s,transform .15s;box-shadow:0 4px 28px rgba(24,82,240,0.3)}
@@ -115,11 +118,13 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .end-emoji{font-size:64px;margin-bottom:16px}
 .end-title{font-size:30px;font-weight:800;margin-bottom:8px;letter-spacing:-.02em;color:#0a1e50}
 .end-score{font-size:16px;color:rgba(10,30,80,0.5);margin-bottom:12px;font-weight:300}
-.end-points-badge{display:inline-block;background:rgba(24,82,240,0.1);border:1.5px solid rgba(24,82,240,0.3);color:#1852f0;font-size:22px;font-weight:800;padding:10px 28px;border-radius:100px;margin-bottom:16px}
-.end-msg{font-size:14px;color:rgba(10,30,80,0.45);margin-bottom:24px;line-height:1.7;max-width:360px;margin-left:auto;margin-right:auto}
+.end-points-badge{display:inline-block;background:rgba(24,82,240,0.1);border:1.5px solid rgba(24,82,240,0.3);color:#1852f0;font-size:22px;font-weight:800;padding:10px 28px;border-radius:100px;margin-bottom:8px}
+/* NEW: cumulative total score display */
+.end-total-badge{display:inline-block;background:rgba(245,166,35,0.1);border:1.5px solid rgba(245,166,35,0.4);color:#c8810a;font-size:15px;font-weight:700;padding:7px 22px;border-radius:100px;margin-bottom:16px}
 .saving-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:rgba(10,30,80,0.4);padding:6px 14px;background:rgba(10,30,80,0.04);border-radius:100px;margin-bottom:16px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner{width:12px;height:12px;border:2px solid rgba(24,82,240,0.2);border-top-color:#1852f0;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+.end-msg{font-size:14px;color:rgba(10,30,80,0.45);margin-bottom:24px;line-height:1.7;max-width:360px;margin-left:auto;margin-right:auto}
 .end-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
 .wa-btn{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 26px;background:#25d366;border:none;border-radius:12px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;font-family:'Outfit',sans-serif;text-decoration:none;transition:transform .15s}
 .wa-btn:hover{transform:translateY(-2px)}
@@ -127,7 +132,6 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
 .again-btn:hover{background:#1852f0;color:#fff}
 .end-lb{background:#fff;border:1.5px solid rgba(24,82,240,0.15);border-radius:16px;padding:20px;text-align:left;max-width:520px;margin:0 auto}
 .end-lb-title{font-size:12px;font-weight:700;color:#1852f0;letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px}
-/* NEW: best-score notice */
 .best-notice{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#15803d;padding:7px 16px;background:rgba(22,163,74,0.09);border:1px solid rgba(22,163,74,0.25);border-radius:100px;margin-bottom:14px}
 .no-best-notice{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:rgba(10,30,80,0.4);padding:7px 16px;background:rgba(10,30,80,0.04);border:1px solid rgba(10,30,80,0.1);border-radius:100px;margin-bottom:14px}
 </style>
@@ -166,9 +170,12 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
     <span class="chip">🏆 Canlı reytinq</span>
   </div>
   <div class="lb-section">
-    <div class="lb-title">🏆 Canlı Reytinq</div>
+    <div class="lb-title">🏆 Canlı Reytinq <span style="font-size:10px;font-weight:400;color:rgba(10,30,80,0.4);text-transform:none;letter-spacing:0">(ümumi yığılan xala görə)</span></div>
     <div id="aLbLoad" class="lb-loading"><div class="spinner"></div> Yüklənir...</div>
-    <table class="lb-table" id="aLbTbl" style="display:none"><thead><tr><th>#</th><th>Ad</th><th>Düzgün</th><th>Xal</th><th>Tarix</th></tr></thead><tbody id="aLbBody"></tbody></table>
+    <table class="lb-table" id="aLbTbl" style="display:none">
+      <thead><tr><th>#</th><th>Ad</th><th>Oyun</th><th>Ən Yaxşı</th><th>Ümumi Xal</th></tr></thead>
+      <tbody id="aLbBody"></tbody>
+    </table>
     <div id="aLbEmpty" class="lb-empty" style="display:none">Hələ heç kim oynamayıb 🎯</div>
     <button class="lb-refresh-btn" onclick="loadLb('aLbBody','aLbTbl','aLbLoad','aLbEmpty','')">↻ Yenilə</button>
   </div>
@@ -184,9 +191,12 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
   <div class="pool-info" id="poolInfo"></div>
   <button class="logout-btn" onclick="doLogout()">↩ Çıxış / Digər hesab</button>
   <div class="lb-section">
-    <div class="lb-title">🏆 Canlı Reytinq</div>
+    <div class="lb-title">🏆 Canlı Reytinq <span style="font-size:10px;font-weight:400;color:rgba(10,30,80,0.4);text-transform:none;letter-spacing:0">(ümumi yığılan xala görə)</span></div>
     <div id="sLbLoad" class="lb-loading"><div class="spinner"></div> Yüklənir...</div>
-    <table class="lb-table" id="sLbTbl" style="display:none"><thead><tr><th>#</th><th>Ad</th><th>Düzgün</th><th>Xal</th><th>Tarix</th></tr></thead><tbody id="sLbBody"></tbody></table>
+    <table class="lb-table" id="sLbTbl" style="display:none">
+      <thead><tr><th>#</th><th>Ad</th><th>Oyun</th><th>Ən Yaxşı</th><th>Ümumi Xal</th></tr></thead>
+      <tbody id="sLbBody"></tbody>
+    </table>
     <div id="sLbEmpty" class="lb-empty" style="display:none">Hələ heç kim oynamayıb 🎯</div>
     <button class="lb-refresh-btn" onclick="loadLb('sLbBody','sLbTbl','sLbLoad','sLbEmpty',currentPlayer)">↻ Yenilə</button>
   </div>
@@ -221,6 +231,8 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
   <div class="end-title" id="endTitle"></div>
   <div class="end-score" id="endScore"></div>
   <div class="end-points-badge" id="endPoints"></div>
+  <!-- NEW: cumulative total xal -->
+  <div class="end-total-badge" id="endTotalPoints" style="display:none"></div>
   <div id="savingState" class="saving-badge" style="display:none"><div class="spinner"></div> Nəticə saxlanılır...</div>
   <div id="bestNotice" style="display:none"></div>
   <div class="end-msg" id="endMsg"></div>
@@ -232,9 +244,12 @@ body{font-family:'Outfit',sans-serif;background:#f0f5ff;color:#0a1e50;min-height
     <button class="again-btn" onclick="playAgain()">Yenidən Oyna</button>
   </div>
   <div class="end-lb">
-    <div class="end-lb-title">🏆 Canlı Reytinq</div>
+    <div class="end-lb-title">🏆 Canlı Reytinq <span style="font-size:10px;font-weight:400;color:rgba(10,30,80,0.4);text-transform:none;letter-spacing:0">(ümumi yığılan xala görə)</span></div>
     <div id="eLbLoad" class="lb-loading"><div class="spinner"></div> Yüklənir...</div>
-    <table class="lb-table" id="eLbTbl" style="display:none"><thead><tr><th>#</th><th>Ad</th><th>Düzgün</th><th>Xal</th><th>Tarix</th></tr></thead><tbody id="eLbBody"></tbody></table>
+    <table class="lb-table" id="eLbTbl" style="display:none">
+      <thead><tr><th>#</th><th>Ad</th><th>Oyun</th><th>Ən Yaxşı</th><th>Ümumi Xal</th></tr></thead>
+      <tbody id="eLbBody"></tbody>
+    </table>
     <button class="lb-refresh-btn" onclick="loadLb('eLbBody','eLbTbl','eLbLoad',null,currentPlayer)">↻ Yenilə</button>
   </div>
 </div>
@@ -267,6 +282,7 @@ var tInt=null,tLeft=0,pNext=false;
 
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function fmt(x){return x.toLocaleString('az-AZ');}
+// Bu sessiyada qazanılan xal (yalnız düzgün cavabların cəmi)
 function sum(n){var x=0;for(var i=0;i<n;i++)x+=XAL[i];return x;}
 function shuf(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
 function nkey(n){return n.trim().replace(/[.#$\[\]\/\s]/g,'_').toLowerCase();}
@@ -352,13 +368,20 @@ function enterStart(){
   loadLb('sLbBody','sLbTbl','sLbLoad','sLbEmpty',currentPlayer);
 }
 
-// LEADERBOARD
-// Now reads from /leaderboard (keyed by player), not array
+// ══════════════════════════════════════════
+// LEADERBOARD — ümumi (kumulyativ) xala görə sıralama
+// Firebase strukturu: /leaderboard/{playerKey}
+//   { name, totalXal, bestCorrect, bestXal, games, date }
+//   totalXal = bütün oyunlardan yığılan ümumi xal (sıralama bunun üzərindəndir)
+//   bestCorrect = ən yaxşı oyundakı düzgün cavab sayı (göstərmək üçün)
+//   games = oynanan oyun sayı
+// ══════════════════════════════════════════
 async function getLb(){
   var d=await fbGet('/leaderboard');
   if(!d)return[];
   var a=Object.values(d);
-  a.sort(function(x,y){return y.correct-x.correct||y.xal-x.xal;});
+  // Sıralama: ümumi yığılan xala görə (azalan), bərabərlikdə ən yaxşı düzgün cavab sayına görə
+  a.sort(function(x,y){return y.totalXal-x.totalXal||y.bestCorrect-x.bestCorrect;});
   return a.slice(0,50);
 }
 
@@ -392,12 +415,16 @@ function renderLb(lb,tbId,tblId,ldId,emId,hi){
     else if(i===2)tr.className='rank-3';
     var ri=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
     var tag=me?'<span class="lb-you-tag">SİZ</span>':'';
-    var bestTag=me?'<span class="lb-best-tag">ƏN YAXŞI</span>':'';
+    var gamesCount=e.games||1;
+    // Ən yaxşı nəticə sütunu
+    var bestStr='<span style="color:#16a34a;font-weight:700">'+(e.bestCorrect||0)+'/12</span>';
+    // Ümumi xal sütunu — əsas sıralama meyarı
+    var totalStr='<span class="lb-total-xal">'+fmt(e.totalXal||0)+'</span>';
     tr.innerHTML='<td class="lb-rank">'+ri+'</td>'
       +'<td>'+esc(e.name)+tag+'</td>'
-      +'<td style="color:#16a34a;font-weight:700">'+e.correct+'/12</td>'
-      +'<td style="color:#1852f0;font-weight:700;font-size:12px">'+fmt(e.xal)+' <span style="font-weight:400;font-size:10px;color:rgba(10,30,80,0.35)">xal</span>'+bestTag+'</td>'
-      +'<td style="font-size:11px;color:rgba(10,30,80,0.35)">'+e.date+'</td>';
+      +'<td style="font-size:12px;color:rgba(10,30,80,0.5)">'+gamesCount+'x</td>'
+      +'<td>'+bestStr+'</td>'
+      +'<td>'+totalStr+' <span class="lb-games-tag">xal</span></td>';
     tb.appendChild(tr);
   });
 }
@@ -414,6 +441,8 @@ loadLb('aLbBody','aLbTbl','aLbLoad','aLbEmpty','');
 // QUESTIONS
 var ALL_Q=[
   {q:'Dünyanın ən uzun çayı hansıdır?',a:['Amazon','Nil','Yanszı','Missisipi'],c:1,
+f:{t:'Nil çayı 6.650 km — 11 ölkədən axır',x:'<strong>Nil</strong> 6.650 km ilə dünyanın ən uzun çayıdır. Etiopiya, Sudan, Misir daxil <strong>11 ölkədən</strong> keçir. Qədim Misir sivilizasiyasının bütün inkişafı məhz bu çayın sahillərindən başladı.',i:'https://images.unsplash.com/photo-1609619385002-f40f1df9b7eb?w=900&q=80'}},
+{q:'Dünyanın ən uzun çayı hansıdır?',a:['Amazon','Nil','Yanszı','Missisipi'],c:1,
 f:{t:'Nil çayı 6.650 km — 11 ölkədən axır',x:'<strong>Nil</strong> 6.650 km ilə dünyanın ən uzun çayıdır. Etiopiya, Sudan, Misir daxil <strong>11 ölkədən</strong> keçir. Qədim Misir sivilizasiyasının bütün inkişafı məhz bu çayın sahillərindən başladı.',i:'https://images.unsplash.com/photo-1609619385002-f40f1df9b7eb?w=900&q=80'}},
 
 {q:'Avropanın ən böyük ölkəsi hansıdır?',a:['Fransa','Almaniya','Rusiya','Ukrayna'],c:2,
@@ -1574,7 +1603,11 @@ function showFact(ok){
 }
 
 // ══════════════════════════════════════════
-// END GAME — unikal reytinq (hər oyunçudan 1 giriş, ən yaxşı nəticə saxlanır)
+// END GAME
+// Yeni məntiqi:
+//   - Hər oyundan sonra xal cəmlənir (totalXal += bu sessiyada qazanılan xal)
+//   - Ən yaxşı nəticə (bestCorrect, bestXal) ayrıca saxlanılır
+//   - Reytinq cədvəli totalXal üzərindən sıralanır
 // ══════════════════════════════════════════
 async function endGame(){
   clearInterval(tInt);
@@ -1588,46 +1621,61 @@ async function endGame(){
   document.getElementById('endScore').textContent=score+'/12 düzgün cavab — '+LLAB[score];
   document.getElementById('endMsg').textContent=['Hər sualın arxasında bir dünya var. Öyrənmək davam edir!','Yaxşı başlanğıc! Hər oyunla biliklərin artır.','Orta nəticə — amma potensialın çoxdur!','Əla iş! Bir neçə suala az qaldı mükəmmələ.','Demək olar ki, zirvəyə çatdın! Bir daha cəhd et!','Bütün suallara düzgün cavab verdin! MA İmtahan Mərkəzinə qeydiyyat üçün bizimlə əlaqə sax!'][ei];
 
-  var xal=sum(score);
-  document.getElementById('endPoints').textContent=fmt(xal)+' xal';
+  // Bu sessiyada qazanılan xal
+  var sessionXal=sum(score);
+  document.getElementById('endPoints').textContent='Bu oyun: '+fmt(sessionXal)+' xal';
 
-  // ── YENİLİK: hər oyunçudan yalnız 1 giriş, yalnız ən yaxşı nəticə ──
   var sav=document.getElementById('savingState');
   var noticeEl=document.getElementById('bestNotice');
+  var totalEl=document.getElementById('endTotalPoints');
   sav.style.display='inline-flex';
   noticeEl.style.display='none';
+  totalEl.style.display='none';
 
   var lbKey='/leaderboard/'+nkey(currentPlayer);
   var existing=await fbGet(lbKey);
-  var isBetter=false;
+
+  var newTotalXal, newBestCorrect, newBestXal, newGames;
+  var today=new Date().toLocaleDateString('az-AZ',{day:'2-digit',month:'2-digit',year:'2-digit'});
 
   if(!existing){
-    // İlk dəfə oynayır — birbaşa yaz
-    isBetter=true;
+    // İlk oyun
+    newTotalXal=sessionXal;
+    newBestCorrect=score;
+    newBestXal=sessionXal;
+    newGames=1;
   } else {
-    // Artıq var — yalnız daha yaxşıdırsa yaz
-    if(score>existing.correct||(score===existing.correct&&xal>existing.xal)){
-      isBetter=true;
-    }
+    // Mövcud qeydə cəmlə
+    newTotalXal=(existing.totalXal||existing.xal||0)+sessionXal;
+    newBestCorrect=Math.max(existing.bestCorrect||existing.correct||0, score);
+    newBestXal=Math.max(existing.bestXal||existing.xal||0, sessionXal);
+    newGames=(existing.games||1)+1;
   }
 
-  if(isBetter){
-    await fbSet(lbKey,{
-      name:currentPlayer,
-      correct:score,
-      xal:xal,
-      date:new Date().toLocaleDateString('az-AZ',{day:'2-digit',month:'2-digit',year:'2-digit'})
-    });
-    sav.style.display='none';
+  await fbSet(lbKey,{
+    name:currentPlayer,
+    totalXal:newTotalXal,
+    bestCorrect:newBestCorrect,
+    bestXal:newBestXal,
+    games:newGames,
+    date:today
+  });
+
+  sav.style.display='none';
+
+  // Ümumi xalı göstər
+  totalEl.textContent='🏆 Ümumi yığılan xal: '+fmt(newTotalXal);
+  totalEl.style.display='inline-block';
+
+  // Bildiriş: bu sessiya nəticəsi ən yaxşı idi ya yox
+  if(!existing||score>=(existing.bestCorrect||existing.correct||0)){
     noticeEl.className='best-notice';
-    noticeEl.innerHTML='🏅 Yeni rekord! Bu nəticə reytinqə əlavə edildi.';
-    noticeEl.style.display='inline-flex';
+    noticeEl.innerHTML='🏅 Yeni rekord! Bu nəticə ən yaxşı nəticə kimi qeydə alındı.';
   } else {
-    sav.style.display='none';
     noticeEl.className='no-best-notice';
-    noticeEl.innerHTML='📊 Əvvəlki nəticəniz daha yaxşı idi — reytinqdə köhnə nəticə qalır.';
-    noticeEl.style.display='inline-flex';
+    noticeEl.innerHTML='📊 Ümumi xalınıza +'+fmt(sessionXal)+' xal əlavə edildi.';
   }
+  noticeEl.style.display='inline-flex';
 
   loadLb('eLbBody','eLbTbl','eLbLoad',null,currentPlayer);
 }
