@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<link rel="icon" href="https://maimtahan.az/favicon.png" type="image/png">
+<link rel="shortcut icon" href="https://maimtahan.az/favicon.png" type="image/png">
+<meta property="og:image" content="https://maimtahan.az/favicon.png">
+<meta property="og:title" content="Mülki Müdafiə Testi — MA İmtahan Mərkəzi">
+<meta property="og:description" content="Mülki Müdafiə fənni üzrə pulsuz sınaq testi. 30 sual, avtomatik nəticə.">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GF9C8J9FHX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-GF9C8J9FHX');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mülki Müdafiə Testi — MA İmtahan Mərkəzi</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#1852f0; --blue-mid:#2d6aff; --blue-glow:rgba(24,82,240,0.22);
+  --amber:#b30000; --rose:#e83b3b;
+  --bg:#f0f5ff; --card:#ffffff;
+  --text:#0a1e50; --sub:rgba(10,30,80,0.5); --dim:rgba(10,30,80,0.7);
+  --border:rgba(24,82,240,0.12); --border-lt:#c8d9ff;
+  --correct:#16a34a; --correct-bg:rgba(22,163,74,0.1); --correct-bd:rgba(22,163,74,0.35);
+  --wrong:#dc2626;   --wrong-bg:rgba(220,38,38,0.1);   --wrong-bd:rgba(220,38,38,0.35);
+  --r-sm:10px; --r-md:16px; --r-lg:24px; --r-xl:32px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+
+/* ── NAV ────────────────────────────────────── */
+.nav{position:fixed;top:0;left:0;right:0;z-index:500;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 48px;background:rgba(240,245,255,0.92);backdrop-filter:blur(24px) saturate(180%);border-bottom:1px solid rgba(24,82,240,0.15)}
+.nav-logo{display:flex;align-items:center;gap:12px}
+.logo-mark{width:40px;height:40px;background:var(--blue);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:white;box-shadow:0 0 20px var(--blue-glow)}
+.logo-text{font-size:15px;font-weight:700;color:var(--text);line-height:1.2}
+.logo-text small{display:block;font-size:10px;font-weight:400;color:var(--sub);letter-spacing:.12em;text-transform:uppercase}
+.nav-back{height:38px;padding:0 18px;background:rgba(24,82,240,0.08);border:1px solid rgba(24,82,240,0.2);border-radius:var(--r-sm);font-size:13px;font-weight:600;color:var(--blue);display:inline-flex;align-items:center;gap:7px;transition:background .2s,transform .15s}
+.nav-back:hover{background:rgba(24,82,240,0.14);transform:translateY(-1px)}
+
+/* ── LAYOUT ─────────────────────────────────── */
+.page{padding-top:88px;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding-bottom:60px;padding-left:16px;padding-right:16px}
+
+/* ── HERO BANNER ────────────────────────────── */
+.hero-banner{width:100%;max-width:680px;background:linear-gradient(135deg,#1852f0 0%,#2d6aff 60%,#0a1e50 100%);border-radius:var(--r-xl);padding:40px 36px;margin-bottom:28px;position:relative;overflow:hidden;text-align:center}
+.hero-banner::before{content:'';position:absolute;top:-60px;right:-60px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,0.06);pointer-events:none}
+.hero-banner::after{content:'';position:absolute;bottom:-40px;left:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none}
+.hb-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.85);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:6px 14px;border-radius:100px;margin-bottom:16px}
+.hb-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:#7ddda3;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hb-icon{font-size:52px;margin-bottom:12px;display:block;position:relative;z-index:1}
+.hb-title{font-size:clamp(22px,4vw,34px);font-weight:800;color:white;letter-spacing:-.02em;line-height:1.1;margin-bottom:10px;position:relative;z-index:1}
+.hb-sub{font-size:14px;font-weight:300;color:rgba(255,255,255,0.75);margin-bottom:28px;line-height:1.6;position:relative;z-index:1}
+.hb-stats{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;position:relative;z-index:1}
+.hb-stat{text-align:center}
+.hb-stat-num{font-size:26px;font-weight:800;color:white;letter-spacing:-.02em}
+.hb-stat-lbl{font-size:11px;font-weight:400;color:rgba(255,255,255,0.5);letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+.hb-divider{width:1px;height:40px;background:rgba(255,255,255,0.15);align-self:center}
+
+/* ── CARDS ──────────────────────────────────── */
+.card{background:var(--card);border:1.5px solid var(--border-lt);border-radius:var(--r-xl);padding:36px 32px;width:100%;max-width:680px;box-shadow:0 8px 40px rgba(24,82,240,0.07)}
+
+/* ── USER BAR ───────────────────────────────── */
+.user-bar{display:flex;align-items:center;gap:12px;background:#f0f5ff;border:1px solid var(--border-lt);border-radius:var(--r-md);padding:14px 18px;margin-bottom:20px;width:100%;max-width:680px}
+.u-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--blue-mid));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0}
+.u-info{flex:1}
+.u-name{font-size:14px;font-weight:600}
+.u-email{font-size:12px;color:var(--sub)}
+.u-logout{background:none;border:none;font-family:'Poppins',sans-serif;font-size:12px;color:var(--sub);cursor:pointer;text-decoration:underline}
+
+/* ── HISTORY ────────────────────────────────── */
+.hist-label{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--sub);margin-bottom:10px}
+.hist-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-lt);font-size:13px}
+.hist-row:last-child{border-bottom:none}
+
+/* ── FORM ───────────────────────────────────── */
+.field-label{font-size:13px;font-weight:600;color:var(--dim);margin-bottom:6px;display:block}
+.field{width:100%;padding:13px 16px;border-radius:var(--r-sm);border:1.5px solid var(--border-lt);background:#f8faff;color:var(--text);font-size:15px;font-family:'Poppins',sans-serif;outline:none;margin-bottom:14px;transition:border-color .2s,box-shadow .2s}
+.field:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,82,240,0.08)}
+.err{color:var(--wrong);font-size:13px;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+/* ── BUTTONS ────────────────────────────────── */
+.btn{width:100%;padding:14px;border-radius:var(--r-md);font-size:15px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;border:none;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:9px;margin-bottom:8px}
+.btn:last-child{margin-bottom:0}
+.btn-blue{background:var(--blue);color:white;box-shadow:0 4px 20px var(--blue-glow)}
+.btn-blue:hover{background:var(--blue-mid);transform:translateY(-1px);box-shadow:0 8px 28px rgba(24,82,240,0.35)}
+.btn-outline{background:transparent;color:var(--blue);border:1.5px solid rgba(24,82,240,0.3)}
+.btn-outline:hover{background:rgba(24,82,240,0.06)}
+
+/* ── PROGRESS ───────────────────────────────── */
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.prog-label{font-size:13px;font-weight:600;color:var(--sub)}
+.score-badge{font-size:12px;font-weight:700;padding:5px 14px;border-radius:100px;background:rgba(24,82,240,0.1);color:var(--blue);border:1px solid rgba(24,82,240,0.2)}
+.prog-wrap{height:7px;background:var(--border-lt);border-radius:100px;overflow:hidden;margin-bottom:24px}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--blue),#818cf8);border-radius:100px;transition:width .4s ease}
+
+/* ── QUESTION ───────────────────────────────── */
+.q-text{font-size:16px;font-weight:600;line-height:1.7;margin-bottom:22px;color:var(--text)}
+
+/* ── OPTIONS ────────────────────────────────── */
+.opt{width:100%;padding:14px 16px;border-radius:var(--r-md);border:1.5px solid var(--border-lt);background:#f8faff;cursor:pointer;margin-bottom:10px;font-size:14px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:11px;transition:border-color .18s,background .18s,transform .12s;text-align:left;font-family:'Poppins',sans-serif}
+.opt:last-of-type{margin-bottom:0}
+.opt:hover:not(.locked){border-color:var(--blue);background:rgba(24,82,240,0.05);transform:translateX(4px)}
+.opt.picked{border-color:var(--blue);background:rgba(24,82,240,0.07)}
+.opt.correct{border-color:var(--correct-bd);background:var(--correct-bg);color:var(--correct)}
+.opt.wrong{border-color:var(--wrong-bd);background:var(--wrong-bg);color:var(--wrong)}
+.opt.locked{cursor:default;transform:none!important}
+.opt-letter{width:30px;height:30px;border-radius:8px;background:rgba(24,82,240,0.1);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--blue);flex-shrink:0;transition:background .18s,color .18s}
+.opt.correct .opt-letter{background:var(--correct);color:white}
+.opt.wrong   .opt-letter{background:var(--wrong);color:white}
+.opt-icon{margin-left:auto;font-size:17px;flex-shrink:0}
+.opt-text{flex:1;line-height:1.45}
+
+/* ── RESULT ─────────────────────────────────── */
+.res-center{text-align:center;padding:12px 0 24px}
+.res-emoji{font-size:72px;display:block;margin-bottom:10px}
+.res-pct{font-size:58px;font-weight:900;letter-spacing:-.03em;line-height:1}
+.res-score{font-size:17px;font-weight:400;color:var(--sub);margin-top:6px}
+.res-badge{display:inline-block;padding:7px 20px;border-radius:100px;font-size:13px;font-weight:700;margin-top:14px;margin-bottom:28px}
+.res-list-title{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--sub);margin-bottom:10px}
+.res-list{border:1px solid var(--border-lt);border-radius:var(--r-md);overflow:hidden;max-height:300px;overflow-y:auto;margin-bottom:24px}
+.res-row{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border-lt);font-size:13px}
+.res-row:last-child{border-bottom:none}
+.res-row-ic{font-size:14px;flex-shrink:0;margin-top:1px}
+.res-row-txt{color:var(--sub);line-height:1.5;flex:1}
+
+/* ── ANIMATIONS ─────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeUp .4s ease both}
+
+/* ── RESPONSIVE ─────────────────────────────── */
+@media(max-width:600px){
+  .nav{padding:0 14px}
+  .hero-banner{padding:28px 18px;border-radius:20px}
+  .hb-title{font-size:22px}
+  .hb-stats{gap:16px}
+  .hb-stat-num{font-size:22px}
+  .card{padding:22px 16px;border-radius:20px}
+  .q-text{font-size:14px}
+  .opt{font-size:13px;padding:12px 13px}
+  .opt-letter{width:26px;height:26px;font-size:11px}
+  .res-pct{font-size:46px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <div class="logo-mark">MA</div>
+    <div class="logo-text">İmtahan Mərkəzi<small>MQM / OTK Rəsmi Əməkdaşı</small></div>
+  </a>
+  <a href="index.html" class="nav-back">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Ana səhifə
+  </a>
+</nav>
+
+<div class="page" id="app">
+  <!-- JS ilə render edilir -->
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+// SUALLAR — öz suallarını bura əlavə et
+// format: { id, q, options:[5 variant], answer: 0-4 }
+// ════════════════════════════════════════════════
+const ALL_QUESTIONS = [
+  // ✏️ SUALLARI BURA ƏLAVƏ ET
+  // Nümunə:
+  // { id:1, q:"Sual mətni?", options:["A","B","C","D","E"], answer:2 },
+];
+
+// ════════════════════════════════════════════════
+// YARDIMÇI
+// ════════════════════════════════════════════════
+const QUIZ_COUNT = 30;
+
+function shuffle(a){ const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b; }
+function pick(pool,n){ return shuffle(pool).slice(0,Math.min(n,pool.length)); }
+
+function lsGet(k){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):null; }catch{ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch{} }
+function lsDel(k){ try{ localStorage.removeItem(k); }catch{} }
+
+// ════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════
+let state = {
+  screen: 'home',   // home | login | quiz | result
+  user:   null,
+  history: [],
+  questions: [],
+  current:  0,
+  selected: null,
+  answers:  [],
+  loginName:  '',
+  loginEmail: '',
+  loginErr:   '',
+};
+
+// ════════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════════
+const app = document.getElementById('app');
+
+function render(){
+  app.innerHTML = '';
+  const s = state;
+
+  if(s.screen === 'login')  { renderLogin();  return; }
+  if(s.screen === 'quiz')   { renderQuiz();   return; }
+  if(s.screen === 'result') { renderResult(); return; }
+  renderHome();
+}
+
+// ── BADGE ────────────────────────────────────────
+function badgeStyle(color){
+  return `background:${color}22;color:${color};border:1px solid ${color}55`;
+}
+
+// ── HOME ─────────────────────────────────────────
+function renderHome(){
+  const s = state;
+
+  // Hero banner
+  const banner = el('div','hero-banner fade-in');
+  banner.innerHTML = `
+    <div class="hb-badge">Pulsuz Sınaq Testi</div>
+    <span class="hb-icon">🛡️</span>
+    <div class="hb-title">Mülki Müdafiə<br>Test Bazası</div>
+    <div class="hb-sub">Hər sessiyada ${QUIZ_COUNT} sual avtomatik seçilir.<br>Cavabla, öyrən, inkişaf et.</div>
+    <div class="hb-stats">
+      <div class="hb-stat"><div class="hb-stat-num">${ALL_QUESTIONS.length}</div><div class="hb-stat-lbl">Sual bazası</div></div>
+      <div class="hb-divider"></div>
+      <div class="hb-stat"><div class="hb-stat-num">${QUIZ_COUNT}</div><div class="hb-stat-lbl">Hər sessiya</div></div>
+      <div class="hb-divider"></div>
+      <div class="hb-stat"><div class="hb-stat-num">5</div><div class="hb-stat-lbl">Variant</div></div>
+    </div>`;
+  app.appendChild(banner);
+
+  if(s.user){
+    // User bar
+    const ubar = el('div','user-bar fade-in');
+    ubar.innerHTML = `
+      <div class="u-avatar">${s.user.name[0].toUpperCase()}</div>
+      <div class="u-info">
+        <div class="u-name">👤 ${s.user.name}</div>
+        <div class="u-email">${s.user.email}</div>
+      </div>
+      <button class="u-logout" onclick="doLogout()">Çıxış</button>`;
+    app.appendChild(ubar);
+
+    // Əsas kart
+    const card = el('div','card fade-in');
+
+    if(ALL_QUESTIONS.length === 0){
+      card.innerHTML = `
+        <div style="text-align:center;padding:20px 0;color:var(--amber);font-size:14px;line-height:1.7">
+          ⚠️ Sual bazası hələ boşdur.<br>
+          <span style="color:var(--sub);font-size:13px">mm_quiz.html faylında <code>ALL_QUESTIONS</code> massivinə sualları əlavə et.</span>
+        </div>`;
+    } else {
+      const startBtn = el('button','btn btn-blue');
+      startBtn.innerHTML = `🚀 Testi Başlat (${QUIZ_COUNT} sual)`;
+      startBtn.onclick = doStart;
+      card.appendChild(startBtn);
+    }
+
+    // Tarixçə
+    if(s.history.length > 0){
+      const hDiv = document.createElement('div');
+      hDiv.style.marginTop = '24px';
+      hDiv.innerHTML = `<div class="hist-label">📊 Son nəticələr</div>`;
+      s.history.slice(0,5).forEach(h => {
+        const pct = Math.round((h.score/h.total)*100);
+        const c   = pct>=70?'#16a34a':pct>=50?'#d97706':'#dc2626';
+        const row = el('div','hist-row');
+        row.innerHTML = `
+          <span style="color:var(--sub)">${h.date} · ${h.time}</span>
+          <span style="padding:4px 12px;border-radius:100px;font-size:12px;font-weight:700;${badgeStyle(c)}">${h.score}/${h.total} — ${pct}%</span>`;
+        hDiv.appendChild(row);
+      });
+      card.appendChild(hDiv);
+    }
+
+    app.appendChild(card);
+  } else {
+    // Giriş yoxdur
+    const card = el('div','card fade-in');
+    card.innerHTML = `
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="font-size:20px;font-weight:800;margin-bottom:8px">Başlamaq üçün daxil ol</div>
+        <div style="font-size:14px;font-weight:300;color:var(--sub);line-height:1.7">
+          ✅ Suallar hər dəfə avtomatik qarışdırılır<br>
+          ✅ Hər sualdan sonra düzgün cavab göstərilir<br>
+          ✅ Nəticə tarixçəsi saxlanılır
+        </div>
+      </div>`;
+    const loginBtn = el('button','btn btn-blue');
+    loginBtn.innerHTML = '🔑 Qeydiyyat / Giriş';
+    loginBtn.onclick = ()=>{ state.screen='login'; render(); };
+    card.appendChild(loginBtn);
+    app.appendChild(card);
+  }
+}
+
+// ── LOGIN ─────────────────────────────────────────
+function renderLogin(){
+  const banner = el('div','hero-banner fade-in');
+  banner.innerHTML = `
+    <span class="hb-icon">🔑</span>
+    <div class="hb-title">Giriş / Qeydiyyat</div>
+    <div class="hb-sub">Adını və emailini daxil et, nəticələrin saxlanılsın.</div>`;
+  app.appendChild(banner);
+
+  const card = el('div','card fade-in');
+
+  if(state.loginErr){
+    const errDiv = el('div','err');
+    errDiv.innerHTML = `⚠️ ${state.loginErr}`;
+    card.appendChild(errDiv);
+  }
+
+  // Ad
+  const nameLbl = el('label','field-label');
+  nameLbl.textContent = 'Adınız';
+  const nameInp = el('input');
+  nameInp.className = 'field';
+  nameInp.placeholder = 'Ad Soyad';
+  nameInp.value = state.loginName;
+  nameInp.oninput = e => state.loginName = e.target.value;
+  nameInp.onkeydown = e => { if(e.key==='Enter') doRegister(); };
+
+  // Email
+  const emailLbl = el('label','field-label');
+  emailLbl.textContent = 'Email';
+  const emailInp = el('input');
+  emailInp.className = 'field';
+  emailInp.type = 'email';
+  emailInp.placeholder = 'ornek@email.com';
+  emailInp.value = state.loginEmail;
+  emailInp.oninput = e => state.loginEmail = e.target.value;
+  emailInp.onkeydown = e => { if(e.key==='Enter') doRegister(); };
+
+  const submitBtn = el('button','btn btn-blue');
+  submitBtn.innerHTML = '✓ Daxil ol';
+  submitBtn.onclick = doRegister;
+
+  const backBtn = el('button','btn btn-outline');
+  backBtn.innerHTML = '← Geri';
+  backBtn.onclick = ()=>{ state.screen='home'; render(); };
+
+  card.append(nameLbl,nameInp,emailLbl,emailInp,submitBtn,backBtn);
+  app.appendChild(card);
+
+  setTimeout(()=>nameInp.focus(),50);
+}
+
+// ── QUIZ ──────────────────────────────────────────
+function renderQuiz(){
+  const s = state;
+  const q = s.questions[s.current];
+  if(!q){ doFinish(); return; }
+
+  const answered = s.selected !== null;
+  const prog = ((s.current+1)/s.questions.length)*100;
+  const correct = s.answers.filter(a=>a.sel===a.ans).length;
+
+  const card = el('div','card fade-in');
+
+  // Top row
+  const topRow = el('div','prog-row');
+  topRow.innerHTML = `
+    <span class="prog-label">Sual ${s.current+1} / ${s.questions.length}</span>
+    <span class="score-badge">✓ ${correct} düzgün</span>`;
+  card.appendChild(topRow);
+
+  // Progress
+  const pw = el('div','prog-wrap');
+  const pb = el('div','prog-bar');
+  pb.style.width = prog+'%';
+  pw.appendChild(pb);
+  card.appendChild(pw);
+
+  // Question
+  const qText = el('div','q-text');
+  qText.textContent = q.q;
+  card.appendChild(qText);
+
+  // Options
+  q.options.forEach((opt,i)=>{
+    const btn = el('button','opt');
+    if(answered) btn.classList.add('locked');
+    if(answered && i===q.answer)          btn.classList.add('correct');
+    if(answered && i===s.selected && i!==q.answer) btn.classList.add('wrong');
+    if(!answered && i===s.selected)       btn.classList.add('picked');
+
+    let icon = '';
+    if(answered && i===q.answer)                       icon='✅';
+    if(answered && i===s.selected && i!==q.answer)     icon='❌';
+
+    btn.innerHTML = `
+      <span class="opt-letter">${String.fromCharCode(65+i)}</span>
+      <span class="opt-text">${opt}</span>
+      ${icon?`<span class="opt-icon">${icon}</span>`:''}`;
+
+    if(!answered) btn.onclick = ()=>doAnswer(i);
+    card.appendChild(btn);
+  });
+
+  // Next btn
+  if(answered){
+    const nextBtn = el('button','btn btn-blue');
+    nextBtn.style.marginTop='16px';
+    nextBtn.innerHTML = s.current+1>=s.questions.length
+      ? 'Nəticəyə bax →'
+      : 'Növbəti sual →';
+    nextBtn.onclick = doNext;
+    card.appendChild(nextBtn);
+  }
+
+  app.appendChild(card);
+}
+
+// ── RESULT ────────────────────────────────────────
+function renderResult(){
+  const s = state;
+  const score = s.answers.filter(a=>a.sel===a.ans).length;
+  const total = s.questions.length;
+  const pct   = total ? Math.round((score/total)*100) : 0;
+  const color = pct>=70?'#16a34a':pct>=50?'#d97706':'#dc2626';
+  const emoji = pct>=70?'🏆':pct>=50?'📚':'💪';
+  const label = pct>=70?'Əla nəticə!':pct>=50?'Yaxşı, daha çalış!':'Daha çox hazırlaşmaq lazımdır';
+
+  const card = el('div','card fade-in');
+
+  // Center block
+  const center = el('div','res-center');
+  center.innerHTML = `
+    <span class="res-emoji">${emoji}</span>
+    <div class="res-pct" style="color:${color}">${pct}%</div>
+    <div class="res-score">${score} / ${total} düzgün cavab</div>
+    <span class="res-badge" style="${badgeStyle(color)}">${label}</span>`;
+  card.appendChild(center);
+
+  // Answer list
+  const listTitle = el('div','res-list-title');
+  listTitle.textContent = 'Cavablarınızın icmalı';
+  card.appendChild(listTitle);
+
+  const list = el('div','res-list');
+  s.questions.forEach((q,i)=>{
+    const ok = s.answers[i]?.sel === q.answer;
+    const row = el('div','res-row');
+    row.innerHTML = `
+      <span class="res-row-ic">${ok?'✅':'❌'}</span>
+      <span class="res-row-txt">${i+1}. ${q.q.length>70?q.q.slice(0,70)+'…':q.q}</span>`;
+    list.appendChild(row);
+  });
+  card.appendChild(list);
+
+  // Buttons
+  const newBtn = el('button','btn btn-blue');
+  newBtn.innerHTML = '🔄 Yeni test';
+  newBtn.onclick = doStart;
+
+  const homeBtn = el('button','btn btn-outline');
+  homeBtn.innerHTML = '🏠 Ana səhifə';
+  homeBtn.onclick = ()=>{ state.screen='home'; render(); };
+
+  card.appendChild(newBtn);
+  card.appendChild(homeBtn);
+  app.appendChild(card);
+}
+
+// ════════════════════════════════════════════════
+// ACTIONS
+// ════════════════════════════════════════════════
+function doRegister(){
+  const name  = state.loginName.trim();
+  const email = state.loginEmail.trim();
+  if(!name)  { state.loginErr='Ad daxil edin.';   render(); return; }
+  if(!email) { state.loginErr='Email daxil edin.'; render(); return; }
+  const u = { name, email, id: Date.now() };
+  state.user    = u;
+  state.loginErr = '';
+  state.screen  = 'home';
+  lsSet('mm_user', u);
+  render();
+}
+
+function doLogout(){
+  state.user = null;
+  lsDel('mm_user');
+  state.screen = 'home';
+  render();
+}
+
+function doStart(){
+  if(ALL_QUESTIONS.length === 0) return;
+  state.questions = pick(ALL_QUESTIONS, QUIZ_COUNT);
+  state.current   = 0;
+  state.selected  = null;
+  state.answers   = [];
+  state.screen    = 'quiz';
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function doAnswer(idx){
+  if(state.selected !== null) return;
+  state.selected = idx;
+  const q = state.questions[state.current];
+  state.answers.push({ qid: q.id, sel: idx, ans: q.answer });
+  render();
+}
+
+function doNext(){
+  if(state.current + 1 >= state.questions.length){
+    doFinish();
+  } else {
+    state.current++;
+    state.selected = null;
+    render();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+}
+
+function doFinish(){
+  const score = state.answers.filter(a=>a.sel===a.ans).length;
+  const total = state.questions.length;
+  const entry = {
+    date:  new Date().toLocaleDateString('az-AZ'),
+    time:  new Date().toLocaleTimeString('az-AZ'),
+    score, total
+  };
+  state.history = [entry, ...state.history].slice(0,10);
+  lsSet('mm_history', state.history);
+  state.screen = 'result';
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════
+function el(tag, className){
+  const e = document.createElement(tag||'div');
+  if(className) e.className = className;
+  return e;
+}
+
+// ════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════
+(function init(){
+  const u = lsGet('mm_user');
+  const h = lsGet('mm_history');
+  if(u) state.user    = u;
+  if(h) state.history = h;
+  render();
+})();
+</script>
+</body>
+</html>
