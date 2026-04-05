@@ -1,0 +1,574 @@
+import { useState, useEffect, useCallback } from "react";
+
+const ALL_QUESTIONS = [
+  { id: 1, q: "İnsanların həyatı və sağlamlığı üçün təhlükə yarada biləcək fövqəladə hadisələr barəsində əhalini kimlər xəbərdar edir?", options: ["Polis rəisinə", "İdarə və təşkilatlara", "Dövlət hakimiyyət orqanları", "Obyekt rəhbərlərinə", "Rayonun icra hakimiyyətinə"], answer: 2 },
+  { id: 2, q: "Kütləvilik və məcburilik prinsipi nə deməkdir?", options: ["MM tədbirlərinin bölgələrin əhalisini əhatə etməsi", "MM tədbirlərinin obyektlərdə fəhlə və qulluqçuları əhatə etməsi", "MM tədbirlərinin şəhərlərin əhalisini əhatə etməsi", "MM tədbirlərinin şəhərlərin əhalisini əhatə etməməsi", "MM tədbirlərinin Azərbaycan Respublikasının bütün əhalisini əhatə etməsi"], answer: 4 },
+  { id: 3, q: "Obyektdə mülki müdafiənin təşkil edilməsi və fəaliyyəti üçün kim məsuliyyət daşıyır?", options: ["Obyektin rəhbəri", "Yanğın təhlükəsizliyi xidməti", "Mexaniki", "Mühafizəçi", "Baş mühəndis"], answer: 0 },
+  { id: 4, q: "Fövqəladə hadisələr baş vermiş ərazilərdən əhalini köçürmək kimə həvalə olunub?", options: ["Rayonun icra hakimiyyətinə", "Polis rəisinə", "Dövlət hakimiyyət orqanlarına", "Obyekt rəhbərlərinə", "İdarə və təşkilatlara"], answer: 2 },
+  { id: 5, q: "Çernobıl AES-də baş vermiş qəza hansı fövqəladə vəziyyətdir?", options: ["texnogen", "sosial", "ekoloji, yerli, atmosferik", "hava, endogen, texnogen", "texnogen, qlobal, ekoloji"], answer: 4 },
+  { id: 6, q: "Fövqəladə vəziyyətin inkişafının ilk mərhələsi hansıdır?", options: ["Normal vəziyyətdən sapmaların toplanması mərhələsi", "Bəzi hallarda üçüncü mərhələdən əvvəl başlaya bilər", "Çürümə mərhələsi", "Risk faktorlarının buraxıldığı proses", "Fövqəladə hadisənin başlanması"], answer: 0 },
+  { id: 7, q: "Hər hansı bir fövqəladə hal neçə tipik mərhələdən keçir?", options: ["1", "5", "6", "2", "4"], answer: 4 },
+  { id: 8, q: "Neft hasilatı zamanı dənizə neft tökülməsi hansı fövqəladə vəziyyətə aiddir?", options: ["geoloji", "aqroiqlim", "endogen", "ekoloji", "hidroloji"], answer: 3 },
+  { id: 9, q: "Şəhər zibilinin daşınması zamanı qəza - hansı fövqəladə vəziyyətdir?", options: ["yerli, ekoloji, qlobal", "ekoloji, yerli, hidroloji", "texnogen, ekoloji, yerli", "geofiziki, yerli", "geoloji, texnogen, yerli"], answer: 2 },
+  { id: 10, q: "Hansı variant mülki müdafiə sahəsində dövlətin vəzifələrinə aid deyil?", options: ["MM sisteminə rəhbərlik etmək", "MM üçün ehtiyat fondlarının yaradılması", "MM üçün kadrlar hazırlamaq", "MM üçün ayrılan vəsaitin məqsədsiz istifadəsi", "MM üçün dövlət büdcəsindən vəsait ayırmaq"], answer: 3 },
+  { id: 11, q: "Aşağıdakılardan hansı mülki müdafiənin prinsipi deyil?", options: ["Daimi hazırlıq prinsipi", "Dərhal xəbərdarlıq prinsipi", "Ərazi prinsipi", "Fərqli və kompleks yanaşma prinsipi", "Əhalinin təşkili prinsipi"], answer: 4 },
+  { id: 12, q: "Mülki müdafiə neçə prinsip üzərində qurulur?", options: ["4", "2", "3", "6", "7"], answer: 3 },
+  { id: 13, q: "FH neçə inkişaf mərhələsi var?", options: ["7", "3", "2", "6", "4"], answer: 4 },
+  { id: 14, q: "FH-in təsnifatı düzgün göstərilən variantı seçin", options: ["Texniki siyasi sosial təbii", "Texniki, təbii, texnogen, ekoloji", "Sosial, texniki, siyasi, təbii", "Təbii ekoloji, texnogen və sosial mənşəli", "Texnogen, siyasi, təbii ekoloji"], answer: 3 },
+  { id: 15, q: "Hansı bənddə mülki müdafiənin prinsipləri düzgün qaydada verilmişdir?", options: ["əhali prinsipi, fərdlik prinsipi, qarşılıqlı prinsipi", "Qarşılıqlı əlaqə prinsipi, könüllülük prinsipi", "Fərdi yanaşma, dərhal xəbərdarlıq, əhali prinsipi", "Dərhal xəbərdarlıq, qarşılıqlı əlaqə, daimi hazırlıq prinsipi", "Əhali prinsipi, dərhal xəbərdarlıq, qarşılıqlı əlaqə"], answer: 3 },
+  { id: 16, q: "FH nəticələrinin aradan qaldırılması üçün maddi ehtiyat yaratmaq kimin vəzifəsinə daxildir?", options: ["Dövlətin", "Maliyyə Nazirliyi", "Dövlət Təhlükəsizliyi Xidməti", "Daxili İşlər Nazirliyi", "Müdafiə Nazirliyi"], answer: 0 },
+  { id: 17, q: "Mülki müdafiə tələblərini pozan şəxsləri nə gözləyir?", options: ["Mükafat vermək", "Müəyyən olunmuş məsuliyyətə cəlb etmək", "Məzəmmət etmək", "Töhmət vermək", "Şiddətli töhmət vermək"], answer: 1 },
+  { id: 18, q: "FH-dən zərər çəkmiş əhalinin sosial müdafiəsi kimin səlahiyyətinə daxildir?", options: ["Müdafiə Nazirliyi", "Dövlətin", "Maliyyə Nazirliyi", "Dövlət Təhlükəsizliyi Xidməti", "Daxili İşlər Nazirliyi"], answer: 1 },
+  { id: 19, q: "Mülki müdafiə üçün kadrların hazırlanmasını hansı nazirlik həyata keçirir?", options: ["Dövlət Təhlükəsizliyi Xidməti", "Maliyyə Nazirliyi", "Fövqəladə Hallar Nazirliyi", "Müdafiə Nazirliyi", "Daxili İşlər Nazirliyi"], answer: 2 },
+  { id: 20, q: "Dinc və müharibə dövrlərində FH-dən müdafiə olunma qaydalarını əhaliyə öyrətmək kimin vəzifəsinə daxildir?", options: ["Post patrul xidmətinin", "Bakı nəqliyyat agentliyinin", "Yolları mühafizə xidmətinin", "Yanğından mühafizə xidmətinin", "Dövlətin"], answer: 4 },
+  { id: 21, q: "Əhaliyə MM tədbirlərinin öyrədilməsini təşkil etmək, əhalini fərdi və kollektiv mühafizə vasitələri ilə təmin etmək kimə həvalə olunur?", options: ["Polis rəisinə", "Dövlət hakimiyyət orqanlarına", "İdarə və təşkilatlara", "Obyekt rəhbərlərinə", "Rayonun icra hakimiyyətinə"], answer: 1 },
+  { id: 22, q: "Respublikada 'Mülki müdafiə'nin fəaliyyətinin təşkilinə nəzarət kimə həvalə edilmişdir?", options: ["Daxili İşlər Nazirliyi", "Azərbaycan Respublikasının Baş naziri", "Fövqəladə Hallar Nazirliyi", "Müdafiə Nazirliyi", "Dövlət Təhlükəsizliyi Xidməti"], answer: 1 },
+  { id: 23, q: "'Mülki müdafiənin təmin edilməsi' hansı qərara əsasən müəyyən edilir?", options: ["193 nömrəli Qərar", "393 nömrəli Qərar", "239 nömrəli Qərar", "139 nömrəli Qərar", "293 nömrəli Qərar"], answer: 0 },
+  { id: 24, q: "Mülki müdafiə sahəsində dövlətin vəzifələri nədən ibarətdir?", options: ["Fəhlə və qulluqçulara maliyyə yardımı etmək", "MM sisteminə rəhbərlik etmək, strukturunu müəyyən etmək", "Xilasediciləri cəlb etmək", "Daxili qoşunlara göstəriş vermək", "İdarə və təşkilatların vəzifələrini müəyyən etmək"], answer: 1 },
+  { id: 25, q: "Mülki müdafiənin məqsədi nədən ibarətdir?", options: ["Qüvvə və vasitələri toplamaq", "Profilaktik tədbirlər həyata keçirmək, ziyan həcmini azaltmaq", "Obyektlərdə fəhlə və qulluqçularla təlim keçmək", "Əhali ilə məşqlər keçmək", "Şirkətlərin rəhbərləri ilə əlaqə saxlamaq"], answer: 1 },
+  { id: 26, q: "Qarşılıqlı əlaqə prinsipi nə deməkdir?", options: ["Şirkətlərlə sıx fəaliyyət", "Dövlət orqanlarının və MM qüvvələrinin sıx fəaliyyəti", "Obyekt rəhbərləri ilə sıx fəaliyyət", "İdarə və təşkilatlarla sıx fəaliyyət", "Əhali ilə sıx fəaliyyət"], answer: 1 },
+  { id: 27, q: "Dərhal xəbərdarlıq prinsipi nə deməkdir?", options: ["Dövlət hakimiyyət orqanlarına dərhal məlumat", "İdarə və təşkilatlara dərhal məlumat", "Azərbaycan Respublikasının əhalisinə dərhal məlumat", "Şəhər əhalisinə dərhal məlumat", "Fəhlə və qulluqçulara dərhal məlumat"], answer: 2 },
+  { id: 28, q: "Daimi hazırlıq prinsipi nə deməkdir?", options: ["Daxili qoşunların hazır vəziyyətdə olması", "Əhalinin hazır vəziyyətdə olması", "MM sisteminin dərhal fəaliyyətə başlamağa hazır olması", "Xilasedicilərin hazır olması", "Ümumqoşun hissələrinin hazır olması"], answer: 2 },
+  { id: 29, q: "Fərqli və kompleks yanaşma prinsipi nə deməkdir?", options: ["Şəhərlərin xüsusiyyətləri nəzərə alınmaqla", "MM tədbirlərinin hərbi-strateji, iqtisadi xüsusiyyətlər nəzərə alınmaqla həyata keçirilməsi", "Yalnız bölgələr nəzərə alınmaqla", "Obyektlərin xüsusiyyətləri nəzərə alınmaqla", "Xüsusiyyətlər nəzərə alınmadan"], answer: 1 },
+  { id: 30, q: "Ərazi prinsipi nə deməkdir?", options: ["Obyektlərdə təşkil edilməsi", "MM tədbirlərinin respublikanın bütün ərazisində təşkil edilməsi", "Kənd yerlərində təşkil edilməsi", "Ayrı-ayrı bölgələrdə təşkil edilməsi", "Şəhərlərdə təşkil edilməsi"], answer: 1 },
+  { id: 31, q: "Mülki müdafiənin neçə təşkili prinsipləri vardır?", options: ["4", "6", "5", "7", "3"], answer: 1 },
+  { id: 32, q: "Beynəlxalq MM günü hansı tarixdə qeyd olunur?", options: ["1 iyun", "1 mart", "1 aprel", "1 may", "1 iyul"], answer: 1 },
+  { id: 33, q: "Mülki müdafiənin ərazi təşkili prinsipi nəyi nəzərdə tutur?", options: ["İstehsalat strukturunun bütün ərazilərində", "Respublikanın bütün ərazilərində", "Regionun bütün ərazilərində", "Obyektin bütün ərazilərində", "Dağıntı zonasının bütün ərazilərində"], answer: 1 },
+  { id: 34, q: "Respublikamızın iqtisad obyektlərində mülki müdafiə hansı prinsip əsasında yaradılır?", options: ["Sahə-axtarış", "Ərazi-istehsalat", "Elmi-istehsalat", "Region-ixtisas", "Ərazi-iqtisadiyyat"], answer: 1 },
+  { id: 35, q: "Təbii fəlakətlər nəticəsində nə baş verir?", options: ["Təsərrüfat obyektləri dağılır", "Normal fəaliyyət pozulur, insanlar zədələnir", "Maddi sərvətlər məhv olur", "Kütləvi köçürmə baş verir", "Əhalinin və təsərrüfat obyektlərinin normal həyat fəaliyyəti pozulur, maddi sərvətlər məhv olunur"], answer: 4 },
+  { id: 36, q: "Münaqişəli fövqəladə hadisələr hansılardır?", options: ["Hərbi toqquşmalar, tətil", "Terrorizm, cinayətkarlıq, hərbi toqquşmalar, ekstremizm, milli və dini münaqişələr", "Sosial partlayışlar, sosial durğunluq", "Ekstremist siyasi mübarizə, sosial ədalət", "Milli və dini münaqişələr və siyasi dözümlük"], answer: 1 },
+  { id: 37, q: "Hərbi xarakterli münaqişənin yaranmasında əsas səbəb nədir?", options: ["Daxili böhran, siyasi hegemonluq", "Güclünün gücsüzə təcavüzü", "Siyasətdə ikili münasibətlər", "Ərazi hərisliyi", "Yeni silah növünün sınaqdan çıxarılması"], answer: 0 },
+  { id: 38, q: "Texnogen xarakterli FH-ar nəyə deyilir?", options: ["Avtomobil, təyyarə qəzaları", "Təyyarədə, dənizdə baş verənlər", "Nəqliyyatda, məişətdə və sənayedə baş verən FH", "Gəmi, qatar qəzaları", "Sənaye, nəqliyyat qəzaları"], answer: 2 },
+  { id: 39, q: "Zəlzələ və vulkan püskürməsindən sonra hansı hadisələr baş verir?", options: ["Yanğınların yaranması", "Ildırım çaxması", "Çaylarda dərin çatlar", "Şəlalələr, süni göllər, çayların məcrasından çıxması", "Dağlar, təpələr yaranır"], answer: 3 },
+  { id: 40, q: "Sosial xarakterli hadisələrə hansılar aiddir?", options: ["Sosial narazılıqların gərginləşməsi", "Bankda əmanətin verilməməsi", "Sosial yardımların gecikdirilməsi", "İqtisadi qanunların səhv tətbiqi", "İqtisadi böhranların kəskinləşməsi"], answer: 0 },
+  { id: 41, q: "Yandırıcı silahların insanlara təsiri nədən asılıdır?", options: ["Şok vəziyyətə salmaq", "Orqanizmin yanğınlara məruz qalması", "Ağciyər zədələnməsi", "Tənəffüs yollarında yanıqlar", "Yüksək yandırma və istilik törətmə"], answer: 4 },
+  { id: 42, q: "Nüvə silahının hədəfə çatdırmaq üçün hansı vasitələrdən istifadə olunur?", options: ["Raket, artilleriya, avtomobil", "Raketlər, təyyarələr, sualtı qayıqlar, gəmilər, peyklər", "Raket, tank, tüfəng", "Raket, təyyarə, avtomobil, tank", "Raket, gəmi, avtomobil"], answer: 1 },
+  { id: 43, q: "Geoloji FH-yə hansı uyğundur?", options: ["Sürüşmə, qar uçqunu", "Sel, su hövzəsinin daşması", "Güclü buzlaşma, qar uçqunu", "İri dolu qar uçqunu", "Leysan, sel"], answer: 0 },
+  { id: 44, q: "Fövqəladə hadisələri cəm halında hansı növlərə bölmək olar?", options: ["Məişət, hərbi, siyasi", "Münaqişəli və münaqişəsiz", "Texnogen, məişət, ekoloji", "Münaqişəli, təbii", "Münaqişəsiz, texnoloji"], answer: 1 },
+  { id: 45, q: "Sualtı zəlzələ və vulkan püskürməsi hansı təsirlə səciyyəlidir?", options: ["Yerüstü çatlar", "Subasma", "Yüksək dalğalar", "Sunami", "Sürüşmə"], answer: 3 },
+  { id: 46, q: "Mənsubiyyətinə görə FH-lar necə təsnif olunur?", options: ["Gəmi, dəniz, hava", "Tikintidə, nəqliyyatda, məişətdə, istehsalatda", "Meşədə, dağda, tarlada", "Şəhərdə, qəsəbədə, kənddə", "Metroda, avtomobil, gəmidə"], answer: 1 },
+  { id: 47, q: "Tektonik zəlzələ əsasən harada baş verir?", options: ["Nüvədə", "Yer qabığının üst qatında", "Nüvə ilə mantiya arasında", "Mantiyada", "Yer qabığının dərinliklərindəki litosfer tavalarda"], answer: 4 },
+  { id: 48, q: "Alışma ehtimalına görə inşaat materialları hansı qruplara bölünür?", options: ["Çətin alışan, alışmayan və əriyən", "Alışan, çətin alışan və alışmayan", "Alışmayan, alovlanan və oda davamlı", "Alışan, alışmayan və əriyən", "Alışmayan, əriyən və alışan"], answer: 1 },
+  { id: 49, q: "Zəlzələ yer kürəsinin əsasən hansı hissəsində baş verir?", options: ["Yerin alt qatlarında, mantiyada", "Yalnız mantiyada", "Mantiyada, nüvədə", "Nüvədə, yer qabığında", "Nüvədə"], answer: 0 },
+  { id: 50, q: "Lazer-silahı başqa döyüş silahlarından hansı xassəsinə görə fərqlənir?", options: ["Görünməzliyi", "Yüksək dəqiqlik", "Od-tüstü-səsin olmaması", "Yüksək sürətliliyi", "Düz xətt boyunca yayılması"], answer: 3 },
+  { id: 51, q: "Sosial xarakterli FH vaxtında qarşısı alınmasa hansı xarakterli FH-yə çevrilə bilər?", options: ["Texnogen", "Ekoloji", "Siyasi", "Hərbi", "İctimai-mədəni"], answer: 3 },
+  { id: 52, q: "Güclü və tam dağıntılar ərazisinde hansı növ yanğın əmələ gəlir?", options: ["Yerli-hissə-hissə", "Yanğın əmələ gəlmir", "Közərmə və tüstülənmə", "Bütöv yanğın", "Hissə-hissə-tək"], answer: 1 },
+  { id: 53, q: "Hansı ifadə düzgün deyil?", options: ["Sürüşmə - süxur kütlələrinin yamacdan aşağı sürüşməsi", "Sel maye və bərk kütlə arasında xaçdır", "Meşələrin qırılması sel axınının qarşısını ala bilər", "Epidemiya bitkilər arasında yoluxucu xəstəliyin yayılmasıdır", "Torpaq sürüşmələri çay sahillərindəki yamacda baş verir"], answer: 3 },
+  { id: 54, q: "Daşqınlar baş verir - düzgün variantı müəyyənləşdirin", options: ["Görkəmli və fəlakətli", "Fəlakətli və sadə", "Yüksək və yüksək deyil", "Yüngül və dərin", "Böyük miqyaslı və yerli"], answer: 0 },
+  { id: 55, q: "Daşqınların neçə növü var?", options: ["5", "2", "6", "4", "3"], answer: 3 },
+  { id: 56, q: "Şiddətli şaxta, buzlaşma hansı fövqəladə haldır?", options: ["Meteoroloji", "Ekoloji", "Geofiziki", "Geoloji", "Fəlakətli"], answer: 0 },
+  { id: 57, q: "Ümumi istifadədə olan yollarda qəza hansı fövqəladə haldır?", options: ["Xüsusi fövqəladə vəziyyət", "Sosial fövqəladə vəziyyət", "Ekoloji fövqəladə vəziyyət", "Texnogen fövqəladə hal", "Siyasi Fövqəladə Hal"], answer: 3 },
+  { id: 58, q: "Avtomobil qəzası hansı fövqəladə haldır?", options: ["Ekoloji", "Xüsusi", "Siyasi", "Texnogen", "Sosial"], answer: 3 },
+  { id: 59, q: "Aşağıdakı hadisələrdən hansı texnogen fövqəladə vəziyyətin səbəbi ola bilər?", options: ["Daşqınlar", "Kənd təsərrüfatı fəaliyyəti", "Püskürmə", "Suyun çirklənməsi", "İstehsal yanğınları"], answer: 4 },
+  { id: 60, q: "Aşağıdakı hadisələrdən hansı sürüşmələrə səbəb ola bilər?", options: ["Qasırğa", "Şəhər", "Tayfun", "Leysan yağışları", "Tornado"], answer: 3 },
+  { id: 61, q: "Partlamamış hərbi sursatların aşkarlanması hansı növ fövqəladə haldır?", options: ["Sosial", "Fiziki", "Ekoloji", "Texnogen", "Öldürücü"], answer: 3 },
+  { id: 62, q: "Yeraltı sularının səviyyəsinin artması fövqəladə vəziyyətin hansı növüdür?", options: ["Aqrometeoroloji təhlükələr", "Geofiziki təhlükələr", "Meteoroloji fövqəladə hallar", "Hidroloji təhlükələr", "Geoloji fövqəladə hallar"], answer: 3 },
+  { id: 63, q: "İstehsalat qəzaları ilə istehsalat fəlakətləri arasında fərq nədir?", options: ["Bədbəxt hadisə yalnız müəssisələrdə baş verir", "Heç bir fərq yoxdur", "Fəlakətin yerli olması", "Fəlakət yalnız müəssisələrdə olur", "Fəlakətlər zamanı çoxlu insan ölür, qəzalarda əsasən avadanlıq sıradan çıxır"], answer: 4 },
+  { id: 64, q: "Qrip epidemiyası hansı növ fövqəladə haldır?", options: ["Regional", "Lokal", "Yerli", "Milli", "Qlobal"], answer: 3 },
+  { id: 65, q: "2022-ci ildə Ukraynada hansı fövqəladə hadisələr baş verir?", options: ["Sosial, ekoloji", "Münaqişə, geoloji, ekoloji", "Münaqişə, texnogen, ekoloji, təbii", "Hərbi, texnogen, ekoloji", "Münaqişə, təbii, ekoloji, geofiziki"], answer: 3 },
+  { id: 66, q: "Texnogen xarakterli FH nədir?", options: ["Yerin üst qatının çökməsi, sürüşmə", "Sel, radioaktiv maddələrin yayılması", "Qar uçqunu, AES qəzaları", "Binaların texnogen uçması, radioaktiv çirklənmə, AES qəzaları", "Yeraltı suların qalxması"], answer: 3 },
+  { id: 67, q: "Münaqişəsiz FH-ə hansı variant uyğun deyil?", options: ["Terrorizm, sosial partlayış, təbii", "Hərbi toqquşmalar, terrorizm, texnogen", "Terrorizm, cinayətkarlıq, təbii", "Təbii, ekoloji, texnogen", "Hərbi toqquşmalar, sosial partlayışlar, terrorizm"], answer: 4 },
+  { id: 68, q: "Təbii xarakterli FH-rə aid edilə bilər", options: ["Hidroloji, terrorizm, müharibə", "Bioloji, terrorizm, sosial partlayış", "Hidroloji, bioloji, terrorizm", "Meteoroloji FH, Hidroloji FH, Bioloji hadisə", "Meteoroloji, sosial partlayış, bioloji"], answer: 3 },
+  { id: 69, q: "FH-lar xarakterinə görə necə olur?", options: ["Texnogen, müharibə dövrünün FH", "Sülh dövrü, sosial dövr", "Sülh dövrü və ekoloji dövr", "Sülh dövrü, zəlzələ dövrü", "Sülh dövründə və müharibə dövründə olan"], answer: 4 },
+  { id: 70, q: "FH-ların tələfatın sayına görə xarakteristikası hansıdır?", options: ["Yüngül, əvəzolunmaz, böhranlı...", "Orta ağırlıqlı, katostrafik...", "Yüngül, ağır, katostrafik, kənd daxili...", "Yüngül, ağır, katostrafik, böhranlı, meşə ətraflı...", "Yüngül, orta ağırlıqlı, ağır, çox ağır katastrofik, böhranlı, əvəzolunmaz"], answer: 4 },
+  { id: 71, q: "Zədələnmə ocaqlarında dağıntılar xarakterinə görə neçə qrupa bölünür?", options: ["4", "6", "2", "5", "3"], answer: 0 },
+  { id: 72, q: "Obyektin zədələnmə ocaqları nədir?", options: ["Zədələnməyə məruz qalmış insanların yeri", "Qəzanın baş verdiyi ərazi", "Qəza zamanı insanların məhv olduğu ərazi", "Qəza nəticəsində zədələnməyə məruz qalan insanların və obyektlərin yerləşdiyi ərazi", "Fəlakət zamanı dağılmış ərazi"], answer: 3 },
+  { id: 73, q: "FH-da hansı dağıntı dərəcələri mövcuddur?", options: ["Tam, güclü, orta, zəif", "Tam, orta, zəif, çox güclü", "Güclü, orta, zəif, daha zəif", "Tam, çox güclü, güclü, zəif, orta", "Tam, çox güclü, zəif, az"], answer: 0 },
+  { id: 74, q: "Təbii hadisələr nədir?", options: ["Torpağın dəyişməsinə, güclü qar yağmasına gətirib çıxaran hadisələr", "Torpaq sürüşməsinə, əkin sahələrinin sıradan çıxmasına səbəb olan hadisələr", "İnsanların xəsarəti, binaların uçmasına gətirib çıxaran hadisələr", "AES partlayışlarına, qəzalara səbəb olan hadisələr", "Külli miqdarda maddi vəsaitin məhvi, insanların xəsarəti ilə nəticələnən hadisələr"], answer: 4 },
+  { id: 75, q: "Quraqlıq hansı səbəbdən əmələ gəlir?", options: ["İntensiv yağıntıların yağmaması", "Anormal istiliklərin baş verməsi", "Güclü qar yağması", "Yüksək hərarət və aşağı rütubət, uzun müddət yağış yağmaması", "Fəsillərin dəyişməsi"], answer: 3 },
+  { id: 76, q: "Hidroloji quraqlıq necə yaranır?", options: ["Torpaq sürüşməsi nəticəsində", "Vulkan püskürməsi nəticəsində", "Meşə yanğınları nəticəsində", "Çayların, göllərin, bulaqların quruması nəticəsində", "Zəlzələ baş verməsi nəticəsində"], answer: 3 },
+  { id: 77, q: "Zədələnmə ocaqları hansı formada olur?", options: ["Dairəvi, dörd bucaq, qeyri-müəyyən", "Dairəvi zolaq, silindr", "Dairəvi, dörd bucaq, zolaq, silindr", "Dairəvi zolaq, qeyri-müəyyən", "Zolaq, qeyri-müəyyən, üç bucaq"], answer: 3 },
+  { id: 78, q: "Sülh dövründəki FH-lar hansılardır?", options: ["Meteoroloji, bioloji, silahların tətbiqi...", "Hidrosferin dəyişməsi, nüvə silahı...", "Meteoroloji, aqrometeoroloji, nəqliyyat, sənaye, təbii, ekoloji, sosial, siyasi, iqtisadi", "Aqrometeoroloji, kimyəvi silah, bakterioloji...", "Nüvə silahı, su basma, mətrolog..."], answer: 2 },
+  { id: 79, q: "Sosial xarakterli FH necə baş verə bilər?", options: ["İnsanlar işə münasibəti dəyişdikdə...", "İnsanlar arasında psixoloji gərginlik yarandıqda...", "İstehsal yüksəlmədikdə...", "Əhalinin istehsal gücü tükəndikdə...", "Əhalinin istehsal gücü tükənir, qayda-qanunlara riayət edilmədikdə"], answer: 4 },
+  { id: 80, q: "Təbii fəlakətlər hansılardır?", options: ["Sel, partlayışlar, zəlzələ, vulkanlar", "Sel, kimyəvi zəhərlənmələr, zəlzələlər", "Sel, radioaktiv zəhərlənmələr, zəlzələlər, quraqlıq", "Sel, radioaktiv və kimyəvi zəhərlənmələr", "Su hadisələri, zəlzələ, qasırğalar, vulkanlar, quraqlıq, leysan, yağışlar"], answer: 4 },
+  { id: 81, q: "Fövqəladə hallar nəyə deyilir?", options: ["Təbii fəlakətlər, texnogen qəzalar, sosial-siyasi, hərbi, iqtisadi faktorlar nəticəsindəki vəziyyət", "Kütləvi qırğın silahlarının tətbiqi zamanı yaranan vəziyyət", "Təbii fəlakətlər nəticəsindəki vəziyyət", "Güclü yanğınlar nəticəsindəki vəziyyət", "Sənaye qəzaları zamanı yaranan ocaqlar"], answer: 0 },
+  { id: 82, q: "Münaqişəsiz fövqəladə hadisələri hansılardır?", options: ["Müharibələr, subasmalar, uçqunlar", "Təbii, texnogen, ekoloji", "Texnogen, qəzalar, ildırım", "Məişət xarakterli hadisələr", "Ekoloji hadisələr, epidemiya"], answer: 1 },
+  { id: 83, q: "Məişət xarakterli fövqəladə hadisələri hansılardır?", options: ["İlan sancması, əqrəb sancması, qaz partlaması, yanğın", "Elektrik cərəyanı qəzası, sunami", "Suda batma, vulkan püskürməsi", "Qazdan boğulma, zəhərlənmə, zəlzələ", "Qaz partlaması, yanğın, qazdan boğulma, zəhərlənmə"], answer: 4 },
+  { id: 84, q: "Uçqun zəlzələlər nədən əmələ gəlir?", options: ["Boğucu qazlar oyuğunda", "Yeraltı karst boşluqlarından", "Termal sular yatağında", "Uçub tökülən mədən boşluğunda", "Yeraltı mədən boşluqlarından"], answer: 1 },
+  { id: 85, q: "Nəticələrin miqyasına görə FH-lar necə təsnif olunur?", options: ["Lokal, yerli, qlobal, obyekt daxili, siyasi", "Lokal, milli, regional, şəhər daxili, ölkə miqyaslı", "Lokal, obyekt miqyaslı, yerli, regional, milli, qlobal", "Yerli, qlobal, regional, milli, obyekt daxili", "Lokal, obyekt miqyaslı, yerli, şəhər daxili, iri miqyaslı"], answer: 2 },
+  { id: 86, q: "Sənaye qəzaları nədir?", options: ["Obyektin işinin qəflətən dayanması ilə binaların sıradan çıxması, dağılması, insanların zədələnməsi", "Obyektin yavaş-yavaş dayanması ilə dağılma", "Qəflətən dayanma, insanların məhv olması", "Qəflətən dayanma, insanların zədələnməsi", "Dayanma, insanların zədələnməsi"], answer: 0 },
+  { id: 87, q: "Vulkanik zəlzələlər nədən əmələ gəlir?", options: ["Yeraltı parçalanmalardan", "Vulkan püskürməsindən", "Yeraltı çatlardan", "Yeraltı qazların büruzə çıxmasından", "Yeraltı nüvə partlayışından"], answer: 1 },
+  { id: 88, q: "Ekoloji xarakterli FH necə baş verir?", options: ["Meşələrin, dənizlərin bioloji təsirə məruz qalması", "Sənaye müəssisələrinin qəzası, ozon dəliyi", "Sənaye müəssisələrinin qəzası, kimyəvi zəhərlənmə", "Ərazidə suyun, dənizlərin, bitki örtüyünün, meşələrin məhv olması", "Bitki örtüyünün məhv olması, yanğınlar, məişət qəzaları"], answer: 3 },
+  { id: 89, q: "12,5 bal gücündə küləyin təsirindən ən çox hansı binalar dağılır?", options: ["Saman-palçıq tikililər və daş binalar", "Dəniz sahilləri, bəndlər, zavodlar", "Daş binalar və yeraltı qurğular", "Dənizdə dalğaların hündürlüyü 15,5m", "Dəmir-beton binalar"], answer: 0 },
+  { id: 90, q: "Texnogen qəza zamanı ən çox zərər çəkən kimlərdir?", options: ["Sanitar mühafizə ərazisində qanunsuz məskunlaşmış əhali", "Fəhlələr və texniki işçilər", "Məktəblilər və tələbələr", "Şəhər əhalisi", "Mühəndis-texniki işçilər"], answer: 0 },
+  { id: 91, q: "Hərbi mənşəli FH-lar hansılardır?", options: ["Zəlzələ, nüvə və kimyəvi silahlar", "Nüvə, kimyəvi, bakterioloji və adi qırğın silahları ilə əlaqədar FH", "Bakterioloji, bioloji, kimyəvi silahlar, vulkan", "Zərbə dalğası, işıq şüalanması, yanğınlar", "Zarin, İprit, yandırıcı maddələr"], answer: 1 },
+  { id: 92, q: "Subasma əsasən nə ilə nəticələnir?", options: ["İstehsalat partlayışları", "Məhsulun məhvi, partlayışlar", "Kənd təsərrüfatının pozulması və məhsulun məhvi", "Fauna və floranın məhvi", "Yerli yanğınlar, iqlim dəyişməsi"], answer: 2 },
+  { id: 93, q: "Zəlzələnin maksimal təsir qüvvəsi Merkali şkalasına əsasən neçə baldır?", options: ["11", "14", "13", "10", "12"], answer: 4 },
+  { id: 94, q: "Zəlzələnin insanlara təsiri necə olur?", options: ["Çayların istiqamətinin dəyişməsi", "Binaların dağılması", "Ərazidə çatlar", "Vulkan qazlarından zəhərlənmə", "Ölüm və psixoloji sarsıntı"], answer: 4 },
+  { id: 95, q: "Ekoloji böhran hansı hadisələrin təsirindən yaranır?", options: ["Qlobal quraqlıq, su hövzələrinin quruması, meşələrin qırılması", "Qlobal istiləşmə ilə daşqınlar", "Günəş hadisələri, ay tutulması", "Yerin maqnitudasının dəyişməsi", "Meşə yanğınları, aclıq"], answer: 0 },
+  { id: 96, q: "Ayrıca yanğın zonaları nədir?", options: ["I, II, III dərəcəli yanğına davamlı binaların yanması", "Rayonlar ərazisindəki binalarda yanğın", "Dağılmamış binaların çoxunun yanması", "Bütün binalarda yanğın", "Yanğınların güclü tüstülənmə əmələ gətirməsi"], answer: 1 },
+  { id: 97, q: "Meşə yanğınlarının söndürülməsi üsullarını göstərin?", options: ["Kombinə üsul, su ilə söndürmə, ayrıcı xətlər", "Kombinə üsul, süni yanğın, su, köpük, xəndəklər", "Kombinə üsul, su/köpük, odsöndürücü", "Sudan, köpük əmələ gətirən maddə ilə, xəndəklər", "Kombinə üsul, köpük, xüsusi kimyəvi maddələr, su, ayrıcı xətlər, torpaq tökmə"], answer: 4 },
+  { id: 98, q: "Zəlzələnin gücü hansı şkala üzrə ölçülür?", options: ["11 ballıq rixter", "7 ballıq rixter", "16 ballıq rixter", "14 ballıq rixter", "12 ballıq rixter"], answer: 4 },
+  { id: 99, q: "Bir milyon tonluq nüvə silahı partladıqda zəif dağılma zonası neçə km məsafəni əhatə edir?", options: ["9 km", "11 km", "12 km", "10 km", "15 km"], answer: 1 },
+  { id: 100, q: "Bütün zəhərləyici maddələr orqanizmə təsirinin xarakterinə görə neçə qrupa ayrılır?", options: ["6", "3", "4", "2", "5"], answer: 3 },
+  { id: 101, q: "Partlayış zamanı radioaktiv məhsulların insanlara göstərdiyi təsir nədən asılıdır?", options: ["Radiasiyanın səviyyəsindən", "Zəlzələdən", "Bakterioloji vasitələrdən", "Kimyəvi ZM-dən", "Neytron-proton selindən"], answer: 0 },
+  { id: 102, q: "1Mt nüvə silahı partladıqda güclü dağılma zonası neçə km məsafəni əhatə edir?", options: ["6,5", "4,6", "5,4", "7", "4"], answer: 2 },
+  { id: 103, q: "1Mt nüvə silahı partladıqda tam dağılma zonası neçə km məsafəni əhatə edir?", options: ["1 km", "2 km", "3 km", "4 km", "5 km"], answer: 3 },
+  { id: 104, q: "Kütləvi qırğın silahlarının növləri hansı variantda düzgün verilib?", options: ["Nüvə, ekoloji, kimyəvi", "Nüvə, kimyəvi, bakterioloji", "Ekoloji, nüvə, kimyəvi, bakterioloji", "Nüvə, ekoloji, kimyəvi", "Ekoloji, kimyəvi, radioaktiv"], answer: 1 },
+  { id: 105, q: "Kimyəvi silahın ən vacib xüsusiyyətləri hansılardır?", options: ["Cansız qüvvələrin zədələnməsi", "Zəhərlənmənin sürətli olması, cansız qüvvələrin zədələnməsi", "Zəhərlənmənin baş verməsi, ucuz istehsal", "Zəhərlənmənin sürətli olması, ucuz istehsal, canlı qüvvələri zədələmək", "Sürətli zəhərlənmə, baha istehsal"], answer: 3 },
+  { id: 106, q: "Neytron bombası partlayışından mühafizə olunmayan adamlar partlayış mərkəzindən neçə metr məsafədə məhv ola bilər?", options: ["330 m", "700 m", "600 m", "800 m", "500 m"], answer: 3 },
+  { id: 107, q: "İşıq şüalanmasına aid xüsusiyyət hansıdır?", options: ["Yaşayış məntəqələrindəki yanğınlar, qeyri-şəffaf mühitdən keçə bilir", "Meteoroloji şəraitdən asılı deyil", "Divardan, taxtan, torpaqdan keçə bilir", "Qeyri-şəffaf materiallardan keçə bilmir, meteoroloji şəraitdən asılıdır", "İnsan bədənini zədələmir"], answer: 3 },
+  { id: 108, q: "Zərbə dalğasından mühafizə olunmaq üçün nədən istifadə olunur?", options: ["Zirzəmilərdən, meşəliklərdən", "Daldanacaqlardan, zirzəmilərdən", "Açıq mühit və daldanacaqlar", "Zirzəmilərdən, geniş ərazilərdən", "Sığınacaqlarda, geniş ərazilərdə"], answer: 1 },
+  { id: 109, q: "300-500 rentgen doza hansı dərəcəli şüa xəstəliyi törədir?", options: ["Ağır dərəcəli, dönməz", "Dönməz, yüngül dərəcəli", "Simptomu bilinən dərəcəli", "Dönməz, orta dərəcəli", "Gizli müddəti olan dönməz"], answer: 0 },
+  { id: 110, q: "200-300 rentgen doza hansı dərəcəli şüa xəstəliyi yaradır?", options: ["Orta dərəcəli", "Təsiri nəzərə alınan", "Gizli, ağır dərəcəli", "Simptomu bilinən", "Yüngül dərəcəli"], answer: 0 },
+  { id: 111, q: "100-200 rentgen doza hansı dərəcəli şüa xəstəliyi törədə bilir?", options: ["Gizli, ağır dərəcəli", "Simptomu bilinən", "Yüngül dərəcəli", "Təsiri nəzərə alınmır", "Orta dərəcəli"], answer: 2 },
+  { id: 112, q: "İonlaşdırıcı şüalanmanın təsiri zamanı udulan dozanın vahidi olaraq nə qəbul edilmişdir?", options: ["C/kq", "Rentgen/saat", "Qrey", "Bekkerel", "Rentgen/san"], answer: 0 },
+  { id: 113, q: "Radioaktiv şüalanma nəticəsinde mühitə hansı şüalar təsir göstərir?", options: ["γ, n, l, e, R", "α, n, γ, p", "α, β, γ, n", "γ, β, R, P", "α, β, e, lazer"], answer: 2 },
+  { id: 114, q: "Nüfuzedici radiasiyanın canlı orqanizmdə yaratdığı təsir necə adlanır?", options: ["Astma", "Baş gicələnmə", "Şüa xəstəliyi", "Respirativ xəstəlik", "Tənginəfəslik"], answer: 2 },
+  { id: 115, q: "Udulan dozanın nəyindən asılı olaraq insanlar şüa xəstəliyinə məruz qalırlar?", options: ["Şüanın intensivliyindən", "Həcmindən, radiasiya səviyyəsindən", "Həcmindən və miqdarından", "Udulan dozanın miqdarından", "Məsafədən"], answer: 3 },
+  { id: 116, q: "Tibbdə radiasiyanın təsirindən neçə dərəcəli şüa xəstəliyi mövcuddur?", options: ["5", "2", "4", "6", "3"], answer: 2 },
+  { id: 117, q: "Nüvə zədələnmə ocağının qarışıq olmasının amilləri hansılardır?", options: ["Zəlzələ, sunami, yeraltı suların artması", "GTZM yayılması", "Partlayış, kimyəvi zəhərlənmə", "Qəzalar, subasmalar, sürüşmələr", "Dağıntılar, yanğınlar, radioaktiv zəhərlənmələr"], answer: 4 },
+  { id: 118, q: "Ərazinin radioaktiv zonasında 'A' zəhərlənmə sahəsi hansı rənglə işarələnir?", options: ["Mavi", "Qonur", "Qara", "Yaşıl", "Sarı"], answer: 0 },
+  { id: 119, q: "Zərbə dalğasında sıxılma fazası ilə boşalma fazasının kəsişdiyi yerdə təzyiq nə qədər ola bilər?", options: ["10", "1", "5", "0", "3"], answer: 3 },
+  { id: 120, q: "6-10 kal/sm² işıq impulsu mühafizə olunmayan insanlarda hansı təsir yaradır?", options: ["Nəzərə alınmaz", "Üçüncü dərəcəli yanıq", "Cüzi təsir", "İkinci dərəcəli yanıq", "Təsir etmir"], answer: 3 },
+  { id: 121, q: "0,4-0,6 kqq/sm² izafi təzyiq zamanı mühafizə olunmayan insanlar hansı təsirə məruz qalırlar?", options: ["Güclü", "Orta", "Ölümcül", "Yüngül", "Ağır"], answer: 1 },
+  { id: 122, q: "İzafi təzyiq 0,2-0,4 kqq/sm² olduqda neçənci dərəcəli zədələnmə baş verir?", options: ["Ölümcül", "Yüngül", "Orta", "Ağır", "Güclü"], answer: 1 },
+  { id: 123, q: "İnsanlara 10-15 kal/sm² işıq impulsu təsir edərsə hansı dərəcəli yanıq baş verər?", options: ["Güclü təsir", "Məhv edər", "İkinci dərəcəli", "Üçüncü dərəcəli", "Nəzərə alınan"], answer: 3 },
+  { id: 124, q: "100-200 rentgen doza olarsa neçənci dərəcəli şüa xəstəliyi yaranar?", options: ["Gizli, ağır", "Nəzərə alınmır", "Yüngül dərəcəli", "Simptomu bilinən", "Orta"], answer: 2 },
+  { id: 125, q: "Radioaktiv maddələr hansı qabiliyyətə malik deyildilər?", options: ["Dada, görünməyə, iyə...", "Qoxuya, dada, hiss olunmağa...", "Qoxuya, hiss olunmağa, buxarlanmağa...", "Qoxuya, rəngə, dada, gözlə görünməyə", "Rəngə, iyə, gözlə görünməyə..."], answer: 3 },
+  { id: 126, q: "Yerüstü nüvə partlayışının enerjisinin təqribən neçə %-i zərbə dalğasına sərf olunur?", options: ["50%", "65%", "30%", "20%", "40%"], answer: 0 },
+  { id: 127, q: "300-500 rentgen doza olarsa neçənci dərəcəli kəskin şüa xəstəliyi baş verər?", options: ["Dönməz, yüngül", "Dönməz, orta", "Gizli, dönməz", "Ağır dərəcəli, dönməz", "Simptomu bilinən"], answer: 3 },
+  { id: 128, q: "Elektromaqnit impulsu nəyə təsir edir?", options: ["Rabitə və avtomatik idarəetmə sisteminə", "Ultradalgalı radiostansiyalara", "Mobil telefonlara", "Radio stansiyalara", "Yüksək gərginlikli enerji sisteminə"], answer: 0 },
+  { id: 129, q: "Nüvə silahının zədələyici amilləri hansılardır?", options: ["İşıq şüalanması, zərbə dalğası, partlayış", "Radioaktiv zəhərlənmə, nüfuzedici radiasiya, işıq şüalanması, zərbə dalğası, elektromaqnit impulsu", "Nüfuzedici, çirklənmə, daşqınlar", "Zərbə dalğası, işıq şüalanması, sunami", "Radioaktiv zəhərlənmə, daşqınlar"], answer: 1 },
+  { id: 130, q: "Nüvə zədələnmə ocağında işıq şüalanmasının təsir ərazisi hansı göstəricilərdən asılıdır?", options: ["Məsafədən", "Nüvə silahının gücündən və məsafədən", "Növündən və izafi təzyiqdən", "Tətbiq növündən və relyefdən", "Yeraltı partlayışdan"], answer: 1 },
+  { id: 131, q: "200-300 rentgen doza olduqda neçənci dərəcəli şüa xəstəliyi əmələ gəlir?", options: ["Simptomu bilinən", "Yüngül", "Nəzərə alınan", "Gizli, ağır", "Orta dərəcəli"], answer: 4 },
+  { id: 132, q: "Bir ildə AES-də işləməyən fəhlələr şüalanma dozası nə qədər qəbul edərlər?", options: ["0,5 rentgen", "50 rentgen", "5 rentgen", "0,05 rentgen", "0,005 rentgen"], answer: 0 },
+  { id: 133, q: "Müxtəlif materiallar üçün nüfuzedici radiasiyanın təsirini 2 dəfə azaldan qalınlıqlar nə qədərdir?", options: ["Polad -2,7 sm", "Qurğuşun -10 mm", "Ağac - 40 sm", "Torpaq - 20 sm", "Beton - 5 sm"], answer: 0 },
+  { id: 134, q: "0,2-0,4 kqq/sm2 izafi təzyiq zamanı mühafizə olunmayan insanlar hansı təsirə məruz qalırlar?", options: ["Orta", "Ölümcül", "Güclü", "Ağır", "Yüngül"], answer: 4 },
+  { id: 135, q: "Nüvə zədələnmə ocağında radioaktiv zəhərlənməyə ən çox hansılar məruz qalır?", options: ["Ağaclar, torpaq, su, bostanlar", "Çaylar, çöllər, dənizlər", "Binalar, şəhərlər, dağlar", "Hava, torpaq, su, od", "İnsanlar, heyvanlar, quşlar, balıqlar"], answer: 4 },
+  { id: 136, q: "İşıq impulsu Yer səthinə nisbətən necə yayılır?", options: ["Perpendikulyar", "Əvvəlcə paralel, sonra perpendikulyar", "Ziqzaq", "Paralel", "Rəvan"], answer: 3 },
+  { id: 137, q: "Zərbə dalğası yer səthinə nisbətən necə yayılır?", options: ["Perpendikulyar", "Əvvəlcə paralel, sonra perpendikulyar", "Ziqzaq", "Paralel", "Rəvan"], answer: 3 },
+  { id: 138, q: "Zərbə dalğasından məhv zonası hansı formadadır?", options: ["Ellips", "Kvadrat", "Oval", "Dairə", "Trapesiya"], answer: 3 },
+  { id: 139, q: "Nüvə partlayışında ciddi dağıntı zonası nə ilə xarakterizə olunur?", options: ["Bina partlayışları", "Orta məhv zonası ilə eyni", "50 kPa-dan artıq təzyiq", "Davamlı yanğınlar və dağıntılar", "Dağıntılar arasında tüstülənmə"], answer: 3 },
+  { id: 140, q: "Şəhərlərdə kəskin 'oksigen aclığının' baş verməsini hansı FH əhatə edəcək?", options: ["Təbii", "Sosial", "Geoloji", "Ekoloji", "Şəhər FH"], answer: 3 },
+  { id: 141, q: "Tam dağılma zonasının xarakterik xüsusiyyəti nədir?", options: ["30-40 kPa artıq təzyiq", "20-30 kPa artıq təzyiq", "750 kPa atmosfer təzyiqi", "50 kPa və ya daha çox artıq təzyiq", "30 kPa artıq təzyiq"], answer: 3 },
+  { id: 142, q: "İnsanlar arasında virus xəstəliklərinin qarşısını almaq üçün hansı tədbirlər görülür?", options: ["Deqazasiya və karantin", "Yalnız observasiya", "Karantin və qismən sanitarizasiya", "Karantin və observasiya", "Dezinfeksiya və deqazasiya"], answer: 3 },
+  { id: 143, q: "Nüvə partlayışında tam dağılma zonası nə ilə xarakterizə olunur?", options: ["30-50 kPa, dağıntılar, yanğınlar", "30-50 kPa, yanğın yox, partlayışlar", "50 kPa, yanğın yox, dağıntılarda tüstülənmə", "30-50 kPa, davamlı yanğınlar, natamam dağıntı", "50 kPa, davamlı yanğınlar"], answer: 2 },
+  { id: 144, q: "Radioaktiv zəhərlənməni digər amillərdən fərqləndirən cəhət hansıdır?", options: ["Çətin aşkar edilməsi", "Rəngsiz, iysiz olması", "Qeyri-sabit parçalanma", "Uzun müddət təsir", "Radioaktiv maddələrin fasiləsiz parçalanması"], answer: 4 },
+  { id: 145, q: "γ-şüaları üçün udulan dozanın ölçü vahidi nədir?", options: ["Rad, zibert, qrey", "Rentgen/saat, mr/s", "Zibert, ber, qrey", "Rentgen/saat/sm2, rad", "Qrey, rentgen, rad"], answer: 4 },
+  { id: 146, q: "Nüvə zədələnmə ocağında elektromaqnit impulsu nəyə təsir göstərir?", options: ["İdarəetmə və radio-elektron cihazlarını məhv edir", "Yanğınlarla insanları məhv edir", "Daşqın, sürüşmə yaradır", "Yanğınlarla heyvanları məhv edir", "Binaları dağıdır"], answer: 0 },
+  { id: 147, q: "İşıq şüalanması zamanı ərazinin yanğın zonaları necə olur?", options: ["Ucqunlarda közərmə, əhatəli yanğınlar, tək-tək yanğınlar", "Tək-bir yanğınlar, yeraltı yanğınlar", "Tam yanğınlar, tək-bir yanğınlar", "Ərazi yanğınları, tək-bir yanğınlar", "Ucqunlarda közərmə, başdan-başa yanğınlar"], answer: 0 },
+  { id: 148, q: "γ-neytronların azalması necə adlanır?", options: ["Yüngül azaltma qatı", "Orta azaltma qatı", "Qismən azaltma qatı", "Tam azaltma qatı", "Yarım azaltma qatı"], answer: 4 },
+  { id: 149, q: "Üçüncü dərəcəli yanıqda dəridə nə baş verir?", options: ["Dərinin hüceyrələrinin tam ölməsi", "Suluqların deşilməsi", "Hissiyatın ölməsi", "Toxumaların tam yanması", "Toxumaların qaralması"], answer: 0 },
+  { id: 150, q: "Dördüncü dərəcəli yanıqda dəridə nə baş verir?", options: ["Bütün hissənin göynəməsi", "Bütün dərinliyi üzrə toxumaların ölməsi", "Qızartı, qaralma", "Dərinin bütün dərinliyi üzrə tam yanması", "Suluqların deşilməsi"], answer: 3 },
+  { id: 151, q: "İşıq şüalanmasının gözlərə təsiri necədir?", options: ["Görmə qabiliyyətinin artması", "Müvəqqəti korluq, göz ağının əriməsi", "Göz dibinin yanması, bəbəyin məhv olması", "Müvəqqəti korluq, göz dibinin yanması, göz qapağı və ağının yanması", "Müvəqqəti korluq, tam korluq"], answer: 3 },
+  { id: 152, q: "İşıq şüalanması zamanı bədənin açıq hissəsinde neçə dərəcəli yanıq yaranır?", options: ["2", "5", "6", "3", "4"], answer: 4 },
+  { id: 153, q: "İşıq şüalanmasının təsirini qatı duman, yağış, qar neçə dəfə zəiflədir?", options: ["10-20", "20-40", "40-50", "15-50", "55-70"], answer: 0 },
+  { id: 154, q: "Müharibə dövrü üçün birdəfəlik şüa dozası nə qədərdir?", options: ["4 gündə 150 rentgen", "4 gündə 50 rentgen", "4 gündə 100 rentgen", "4 gündə 70 rentgen", "4 gündə 60 rentgen"], answer: 1 },
+  { id: 155, q: "Nüvə zədələnmə ocağı nədir?", options: ["Nüvə partlayışının zədələyici amillərindən insan, heyvan, bitki təlafatı olan, binalar dağılan, yanğınlar olan, ərazi radioaktiv zəhərlənən ərazi", "Nüvə silahı tətbiq olunan, insanlar tələf olan ərazi", "İnsan tələfatı olan, binalar salamat qalan ərazi", "Bitki, heyvan, insan tələfatı, kimyəvi zəhərlənmə", "Zərbə dalğasından güclü dağıntılar olan, GTZM-lə çirklənmiş ərazi"], answer: 0 },
+  { id: 156, q: "Nüvə zədələnmə ocağı hansı növ zədələnmə ocağına aiddir?", options: ["Müxtəlif formalı", "Sadə", "Mürəkkəb", "Qarışıq", "Düzgün olmayan"], answer: 3 },
+  { id: 157, q: "Radioaktiv zəhərlənmə zonalarının yaranmasında küləyin sürəti nəyə təsir edir?", options: ["Uzunluğuna, eninə", "Formasına, tərkibinə", "Ölçülərinə və zəhərlənmə səviyyəsinə", "Zəhərlənmə formasına", "Zəhərlənmə səviyyəsinə"], answer: 2 },
+  { id: 158, q: "Radioaktiv zəhərlənmə zonaları hansı həndəsi fiqur formasında olur?", options: ["Üçbucaq", "Kvadrat", "Dairə", "Ellips", "Düzbucaq"], answer: 3 },
+  { id: 159, q: "Elektromaqnit impulsundan mühafizə nəyə əsaslanır?", options: ["Avtomatik sistemlərin yerlə əlaqəsinə", "Radioaparatların mühafizə sisteminə", "Qoruyucu avtomat", "Mobil sistemlər", "İdarəetmə sistemi"], answer: 0 },
+  { id: 160, q: "Elektromaqnit impulsu canlı orqanizmə hansı yolla təsir göstərir?", options: ["Avtomatik idarəetmə sistemi ilə birbaşa əlaqədə", "Komputer və televizordan", "Dozimetrik cihazlardan", "Radiometrik cihazlardan", "Mobil telefonlardan"], answer: 0 },
+  { id: 161, q: "Vaxtın 7 dəfə artması radioaktiv zəhərlənməni neçə dəfə azaldır?", options: ["3 dəfə", "5 dəfə", "10 dəfə", "6 dəfə", "15 dəfə"], answer: 2 },
+  { id: 162, q: "Ərazinin radioaktiv zəhərlənmə dərəcəsi nədən asılıdır?", options: ["Məsafədən", "Yerin relyefindən", "Partlayışın növündən", "Partlayışın gücündən", "Torpağın tərkibindən"], answer: 3 },
+  { id: 163, q: "Ərazinin radioaktiv zəhərlənməsi hansı səviyyədən başlayır?", options: ["2 R/S", "0,5 R/S", "0,1 R/S", "2,5 R/S", "1,5 R/S"], answer: 1 },
+  { id: 164, q: "2-4 kal/sm2 işıq impulsu mühafizə olunmayan insanlarda hansı təsir yaradır?", options: ["İkinci dərəcəli yanıq", "Cüzi", "Təsir etmir", "Birinci dərəcəli yanıq", "Nəzərə alınmaz"], answer: 3 },
+  { id: 165, q: "Birinci dərəcəli yanıq zamanı dəridə nə baş verir?", options: ["Qaralma", "Göyərmə", "Bozarma", "Göynəmə", "Qızartı"], answer: 4 },
+  { id: 166, q: "İkinci dərəcəli yanıq zamanı dəridə nə baş verir?", options: ["Göynəmə", "Yanıq", "Qızartı", "Suluqlar əmələ gəlir", "Qaralma"], answer: 3 },
+  { id: 167, q: "Zərbə dalğasının təsir müddəti nə qədər ola bilər?", options: ["10-12 san", "3-7 san", "5-10 san", "25-30 san", "15-20 san"], answer: 4 },
+  { id: 168, q: "İşıq şüalanması nədir?", options: ["Gözəgörünməz şüalar", "Od kürəsinin saçdığı görünən, ultrabənövşəyi, infraqırmızı şüalanma", "Bənövşəyi işıq", "Lazer şüaları", "Qamma şüaları"], answer: 1 },
+  { id: 169, q: "Zərbə dalğası nədir?", options: ["Torpaq-hava qarışığı", "İşıq sürətiylə yayılan hava", "Ses sürətindən güclü sürətiylə yayılan sıxılmış hava", "Ses sürətindən yavaş yayılan hava", "Zəif sürətiylə yayılan hava"], answer: 2 },
+  { id: 170, q: "İzafi təzyiqin miqdarından asılı olaraq insanlar neçə növdə zədə alırlar?", options: ["6", "2", "5", "3", "4"], answer: 4 },
+  { id: 171, q: "Zərbə dalğasının təsiretmə müddəti nədən asılıdır?", options: ["Relyefdən", "Silahın növündən", "Tətbiq növündən", "Epimərrkəzdən", "Nüvə silahının gücündən"], answer: 4 },
+  { id: 172, q: "Radioaktivlik nədir?", options: ["Kimyəvi reaksiya zamanı şüa buraxma", "Kimyəvi birləşmələrin parçalanması", "Maddələrin şüa buraxmaqla sabitləşməsi", "Kimyəvi elementlərin atomlarının nüvələrinin öz-özünə parçalanması ve şüa buraxması", "Kimyəvi maddələrin parçalanması"], answer: 3 },
+  { id: 173, q: "Nüvə zədələnmə ocağının yaranmasına işıq şüalanması necə təsir edir?", options: ["Əhatəli yanğınlar, radioaktiv zəhərlənmə", "Yanğınlar, sürüşmələr", "Yeraltı yanğınlar, izafi təzyiq", "Tək-tək və əhatəli yanğınlar", "Tək-tək yanğınlar, dağıntılar"], answer: 3 },
+  { id: 174, q: "Nüfuzedici radiasiya nədir?", options: ["Pozitron seli", "Görünən qamma şüaları, proton seli", "Yalnız neytronlar", "Görünməyən qamma şüaları və neytron seli", "İşıq şüaları"], answer: 3 },
+  { id: 175, q: "Nüfuzedici radiasiyanın tərkibi nədir?", options: ["α, β, γ", "α-β seli", "γ-şüalanma və neytron seli", "β-γ seli", "β-şüası, neytron"], answer: 2 },
+  { id: 176, q: "Nüfuzedici radiasiya əsasən nəyə təsir edir?", options: ["Silaha", "Heyvanlar, meşələr", "İnsanlar, tikintilər", "Flora, fauna, dağlar", "Canlı orqanizmə və bitki örtüyünə"], answer: 4 },
+  { id: 177, q: "İşıq şüalanmasının zədələyici təsiri nədən asılıdır?", options: ["İşıq impulsundan, səthin hər sm2-nə düşən işıq enerjisi miqdarından", "Nüfuzedici radiasiyadan", "GTZM-dən, işıq impulsundan", "Zərbə dalğasından", "Radioaktiv zəhərlənmədən"], answer: 0 },
+  { id: 178, q: "Müasir qırğın silahları hansı vasitələrdən ibarətdir?", options: ["Kütləvi və adi qırğın silahlarından", "Qatarlardan", "Gəmilərdən", "Təyyarələrdən", "Nəqliyyat vasitələrindən"], answer: 0 },
+  { id: 179, q: "İşıq şüalanmasının ölçü vahidi nədir?", options: ["kc/m³ və ya kal/sm³", "kc/sm², R/saat", "kkal/sm", "kc/m", "kal/sm²"], answer: 4 },
+  { id: 180, q: "İnsanlara 2-4 kal/sm² işıq impulsu təsir etdikdə neçənci dərəcəli yanıq baş verər?", options: ["İkinci dərəcəli", "Nəzərə alınmaz", "Birinci dərəcəli", "Cüzi", "Təsir etmir"], answer: 2 },
+  { id: 181, q: "İşıq şüalanmasının təsirindən ərazi neçə zonaya bölünür?", options: ["3", "1", "4", "5", "2"], answer: 0 },
+  { id: 182, q: "γ-şüaları ve neytron seli radiasiyanın intensivliyi hansı qanuna əsaslanaraq azalır?", options: ["Yüngül azaltma", "Orta azaltma", "Tam azaltma", "Qismən azaltma", "Yarım azaltma"], answer: 4 },
+  { id: 183, q: "İzafi təzyiq ΔP-20-40 kПа olarsa hansı dərəcəli zədələnmə baş verir?", options: ["Daha ağır", "Ağır", "Hiss olunmaz", "Orta", "Yüngül"], answer: 4 },
+  { id: 184, q: "İşıq impulsunun ölçü vahidləri hansıdır?", options: ["kal/sm2, rentgen/sm2", "kal/sm2, radian/sm2", "kal/sm2, kc/metr2", "kal/sm2, kc/sm2", "kc/metr2, rentgen/sm2"], answer: 2 },
+  { id: 185, q: "İşıq şüalanmasının təsir müddəti nədən asılıdır?", options: ["Partlayışın sayından", "Partlayışın gücündən", "Partlayışın xarakterindən", "Relyefdən", "Partlayışın dərəcəsindən"], answer: 1 },
+  { id: 186, q: "Nüfuzedici radiasiya hansı qalınlıqlarda öz intensivliyini azaldır?", options: ["ağac-50, torpaq-15, beton-12, polad-10, qurğuşun-8", "ağac-20, torpaq-25, beton-9, polad-5, qurğuşun-3", "ağac-55, torpaq-35, beton-15, polad-18, qurğuşun-13", "ağac-30, torpaq-14, beton-10, polad-3, qurğuşun-2", "ağac-10, torpaq-4, beton-11, polad-7, qurğuşun-5"], answer: 3 },
+  { id: 187, q: "Nüfuz edici şüalar ətraf mühitə neçə saniyə təsir göstərir?", options: ["6-7 saniyə", "5-10 saniyə", "9-12 saniyə", "10-15 saniyə", "8-10 saniyə"], answer: 3 },
+  { id: 188, q: "'Q' radioaktiv zonası hansı rənglə rənglənir?", options: ["Qara", "Yaşıl", "Qonur", "Mavi", "Sarı"], answer: 0 },
+  { id: 189, q: "Nüvə silahının partlayışı zamanı iqtisad obyektlərindəki dağıntılar hansı göstəricilərə əsaslanır?", options: ["Məsafə, partlayış növündən", "Gücü, növü, məsafə, havanın şaquli vəziyyəti", "Gücü, relyef, külək istiqaməti", "Növü, məsafə, relyef, külək", "Gücü, növü, məsafə, relyef"], answer: 4 },
+  { id: 190, q: "Yerüstü partlayış növündə işıq şüalanmasının təsir müddəti nə qədərdir?", options: ["10-20 saniyə", "40 san", "60 san", "10 dəq", "10-20 dəq"], answer: 0 },
+  { id: 191, q: "Kimyəvi zəhərlənmə ocağı ərazisi nədir?", options: ["Yalnız heyvanların zərər çəkdiyi ərazi", "Yalnız bitkilər zərər çəkən ərazi", "Əhali və heyvanlar zərər çəkmiş ərazi", "ZM və GTZM-dən əhali, heyvanlar, bitkilər zərər çəkmiş ərazi", "Yalnız əhali, bitgilər zərər çəkmiş ərazi"], answer: 3 },
+  { id: 192, q: "Bakterioloji silahın təsirindən kənd təsərrüfatı bitkilərindəki xəstəliklər:", options: ["Fitoftoroza, paslanma, kanada lixoradkası", "Dabbaq, ku-lexoradka, ağciyər iltihabı", "Kanada lixoradkası, donuz qripi", "Paslanma, vəba, tif", "Fitoftoroza-gripp, sibir göbələyi"], answer: 0 },
+  { id: 193, q: "Bi-zet kimyəvi zədələnmə ocağına necə təsir göstərir?", options: ["Boğulmalar güclənir", "Qrip güclənir", "Dəri-zöhrəvi yaralar", "Psixo-kimyəvi təsir güclənir", "Sinir iflici güclənir"], answer: 3 },
+  { id: 194, q: "Sinir iflicedici ZM kimyəvi strukturuna hansı maddələr aiddir?", options: ["Tosgen", "Fosforlu üzvi birləşmə (zarin, zoman, v qazı)", "Adamsit", "Xlorlu birləşmə", "Xlorisan"], answer: 1 },
+  { id: 195, q: "Döyüş təyinatına görə ZM necə təsnif olunur?", options: ["Mexaniki", "Toksikoloji və taktiki", "Kimyəvi", "Təşkilati", "Texnoloji"], answer: 1 },
+  { id: 196, q: "Dərini zədələyən zəhərli maddələr hansılardır?", options: ["Fosgen, Bi-Zet", "Meskain, Bi-ZET", "Bi-ZET, LSD", "V qazlar, Fosgen", "Saf ipirt, luizit"], answer: 4 },
+  { id: 197, q: "Bakterioloji silahın zədələnmə ocağındaki xəstəliklər:", options: ["Taun, vəba, sibir yarası, botulizm, çiçək, tulyaremiya", "Ağciyər iltihabı, mədə xorası", "Bronxit, angina, tif", "Tif, şəkər xəstəliyi, zob", "Astma, vəba, tif, göbələk"], answer: 0 },
+  { id: 198, q: "Fosgen və difosgen orqanizmlərə necə təsir edir?", options: ["Boğucu təsir güclənir", "Dəri-zöhrəvi yaralar", "Psixo-mimotiq təsir", "Malyariya artır", "Sinir-patoloji təsir"], answer: 0 },
+  { id: 199, q: "Zarin, zoman, Vx-qazları necə təsir göstərir?", options: ["Dəri-zöhrəvi yaralar", "Xolera yayılır", "Sinir sistemini iflic edir", "Bakterioloji xəstəliklər", "Tif yayılır"], answer: 2 },
+  { id: 200, q: "Bakterioloji silahdan yaranan epidemiya zamanı hansı müdafiə tədbirlər icra edilir?", options: ["Deqazasiya-sanitar", "Dezinfeksiya", "Dezaktivasiya-deratizasiya", "Epizootiya", "Karantin-observasiya"], answer: 4 },
+  { id: 201, q: "Bakterioloji silahın şəhərlərdə tətbiqi hansı qorxulu şərait yaradır?", options: ["Epidemiya", "Digər ölkələrə yayılma", "Xəstədən xəstəyə keçmə", "Nəqliyyatla yayılma", "Sağlam adama keçmə"], answer: 0 },
+  { id: 202, q: "Fosgen və difosgennin davamlılığına görə xarakter:", options: ["Müddətsiz-naməlum", "Qeyri-müəyyən", "Davamsız-qısa müddətli", "Davamlı-uzun müddətli", "Müddətli-qeyri-müəyyən"], answer: 2 },
+  { id: 203, q: "Top sursatlarının məhv etmə radiusu nə qədərdir?", options: ["10-100 m", "15-150 m", "1,5-3 m", "1,5-15 m", "5-10 m"], answer: 3 },
+  { id: 204, q: "Həcmli partlayış döyüş silahı nədir?", options: ["Binaları məhv etmək üçün", "Yüngül nəbz ilə məhv etmək", "Yeraltı şok dalğası ilə məhv", "Hava şok dalğası ilə insanları, binaları məhv etmək", "Yanğınla məhv"], answer: 3 },
+  { id: 205, q: "Bioloji zərərin fokuslanması hansı amillərdən asılı deyil?", options: ["Hava şəraiti", "BS-nin növü, sayı", "Yoluxucu xəstəlik yayılma yolu", "Həll etmək qabiliyyəti", "Ərazinin təbiəti"], answer: 3 },
+  { id: 206, q: "Agentlər hansı birləşmə vəziyyətlərinde istifadə olunur?", options: ["1", "5", "4", "3", "2"], answer: 3 },
+  { id: 207, q: "Hansı qaz maskaları bütün agentlərdən qoruya bilər?", options: ["Respiratorlar", "Filtrli qaz maskaları", "Mülki qaz maskaları", "İzolyasiya edən qaz maskaları", "Filtr-udacı qaz maskaları"], answer: 3 },
+  { id: 208, q: "İnfeksiya sıxlığı nədir?", options: ["Havanın vahid həcmindəki RH", "Sudan, qumun vahid həcmindəki üzvi maddə", "RH miqdarı (boz/litr)", "Vahid sahəyə düşən OM miqdarı (q/m2)", "Hava həcmindəki RH (mq/l)"], answer: 3 },
+  { id: 209, q: "İnfeksiya konsentrasiyası nədir?", options: ["Radiasiyanın miqdarı", "Bioloji zəhərlənmə vahid sahəyə", "RH miqdarı boz ilə", "RH miqdarı boz ilə", "Havanın vahid həcmindəki zədələnmə (mq/l, q/m3)"], answer: 4 },
+  { id: 210, q: "Hansı protokol kimyəvi silahdan istifadəni qadağan edib?", options: ["Moskva Protokolu 1925", "Münxen Protokolu 1925", "Paris Protokolu 1925", "Jetomerskiy Protokolu 1925", "1925 Cenevrə Protokolu"], answer: 4 },
+  { id: 211, q: "Deqazasiya nədir?", options: ["Radioaktiv paltarların sanitarlaşdırılması", "Rv və Zomandan çıxarılması", "Bioloji, kimyəvi çirklənmə dezinfeksiyası", "Agentlərin zərərsizləşdirilməsi və ya çıxarılması", "PB maddələrinin çıxarılması"], answer: 3 },
+  { id: 212, q: "Təyyarə klasterləri hansı növ silahlardır?", options: ["Kimyəvi silah", "Nüvə-kimyəvi", "Nüvə silahı", "Ümumi hücum vasitələri", "Kütləvi qırğın silahları"], answer: 3 },
+  { id: 213, q: "Obyektlərin zəhərlənmə dərəcəsi nədən asılıdır?", options: ["ZM növündən, rütubətdən", "ZM növündən", "Rütubətdən", "ZM miqdarından", "Hava şəraitindən"], answer: 3 },
+  { id: 214, q: "Neytron silahının əsas xüsusiyyətləri hansıdır?", options: ["Güclü istilik, qamma seli", "Güclü istilik, neytron seli", "Zəif istilik, neytron seli", "Zəif istilik, elektron seli", "Güclü istilik, beta seli"], answer: 3 },
+  { id: 215, q: "Nüfuzedici radiasiya zamanı hansı şüalar yayılır?", options: ["A, B şüaları, elektron seli", "Qamma-beta, elektron seli", "Alfa-qamma, elektron seli", "Qamma şüaları, neytronlar seli", "Alfa-betta, neytron seli"], answer: 3 },
+  { id: 216, q: "Fosgen, sianid turşusu hansı tip kimyəvi növünə aiddir?", options: ["Davamlı", "Dözümlü", "Gec məhv olan", "Tez məhv olan", "Davamsız"], answer: 4 },
+  { id: 217, q: "Sinir iflicedici ZM-lər hansılardır?", options: ["Zoman, fosgen, difosgen", "Zarin, iprit, zoman", "Vx-qaz, zarin, zoman", "İprit, zoman, Bi-zet", "Fosgen, sianid turşusu"], answer: 2 },
+  { id: 218, q: "Bioloji zədələnmə ocağı nədir?", options: ["Bioloji, kimyəvi zəhərlənmə baş verən ərazi", "Külli insan, heyvan, bitki tələfatı, yoluxan xəstəliklər yayılan ərazi", "Güclü dağıntılar, yanğınlar olan yer", "Dağıntılar olan, yanğınlar baş verən ərazi", "Dağıntılar, bitki, heyvan tələfatı olan ərazi"], answer: 1 },
+  { id: 219, q: "Bioloji zədələnmə ocağının yaranmasına hansı bakterioloji vasitələr səbəb ola bilər?", options: ["Göbələklər, Bi-zat qazları", "Bakterioloji, kimyəvi vasitələr", "Bakteriya, viruslar, göbələklər, mikroblar", "Viruslar, sianit turşusu", "Mikroblar, rikketsilər, zoman"], answer: 2 },
+  { id: 220, q: "Bakterioloji silahdan heyvanlar arasında hansı xəstəliklər yayıla bilər?", options: ["Quş qripi, donuz qripi, sibir xorası, vəba", "Quş qripi, zob, mədə xorası", "Sibir xorası, vəba, qripp", "Donuz qripi, tif, dabbaq", "Sibir xorası, dabbaq, şəkər"], answer: 0 },
+  { id: 221, q: "Si-ES qazı kimyəvi zədələnmə ocağına necə təsir edir?", options: ["Rikketsiyanın yayılması", "Boğucu təsir", "Qıcıqlandırıcı təsir güclənir", "Sinir sistemini iflic edir", "Dəri-zöhrəvi yaralar"], answer: 2 },
+  { id: 222, q: "Zoman ve zarin davamlılığına görə hansı xarakter daşıyır?", options: ["Müddətli-qeyri-müəyyən", "Müddətsiz-naməlum", "Davamsız-qısa", "Davamlı-uzunmüddətli", "Qeyri-müəyyən"], answer: 3 },
+  { id: 223, q: "Kimyəvi silah tətbiq olunan ərazi neçə zonaya bölünür?", options: ["6", "3", "4", "2", "5"], answer: 3 },
+  { id: 224, q: "Bioloji silahın tətbiqi zamanı əraziyə nə yayılır?", options: ["Bakterial vasitələr, radioaktiv, kimyəvi", "Kimyəvi, radioaktiv, rikketsilər", "Radioaktiv, bakterial, göbələklər", "Bakterial, kimyəvi, virus", "Bakteriya, virus, göbələk, mikrob"], answer: 4 },
+  { id: 225, q: "İprit, lyusit, azotlu iprit kimyəvi zədələnmə ocağına necə təsir edir?", options: ["Psixo-mimotiq xəstəliklər", "Göbələk xəstəliyi", "Dəri-zöhrəvi yaralar", "Tulyamiya yayılır", "Sinir sistemini iflic edir"], answer: 2 },
+  { id: 226, q: "Dəridə yara əmələ gətirən ZM hansılardır?", options: ["Vx-qaz, zarin", "Zoman, fosgen", "Fosgen, sianid turşusu", "İprit, luyuzit", "Zarin, iprit"], answer: 3 },
+  { id: 227, q: "Güclü təsir edici zəhərləyici maddə (GTZM) hansıdır?", options: ["Bi-zet", "Si-ES", "Zarin", "İprit", "Xlor"], answer: 4 },
+  { id: 228, q: "Ümumzəhərləyici maddələr hansılardır?", options: ["Zoman, fosgen", "Zarin, iprit", "Vx-qaz, zarin", "İprit, luyuzit", "Sianid turşusu, xlorsian"], answer: 4 },
+  { id: 229, q: "Davamlılığına görə ZM neçə növ olur?", options: ["4", "6", "5", "3", "2"], answer: 4 },
+  { id: 230, q: "İnsan orqanizminə təsirinə görə ZM neçə qrupa bölünür?", options: ["4", "3", "6", "5", "7"], answer: 4 },
+  { id: 231, q: "Kimyəvi silah nədir?", options: ["GTZM-i yayan vasitələr", "Kütləvi qırğın, az təsirli", "Kütləvi qırğın silahı, ZM daşıyan vasitələr", "Adi qırğın silahı, zədələyici", "Kütləvi qırğın, radioaktiv"], answer: 2 },
+  { id: 232, q: "Kimyəvi zədələnmə ocağı nəyə deyilir?", options: ["Dağıntılar, partlayışlar, insan tələfatı", "Qurğular dağılsın, radioaktiv zəhərlənmə", "Bioloji təsir, insan tələfatı", "GTZM tətbiqi, güclü dağıntılar", "Kimyəvi silah tətbiqi, külli insan, heyvan, bitki tələfatı"], answer: 4 },
+  { id: 233, q: "Bioloji xarakterli FH necə baş verə bilər?", options: ["Kimyəvi maddələr, xəstəliklər, tif", "Epidemiyalar, viruslar, müxtəlif xəstəliklərin yayılması", "Epidemiyalar, kimyəvi maddələr, vərəm", "Viruslar, xəstəliklər, yanğın", "Xəstəliklər, maddələr dağılması, tələfat"], answer: 1 },
+  { id: 234, q: "Bakterioloji silahın ən qorxulu cəhəti nədir?", options: ["Müalicənin qeyri-müəyyən effekti", "Tez aşkar edilməsi", "Gizli inkişaf dövrü", "Terroristin əlinə düşməsi", "Gec aşkar edilmə"], answer: 3 },
+  { id: 235, q: "Karantin nədir?", options: ["Deqazasiya, dezinfeksiya tədbirləri", "Bioloji zədələnmə ocağını təcrid, xəstəlik yayılmasının qarşısı", "Zəhərli maddə yayılmasının qarşısı", "Kimyəvi-bakterioloji zəhərlənməyə nəzarət", "Bakterioloji təsirə qarşı"], answer: 1 },
+  { id: 236, q: "Observasiya nədir?", options: ["Yoluxan, kimyəvi zəhərlənmə qarşısı", "Yoluxma xəstəliklərinin qarşısı üçün tədbirlər sistemi", "Kimyəvi kəşfiyyat", "Kimyəvi, bioloji zonalarda tədbirlər", "Radioaktiv nəzarət"], answer: 1 },
+  { id: 237, q: "Bakterioloji silahın xəstəliyinin ən sadə yayılma üsulu hansıdır?", options: ["Heyvanların yoluxması", "Ağacların yoluxması", "Ətraf mühitin yoluxması", "Tərəvəzin yoluxması", "Binaların yoluxması"], answer: 2 },
+  { id: 238, q: "Müxtəlif epidemiya xarakterli xəstəliklər hansı vasitələrlə yayılır?", options: ["Balıqlar, su itləri, pinqvinlər", "Həşaratlar, gənələr, gəmiricilər", "Kirpilər, vəhşi heyvanlar", "İlanlar, quşlar", "Arılar, kəpənəklər"], answer: 1 },
+  { id: 239, q: "Bioloji silah kimi hansı vasitələr istifadə oluna bilər?", options: ["Viruslar, sianit turşusu", "Bakteriya, viruslar, göbələklər, rikketsiyalar", "Mikroblar, rikketsilər, zoman", "Göbələklər, Bi-zat qazları", "Bakterioloji, kimyəvi"], answer: 1 },
+  { id: 240, q: "İnsanların yoluxması üçün bakterioloji daşıyıcı vasitələri hansılardır?", options: ["Kalaşnikov, həcmli bombalar", "Vakuum bombası, neytron silahları", "Təyyarə mərmisi, top mərmisi, raket, konteyner", "Sualtı qayıq, kosmik aparat", "Əl qumbarası, tapança"], answer: 2 },
+  { id: 241, q: "Sığınacaqda orta temperatur nə qədər olmalıdır?", options: ["15 dərəcədən çox deyil", "10 dərəcədən çox deyil", "25 dərəcədən çox deyil", "27 dərəcədən yuxarı", "30 dərəcə"], answer: 2 },
+  { id: 242, q: "FH komissiyalarının fəaliyyəti nədən ibarətdir?", options: ["Şəhər-rayon FHK fəaliyyəti", "Respublika FHK fəaliyyəti", "Obyekt FHK dəyişmək", "Rayon FHK fəaliyyəti", "FH komissiyası yaratmağa əmr gözləmək"], answer: 4 },
+  { id: 243, q: "İdarəetmə qətiyyətli olması nə deməkdir?", options: ["İnamsız qərar qəbul etmək", "İnamsız qərar qəbul etməmək", "MM rəhbərlərinin inamla qərar qəbul etmək bacarığı ve icrasına nail olması", "Qərar qəbul etmək", "İcrasına nail olmaması"], answer: 2 },
+  { id: 244, q: "Naxçıvan MR-da MM sisteminə cavabdeh kimdir?", options: ["Ali məclisin sədri", "FH komissiyasının sədri", "Baş Nazirin müavini", "FHN", "Naxçıvan MR Baş Naziri"], answer: 4 },
+  { id: 245, q: "Gözyaşardıcı təsirli ZM hansıdır?", options: ["Xlorasetofenon, brombenzilsianid, xlorpikrin", "Tremorin, xlorsian", "Xlor, amonyak", "Bi-zet, meksin", "Psilosibin, lünzit"], answer: 0 },
+  { id: 246, q: "Dövlət sisteminin neçə bölmələri vardır?", options: ["3", "6", "2", "5", "4"], answer: 2 },
+  { id: 247, q: "Psixokimyəvi təsirli ZM hansılardır?", options: ["Meskain, Bi-zet, Si-es", "Se-es, Bi-zet, psiloseben", "Psilosiben, meskain, Si-Es", "Bi-zet, LSD, Psilosibin, Tremorin, Meskain", "Premorin, Si-Es, Bi-zet"], answer: 3 },
+  { id: 248, q: "Toksikoloji, taktiki təsirinə görə ZM neçə qrupa bölünür?", options: ["7", "3", "4", "5", "6"], answer: 0 },
+  { id: 249, q: "Gözyaşardıcı təsirli ZM hansıdır?", options: ["Xlor", "Bi-zet", "Xlorasetofenon", "Psilosbin", "Tremorin"], answer: 2 },
+  { id: 250, q: "FH Dövlət sisteminde üçüncü fəaliyyət rejimi hansıdır?", options: ["FH nəticələrinin aradan qaldırılması", "Fövqəladə hal rejimi", "Əhalinin xəbərdar edilməsi", "Köçürülmə", "Proqnozlaşdırma"], answer: 1 },
+  { id: 251, q: "FH Dövlət sisteminde ikinci fəaliyyət rejimi hansıdır?", options: ["Gündəlik fəaliyyət", "Birdəfəlik fəaliyyət", "Gücləndirilmiş fəaliyyət", "Hər günlük", "Sadələşdirilmiş"], answer: 2 },
+  { id: 252, q: "MM üzrə Azərbaycan Respublikasının ərazisi neçə zonaya bölünür?", options: ["7", "9", "10", "6", "5"], answer: 2 },
+  { id: 253, q: "FH Dövlət sisteminde birinci fəaliyyət rejimi hansıdır?", options: ["Hər günlük", "Gücləndirilmiş", "Birdəfəlik", "Sadələşdirilmiş", "Gündəlik fəaliyyət"], answer: 4 },
+  { id: 254, q: "Azərbaycan Respublikası Vahid Dövlət Sisteminin təyinatı nədən ibarətdir?", options: ["Sığınacaqlardan xəbərdar etmə", "Müxtəlif FH-da xəbərdarlıq, nəticə aradan qaldırılması", "Texnikadan, zirzəmilərdən xilas", "Relyefdən istifadə", "Qalın divarlarla mühafizə"], answer: 1 },
+  { id: 255, q: "MM ərazi prinsipi hansı sənədə uyğun olaraq təyin edilir?", options: ["FHN Göstəricilər", "FHN Regional Göstəriş", "'MM haqqında' AR Qanunu", "193 saylı Qərar", "'MM haqqında' Nazirlər Kabineti"], answer: 2 },
+  { id: 256, q: "FH zamanı rabitə şəbəkəsindən istifadə üstünlüyü kimə verilmişdir?", options: ["FH komissiyasına", "Rayonun icra başçısına", "Rayonun prokuroruna", "FH Nazirliyinə", "Daxili İşlər Nazirliyinə"], answer: 0 },
+  { id: 257, q: "Obyektlərdə mülki müdafiənin yaradılmasında məqsəd nədir?", options: ["Tələbələri təbii fəlakətdən qorumaq üçün", "Hazırlamasız yaradılır", "Fəhlə, qulluqçu, gəncləri müasir qırğın vasitələrindən mühafizəyə hazırlamaq, fəlakət nəticələrini ləğv etmək", "Nəticəsiz yaradılır", "Hazırlamasız, nəticəsiz yaradılır"], answer: 2 },
+  { id: 258, q: "FH zamanı neçə iş rejimi təyin olunur?", options: ["4", "7", "5", "3", "2"], answer: 3 },
+  { id: 259, q: "FH Komissiyasının gündəlik planını kim təsdiq edir?", options: ["Daxili işlər naziri, baş nazir", "Daxili işlər naziri", "FH Komissiyasının sədri", "Prezident", "Nazirlər Kabineti"], answer: 2 },
+  { id: 260, q: "FH Komissiyasının şəxsi heyətini kim təsdiq edir?", options: ["Daxili işlər naziri, baş nazir", "Daxili işlər naziri", "Nazirlər Kabineti", "Prezident", "Baş Nazir"], answer: 2 },
+  { id: 261, q: "FH komissiyaları hansı strukturun rəhbərliyi altında fəaliyyət göstərir?", options: ["Baş nazirin", "Daxili işlər naziri, baş nazirin", "Daxili işlər nazirinin", "Nazirlər Kabinetinin", "Prezidentin"], answer: 3 },
+  { id: 262, q: "FH komissiyasına kim rəhbərlik edir?", options: ["Prezident", "Səhiyyə Naziri", "Daxili işlər naziri", "Baş Nazir", "FH Naziri"], answer: 3 },
+  { id: 263, q: "Sığınacaqda karbon qazının ortası neçə faiz olmalıdır?", options: ["1,75%-dən çox deyil", "2,5%-dən çox deyil", "1%-dən çox olmayan", "3%-dən çox olmayan", "2%-dən çox olmayan"], answer: 2 },
+  { id: 264, q: "Sığınacaqda orta rütubət nə qədər olmalıdır?", options: ["80%", "10%", "Quru", "70%-dən çox deyil", "30%-dən çox olmayan"], answer: 3 },
+  { id: 265, q: "Yerlərin ümumi sayının neçə faizini yatmaq üçün yerlər təşkil etməlidir?", options: ["35%", "25%", "15%", "20%", "30%"], answer: 3 },
+  { id: 266, q: "Oturacaqların ümumi sayında neçə faiz olmalıdır?", options: ["90%", "50%", "80%", "60%", "70%"], answer: 2 },
+  { id: 267, q: "Ən sadə qoruyucu quruluş üçün hansı materialdan istifadə edilə bilər?", options: ["Hazır materiallar, köhnəlmir", "Dəmir-beton plitələr", "Kərpic, beton", "Ağacdan, əlaltı materiallardan, qumdan", "Xüsusi yağlı gil, ağac"], answer: 3 },
+  { id: 268, q: "Radiasiyanın əsas qorunma yolları hansılardır?", options: ["Qaz maskası, vaxt, zirzəmi", "Qaz maskası, kombinezon", "Kombinezon, qalxan", "Vaxt, mühafizə quruluşu, radiasiya cihazları", "Vaxt, məsafə, kombinezon"], answer: 4 },
+  { id: 269, q: "450 nəfərlik sığınacaq hansı tutumlu olacaq?", options: ["Kiçik", "Böyükdən kiçik", "Böyük", "Orta", "Həcmli"], answer: 3 },
+  { id: 270, q: "300 nəfərə qədər sığınacaq hansı tutumlu olacaq?", options: ["Orta", "Həcimli", "Böyük olmayan", "Kiçik", "Böyük"], answer: 3 },
+  { id: 271, q: "Sığınacaq tutumu necə müəyyən edilir?", options: ["Oturacaqlar, ikinci-üçüncü pillə", "Birinci pillədəki oturmaqla", "Oturacaqların cəmi", "Yatmaq üçün yerlərin cəmi", "Oturma, yatmaq yerlərinin cəmi"], answer: 4 },
+  { id: 272, q: "Sığınacaqlar təyinatına görə neçə növə bölünür?", options: ["4", "6", "5", "2", "3"], answer: 3 },
+  { id: 273, q: "Sığınacaqlar neçə növə bölünür?", options: ["8", "6", "5", "3", "7"], answer: 4 },
+  { id: 274, q: "FH qarşısının alınması üzrə Azərbaycan Dövlət sistemi neçə rejimdə işləyir?", options: ["2", "4", "5", "3", "1"], answer: 3 },
+  { id: 275, q: "MM-nin Respublikamızda neçə əsas vəzifəsi var?", options: ["7", "8", "3", "5", "4"], answer: 3 },
+  { id: 276, q: "FH Komissiyasının heyyət tərkibini kim təsdiq etmişdir?", options: ["Nazirlər Kabineti", "Təhsil Nazirliyi", "Maliyyə Nazirliyi", "FH Nazirliyi", "Daxili İşlər Nazirliyi"], answer: 0 },
+  { id: 277, q: "FH-da fəaliyyətə hazırlığın yüksəldilməsi üçün nazirliklər fəaliyyətini kim tənzimləyir?", options: ["Rayonun icra başçısı", "Rayonun prokuroru", "Polis şöbəsinin rəisi", "İcra nümayəndəsi", "FH komissiyası"], answer: 4 },
+  { id: 278, q: "Dövlət sisteminin gündəlik idarəetmə orqanı hansı nazirlikdir?", options: ["Dövlət Təhlükəsizliyi Xidməti", "Maliyyə Nazirliyi", "FH Nazirliyi", "Daxili İşlər Nazirliyi", "Yanğından Mühafizə"], answer: 2 },
+  { id: 279, q: "Dövlət sisteminin fəaliyyət mərhələləri hansılardır?", options: ["Rabitə sistemi", "Yüksək hazırlıq", "FH qarşısının alınması, FH-da fəaliyyət, FH-ın aradan qaldırılması", "Gündəlik fəaliyyət", "Fövqəladə hal"], answer: 2 },
+  { id: 280, q: "Dövlət sisteminin neçə fəaliyyət mərhələsi var?", options: ["7", "3", "4", "5", "6"], answer: 1 },
+  { id: 281, q: "Mülki müdafiə sistemi bu gün hansı nazirlikdə təmsil olunur?", options: ["İqtisadi İnkişaf Nazirliyi", "Müdafiə Nazirliyi", "FH Nazirliyi", "Müdafiə Sənayesi", "Daxili İşlər Nazirliyi"], answer: 2 },
+  { id: 282, q: "Dövlət sisteminin birinci fəaliyyət mərhələsi hansıdır?", options: ["FH proqnozu", "Xəbərdar etmə", "Daimi hazırlıq", "FH qarşısının alınması", "FH səbəbinin təyini"], answer: 3 },
+  { id: 283, q: "Dövlət sisteminin ikinci fəaliyyət mərhələsi hansıdır?", options: ["FH-da fəaliyyətə başlamaq", "Hazır olmaq", "Əhalini xəbərdar etmək", "Səbəbi araşdırmaq", "Proqnozlaşdırmaq"], answer: 0 },
+  { id: 284, q: "MM sisteminde nə məcburi deyil?", options: ["16 yaşlı uşaqları dəstələrə", "50 yaşlı kişiləri dəstələrə", "55 yaşlı kişiləri dəstələrə", "60 yaşlı qadınları dəstələrə", "10 yaşlı uşaqlara təlim"], answer: 3 },
+  { id: 285, q: "MM Sistemine ümumi rəhbərlik kim edir?", options: ["Baş Nazir", "FH Komissiyası", "Azərbaycan Respublikasının Prezidenti", "FH Naziri", "İcra Hakimiyyəti Başçısı"], answer: 2 },
+  { id: 286, q: "MM sahəsinde dövlətin vəzifəsi hansıdır?", options: ["Zonaları müəyyən, təqaüdlər", "Şəhərlərin qrupları, əmək haqqı", "İlk tibbi yardım", "X, TİG-ni təşkil etmək", "MM zonaları, şəhər qrupları, obyekt dərəcəsi"], answer: 4 },
+  { id: 287, q: "DP-22V dozimetrin kütləsi nə qədərdir?", options: ["60q", "20q", "30q", "50q", "40q"], answer: 3 },
+  { id: 288, q: "DP-64 cihazı neçə volt gərginliklə işləyir?", options: ["280/380", "136/320", "110/320", "12/36", "127/220"], answer: 4 },
+  { id: 289, q: "Hazırlıq dərəcəsinə görə hərbiləşdirilməmiş qalan dəstələr gündəlik neçə saat hazırlıqda olurlar?", options: ["24 saat", "18 saat", "22 saat", "12 saat", "16 saat"], answer: 0 },
+  { id: 290, q: "Hərbiləşdirilməmiş dəstələrin bir hissəsi yüksək hazırlıqla neçə saat saxlanılır?", options: ["4-6 saat", "6-8 saat", "5-7 saat", "5-6 saat", "7-8 saat"], answer: 1 },
+  { id: 291, q: "MM tədbirlərini hansı nazirlik həyata keçirir?", options: ["FH Nazirliyi rəhbərlik edir", "Daxili İşlər Naziri", "Prezident rəhbərlik edir", "Baş Nazir rəhbərlik edir", "Səhiyyə Naziri"], answer: 0 },
+  { id: 292, q: "Strateji hücum zamanı xüsusi tədbirlər üçün hansı strukturlar yaradılır?", options: ["MM qərargahı", "MM xidmətləri", "MM xidmət struktur bölməsi", "Müdafiə dəstələri", "MM idarələri"], answer: 1 },
+  { id: 293, q: "MM tədbirlərinin planlaşdırılması üçün hansı strukturlar yaradılır?", options: ["MM idarələri", "MM qərargahı", "MM xidmətləri", "MM xidmət struktur bölməsi", "Müdafiə dəstələri"], answer: 1 },
+  { id: 294, q: "MM bölmələri hansı vasitələrlə təchiz edilmişdir?", options: ["Adi silahlar", "Radiasiya, kimyəvi, bakterioloji kəşfiyyat cihazları", "Kürəklər, bombalar", "Məişət cihazları", "Kalaşnikov"], answer: 1 },
+  { id: 295, q: "Sülh dövründe MM birləşmələri harada yaradılır?", options: ["Şəhər, qəsəbələrdə", "Ayrı-ayrı istehsalat obyektlərinde", "Təhsil müəssisələrində", "Qaz maskası istehsalı yerlərinde", "Səhiyyə müəssisəlerinde"], answer: 1 },
+  { id: 296, q: "Hansı birləşmələr MM qüvvələrinə aid deyil?", options: ["Hərbi hissələr", "Könüllü birliklər", "Qeyri-hərbi MM birləşmələri", "SNAVR həyata keçirən MM qüvvələri", "Təcili xilasetmə qrupları"], answer: 1 },
+  { id: 297, q: "Regenerasiya prosesi nə deməkdir?", options: ["Yanma", "Bərpa", "Müdafiə", "Dəyər", "Ventilyasiya"], answer: 1 },
+  { id: 298, q: "Xüsusi çirklənmə zonasındakı sığınacaqda rejimin adı nədir?", options: ["İkinci rejim-filtr havalandırma", "Üçüncü rejim - izolyasiya", "Birinci rejim - təmiz havalandırma", "Süzücü-qoruyucu", "Sadə qoruyucu"], answer: 1 },
+  { id: 299, q: "Nüvə, kimyəvi, bioloji silahlara məruz qaldıqda tətbiq edilən rejim:", options: ["Mürəkkəb", "İkinci rejim-filtr havalandırma", "Sadə-mürəkkəb", "Dördüncü rejim", "Sadə"], answer: 1 },
+  { id: 300, q: "Sadə parça filtri ilə sığınacağa daxil havanın rejimi:", options: ["Sadə qoruyucu", "Birinci rejim - təmiz havalandırma", "Süzücü", "Üçüncü rejim", "Qoruyucu"], answer: 1 },
+  { id: 301, q: "Sığınacağı təmiz hava ilə təmin edən sistemin adı nədir?", options: ["Süzücü", "Ventilyasiya", "Süzücü-qoruyucu", "Qovucu", "Qoruyucu"], answer: 1 },
+  { id: 302, q: "Şəhər daş evlərinin zəifləmə əmsalı nədir?", options: ["5-50 dəfə", "10-30 dəfə", "20-30 dəfə", "10-60 dəfə", "100-300 dəfə"], answer: 1 },
+  { id: 303, q: "Sərnişin vaqonları üçün zəifləmə faktoru nədir?", options: ["5 dəfə", "3 dəfə", "4 dəfə", "6 dəfə", "2 dəfə"], answer: 1 },
+  { id: 304, q: "Daş evlərin zirzəmiləri üçün zəifləmə əmsalı nədir?", options: ["10-100 dəfə", "40-400 dəfə", "20-200 dəfə", "30-300 dəfə", "40-200 dəfə"], answer: 1 },
+  { id: 305, q: "Avtomobillər, avtobuslar üçün zəifləmə faktoru nədir?", options: ["5", "2", "6", "4", "3"], answer: 1 },
+  { id: 306, q: "Qeyri-hərbi birləşmələr hansı fəaliyyəti etmirlər?", options: ["Kəşfiyyat", "Əhalinin hazırlanması", "Yanğınların söndürülməsi", "Radiasiya, kimyəvi əlehinə tədbirlər", "Tibbi yardım"], answer: 1 },
+  { id: 307, q: "Qeyri-hərbi MM birləşmələri hansı əsaslarla formalaşıblar?", options: ["İstehsal əsasında", "Ərazi-istehsal prinsipinə uyğun", "Ərazi əsasında", "Statusuna görə", "İctimai-istehsal prinsipinə"], answer: 1 },
+  { id: 308, q: "Qeyri-hərbi MM birləşmələri tabeliyinə görə neçə qrupa bölünür?", options: ["4", "2", "5", "6", "3"], answer: 1 },
+  { id: 309, q: "Kəşfiyyat qrupunun əsas vəzifəsi nədir?", options: ["Xəndəklər açmaq", "Qida, ərazini təmin etmək", "İlk yardım üçün getmək", "Texnikanı zərərsizləşdirmək", "Dağıdılmış ərazilərin təyini, radiasiya ölçülməsi, FH xarakteri"], answer: 4 },
+  { id: 310, q: "Rayonun MM xidmətinə aid deyil", options: ["Rabitə xidməti, ərzaq xidməti", "Rabitə, tibbi xidmət", "Rabitə, mühafizə xidməti", "Yanğından mühafizə, tibbi", "Tibbi, sosial xidmət"], answer: 4 },
+];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function getRandomQuestions(pool, count) {
+  return shuffle(pool).slice(0, count);
+}
+
+export default function App() {
+  const [screen, setScreen] = useState("home");
+  const [user, setUser] = useState(null);
+  const [loginForm, setLoginForm] = useState({ name: "", email: "" });
+  const [questions, setQuestions] = useState([]);
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState(null);
+  const [answers, setAnswers] = useState([]);
+  const [showResult, setShowResult] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [loginError, setLoginError] = useState("");
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const saved = await window.storage.get("mm_user");
+        if (saved) setUser(JSON.parse(saved.value));
+        const h = await window.storage.get("mm_history");
+        if (h) setHistory(JSON.parse(h.value));
+      } catch {}
+    };
+    loadData();
+  }, []);
+
+  const handleRegister = async () => {
+    if (!loginForm.name.trim() || !loginForm.email.trim()) {
+      setLoginError("Ad və email daxil edin.");
+      return;
+    }
+    const u = { name: loginForm.name, email: loginForm.email, id: Date.now() };
+    setUser(u);
+    try { await window.storage.set("mm_user", JSON.stringify(u)); } catch {}
+    setLoginError("");
+    setScreen("home");
+  };
+
+  const startQuiz = () => {
+    const q = getRandomQuestions(ALL_QUESTIONS, 30);
+    setQuestions(q);
+    setCurrent(0);
+    setSelected(null);
+    setAnswers([]);
+    setShowResult(false);
+    setScreen("quiz");
+  };
+
+  const handleAnswer = (idx) => {
+    if (selected !== null) return;
+    setSelected(idx);
+    setAnswers(prev => [...prev, { qid: questions[current].id, selected: idx, correct: questions[current].answer }]);
+  };
+
+  const handleNext = () => {
+    if (current + 1 >= questions.length) {
+      finishQuiz();
+    } else {
+      setCurrent(c => c + 1);
+      setSelected(null);
+    }
+  };
+
+  const finishQuiz = async () => {
+    const score = answers.filter(a => a.selected === a.correct).length + (selected === questions[current].answer ? 1 : 0);
+    const total = questions.length;
+    const entry = { date: new Date().toLocaleDateString("az-AZ"), score, total, time: new Date().toLocaleTimeString("az-AZ") };
+    const newHistory = [entry, ...history].slice(0, 10);
+    setHistory(newHistory);
+    try { await window.storage.set("mm_history", JSON.stringify(newHistory)); } catch {}
+    setShowResult(true);
+    setScreen("result");
+  };
+
+  const q = questions[current];
+  const correctCount = answers.filter(a => a.selected === a.correct).length;
+
+  const colors = {
+    bg: "#0f172a",
+    card: "#1e293b",
+    accent: "#38bdf8",
+    accent2: "#f43f5e",
+    text: "#e2e8f0",
+    sub: "#94a3b8",
+    correct: "#22c55e",
+    wrong: "#ef4444",
+    border: "#334155",
+  };
+
+  const styles = {
+    wrap: { minHeight: "100vh", background: colors.bg, color: colors.text, fontFamily: "'Segoe UI', sans-serif", display: "flex", flexDirection: "column", alignItems: "center", padding: "20px 16px" },
+    card: { background: colors.card, borderRadius: 16, padding: 28, width: "100%", maxWidth: 640, boxShadow: "0 4px 32px #0008", border: `1px solid ${colors.border}` },
+    h1: { fontSize: 26, fontWeight: 800, color: colors.accent, marginBottom: 4, textAlign: "center" },
+    h2: { fontSize: 20, fontWeight: 700, marginBottom: 16 },
+    sub: { color: colors.sub, fontSize: 14, textAlign: "center", marginBottom: 20 },
+    input: { width: "100%", padding: "12px 14px", borderRadius: 10, border: `1.5px solid ${colors.border}`, background: "#0f172a", color: colors.text, fontSize: 15, marginBottom: 12, outline: "none", boxSizing: "border-box" },
+    btn: { width: "100%", padding: "13px", borderRadius: 10, background: colors.accent, color: "#0f172a", fontWeight: 700, fontSize: 16, border: "none", cursor: "pointer", marginBottom: 10 },
+    btn2: { width: "100%", padding: "13px", borderRadius: 10, background: "transparent", color: colors.accent, fontWeight: 700, fontSize: 15, border: `1.5px solid ${colors.accent}`, cursor: "pointer", marginBottom: 10 },
+    opt: (idx, sel, corr, isResult) => {
+      let bg = "#1a2842", border = colors.border, color = colors.text;
+      if (isResult) {
+        if (idx === corr) { bg = "#14532d"; border = colors.correct; color = colors.correct; }
+        else if (idx === sel && sel !== corr) { bg = "#450a0a"; border = colors.wrong; color = colors.wrong; }
+      } else if (sel === idx) { bg = "#1e3a5f"; border = colors.accent; }
+      return { padding: "12px 14px", borderRadius: 10, border: `1.5px solid ${border}`, background: bg, color, cursor: isResult ? "default" : "pointer", marginBottom: 8, fontSize: 14, transition: "all .2s" };
+    },
+    progress: { height: 6, background: colors.border, borderRadius: 99, overflow: "hidden", marginBottom: 20 },
+    bar: (p) => ({ height: "100%", width: `${p}%`, background: `linear-gradient(90deg, ${colors.accent}, #818cf8)`, borderRadius: 99, transition: "width .4s" }),
+    badge: (c) => ({ display: "inline-block", padding: "4px 12px", borderRadius: 99, background: c + "22", color: c, fontWeight: 700, fontSize: 13 }),
+    histRow: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: `1px solid ${colors.border}`, fontSize: 14 },
+    logout: { background: "transparent", border: "none", color: colors.sub, cursor: "pointer", fontSize: 13, marginTop: 8, textDecoration: "underline" },
+    error: { color: colors.wrong, fontSize: 13, marginBottom: 8 },
+  };
+
+  if (screen === "login") {
+    return (
+      <div style={styles.wrap}>
+        <div style={{ ...styles.card, marginTop: 40 }}>
+          <div style={styles.h1}>🛡️ Mülki Müdafiə</div>
+          <div style={styles.sub}>Sınaq testi sistemi</div>
+          <div style={styles.h2}>Qeydiyyat / Giriş</div>
+          <input style={styles.input} placeholder="Adınız" value={loginForm.name} onChange={e => setLoginForm(f => ({ ...f, name: e.target.value }))} />
+          <input style={styles.input} placeholder="Email" value={loginForm.email} onChange={e => setLoginForm(f => ({ ...f, email: e.target.value }))} />
+          {loginError && <div style={styles.error}>{loginError}</div>}
+          <button style={styles.btn} onClick={handleRegister}>Daxil ol</button>
+          <button style={styles.btn2} onClick={() => setScreen("home")}>Geri</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "quiz" && q) {
+    const prog = ((current + 1) / questions.length) * 100;
+    const isAnswered = selected !== null;
+    return (
+      <div style={styles.wrap}>
+        <div style={styles.card}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14, fontSize: 13, color: colors.sub }}>
+            <span>Sual {current + 1} / {questions.length}</span>
+            <span style={styles.badge(colors.accent)}>✓ {correctCount} düzgün</span>
+          </div>
+          <div style={styles.progress}><div style={styles.bar(prog)} /></div>
+          <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 20, lineHeight: 1.6, color: colors.text }}>
+            {q.q}
+          </div>
+          {q.options.map((opt, i) => (
+            <div key={i} style={styles.opt(i, selected, q.answer, isAnswered)} onClick={() => handleAnswer(i)}>
+              <span style={{ marginRight: 8, fontWeight: 700, color: colors.sub }}>{String.fromCharCode(65 + i)}.</span> {opt}
+              {isAnswered && i === q.answer && <span style={{ float: "right" }}>✅</span>}
+              {isAnswered && i === selected && selected !== q.answer && <span style={{ float: "right" }}>❌</span>}
+            </div>
+          ))}
+          {isAnswered && (
+            <button style={{ ...styles.btn, marginTop: 10 }} onClick={handleNext}>
+              {current + 1 >= questions.length ? "Nəticəyə bax →" : "Növbəti sual →"}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "result") {
+    const finalScore = answers.filter(a => a.selected === a.correct).length;
+    const pct = Math.round((finalScore / questions.length) * 100);
+    const color = pct >= 70 ? colors.correct : pct >= 50 ? "#f59e0b" : colors.wrong;
+    return (
+      <div style={styles.wrap}>
+        <div style={styles.card}>
+          <div style={{ textAlign: "center", padding: "20px 0" }}>
+            <div style={{ fontSize: 64 }}>{pct >= 70 ? "🏆" : pct >= 50 ? "📚" : "💪"}</div>
+            <div style={{ fontSize: 48, fontWeight: 900, color }}>{pct}%</div>
+            <div style={{ fontSize: 18, fontWeight: 700, marginTop: 8 }}>{finalScore} / {questions.length} düzgün</div>
+            <div style={{ ...styles.badge(color), marginTop: 12 }}>
+              {pct >= 70 ? "Əla nəticə!" : pct >= 50 ? "Yaxşı, daha çalış!" : "Daha çox hazırlaşmaq lazımdır"}
+            </div>
+          </div>
+          <div style={{ marginTop: 16 }}>
+            <div style={{ fontSize: 13, color: colors.sub, marginBottom: 12 }}>Cavablarınız:</div>
+            <div style={{ maxHeight: 260, overflowY: "auto" }}>
+              {questions.map((qq, i) => {
+                const ans = answers[i] || { selected: selected, correct: qq.answer };
+                const ok = (i < answers.length ? answers[i].selected : selected) === qq.answer;
+                return (
+                  <div key={qq.id} style={{ padding: "8px 0", borderBottom: `1px solid ${colors.border}`, fontSize: 13 }}>
+                    <span style={{ color: ok ? colors.correct : colors.wrong, marginRight: 8 }}>{ok ? "✓" : "✗"}</span>
+                    <span style={{ color: colors.sub }}>{i + 1}. {qq.q.slice(0, 55)}...</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <button style={{ ...styles.btn, marginTop: 20 }} onClick={startQuiz}>🔄 Yeni test</button>
+          <button style={styles.btn2} onClick={() => setScreen("home")}>Ana səhifə</button>
+        </div>
+      </div>
+    );
+  }
+
+  // HOME
+  return (
+    <div style={styles.wrap}>
+      <div style={{ ...styles.card, marginTop: 20 }}>
+        <div style={styles.h1}>🛡️ Mülki Müdafiə</div>
+        <div style={styles.sub}>698 sualdan ibarət test bazası • 30 sual hər sessiyada</div>
+        {user ? (
+          <>
+            <div style={{ background: "#0f2242", borderRadius: 12, padding: "14px 16px", marginBottom: 20 }}>
+              <div style={{ fontSize: 15, fontWeight: 700 }}>👤 {user.name}</div>
+              <div style={{ fontSize: 12, color: colors.sub }}>{user.email}</div>
+            </div>
+            <button style={styles.btn} onClick={startQuiz}>🚀 Testi Başlat (30 sual)</button>
+            {history.length > 0 && (
+              <div style={{ marginTop: 16 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 10, color: colors.sub }}>📊 Son nəticələr</div>
+                {history.slice(0, 5).map((h, i) => {
+                  const pct = Math.round((h.score / h.total) * 100);
+                  const c = pct >= 70 ? colors.correct : pct >= 50 ? "#f59e0b" : colors.wrong;
+                  return (
+                    <div key={i} style={styles.histRow}>
+                      <span style={{ color: colors.sub }}>{h.date} {h.time}</span>
+                      <span style={styles.badge(c)}>{h.score}/{h.total} — {pct}%</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <button style={styles.logout} onClick={async () => {
+              setUser(null);
+              try { await window.storage.delete("mm_user"); } catch {}
+            }}>Çıxış</button>
+          </>
+        ) : (
+          <>
+            <div style={{ background: "#1a2842", borderRadius: 12, padding: 16, marginBottom: 20 }}>
+              <div style={{ fontSize: 14, color: colors.sub, lineHeight: 1.7 }}>
+                ✅ 698 sualdan <strong>30</strong> sual avtomatik seçilir<br />
+                ✅ Hər sualdan sonra düzgün cavab göstərilir<br />
+                ✅ Nəticə tarixi saxlanılır
+              </div>
+            </div>
+            <button style={styles.btn} onClick={() => setScreen("login")}>Qeydiyyat / Giriş</button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
