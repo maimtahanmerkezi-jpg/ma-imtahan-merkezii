@@ -227,8 +227,13 @@ footer{background:#0a1e50;border-top:1px solid rgba(255,255,255,0.1);padding:36p
 .qalib-sinif{font-size:12px;font-weight:300;color:rgba(10,30,80,0.5);margin-bottom:10px}
 .qalib-hediyye{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:var(--r-sm);padding:8px 10px;font-size:12px;font-weight:400;color:var(--text-mid)}
 .qalib-hediyye-icon{font-size:15px;flex-shrink:0}
+  .nav-quiz-fixed{display:none;position:fixed;bottom:158px;right:28px;z-index:400;height:52px;padding:0 20px;background:#1852f0;border-radius:100px;font-size:14px;font-weight:700;color:white!important;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(24,82,240,0.35);transition:transform .2s}
+   .nav-quiz-fixed:hover{transform:scale(1.05)}
+   @media(max-width:768px){.nav-quiz-fixed{display:inline-flex}}
 .nav-game-fixed{display:none;position:fixed;bottom:96px;right:28px;z-index:400;height:52px;padding:0 20px;background:#ffffff;border-radius:100px;font-size:14px;font-weight:700;color:var(--blue)!important;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(24,82,240,0.35);transition:transform .2s}
 .nav-game-fixed:hover{transform:scale(1.05)}
+  nav-quiz{height:38px;padding:0 18px;background:rgba(24,82,240,0.12);border:1px solid rgba(24,82,240,0.35);border-radius:var(--r-sm);font-size:13px;font-weight:600;color:var(--blue)!important;display:inline-flex;align-items:center;gap:6px;transition:background .2s,transform .15s}
+   .nav-quiz:hover{background:rgba(24,82,240,0.22);transform:translateY(-1px)}
 .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;background:none;border:none;z-index:600}
 .hamburger span{display:block;width:24px;height:2px;background:#0a1e50;border-radius:2px;transition:all .3s}
 .hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
@@ -241,6 +246,7 @@ footer{background:#0a1e50;border-top:1px solid rgba(255,255,255,0.1);padding:36p
 .mobile-menu a:hover{color:#0a1e50}
 .mobile-menu .nav-cta{margin-top:8px;justify-content:center;height:46px;border-radius:var(--r-sm)}
 .mobile-menu .nav-game{margin-top:4px;justify-content:center;height:46px;border-radius:var(--r-sm)}
+
 
 @media(max-width:1024px){
   .hero-inner{grid-template-columns:1fr}
@@ -335,6 +341,7 @@ footer{background:#0a1e50;border-top:1px solid rgba(255,255,255,0.1);padding:36p
     <a href="#filiallar" onclick="closeMenu()">Filiallar</a>
     <a href="#reyler" onclick="closeMenu()">Rəylər</a>
     <a href="https://www.examine.space/searchexam.php?id=178&lang=1" target="_blank" onclick="closeMenu()">Nəticə</a>
+     <a href="mm_quiz.html" target="_blank" class="nav-quiz" onclick="closeMenu()">📝 MM Testi</a>
     <a href="ma_milyoncu.html" target="_blank" class="nav-game" onclick="closeMenu()">🎮 Oyun</a>
     <a href="#elaqe" class="nav-cta" onclick="closeMenu()">Qeydiyyat</a>
   </div>
@@ -666,15 +673,17 @@ tick();setInterval(tick,1000);
     <div class="footer-copy">© 2026 MA İmtahan Mərkəzi · Bütün hüquqlar qorunur</div>
   </div>
   <ul class="footer-links">
+  
     <li><a href="#elanlar">Elanlar</a></li>
     <li><a href="#qalibler">Qaliblərimiz</a></li>
     <li><a href="#format">İmtahan Formatı</a></li>
     <li><a href="#filiallar">Filiallar</a></li>
+   <li><a href="mm_quiz.html" target="_blank">📝 MM Testi</a></li>
     <li><a href="ma_milyoncu.html" target="_blank">🎮 Oyun</a></li>
     <li><a href="https://wa.me/994704945094" target="_blank">WhatsApp</a></li>
   </ul>
 </footer>
-
+<a href="mm_quiz.html" target="_blank" class="nav-quiz-fixed">📝 MM Testi</a>
 <a href="ma_milyoncu.html" target="_blank" class="nav-game-fixed">🎮 Oyunu Oyna</a>
 
 <a href="https://wa.me/994704945094" target="_blank" class="wa-btn" title="WhatsApp ilə yaz">
