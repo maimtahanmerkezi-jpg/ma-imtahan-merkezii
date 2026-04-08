@@ -5,7 +5,7 @@
 <link rel="shortcut icon" href="https://maimtahan.az/favicon.png" type="image/png">
 <meta property="og:image" content="https://maimtahan.az/favicon.png">
 <meta property="og:title" content="Karyera planalması Testi — MA İmtahan Mərkəzi">
-<meta property="og:description" content="Karyera Planalması. 30 sual, avtomatik nəticə. (İsi ürəydi😘.">
+<meta property="og:description" content="Karyera Planalması. 30 sual, avtomatik nəticə. (İsi ürəydi😘.)">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-GF9C8J9FHX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -570,7 +570,7 @@ function renderHome(){
     <div class="hb-badge">Pulsuz Sınaq Testi</div>
     <span class="hb-icon">🛡️</span>
     <div class="hb-title">Mülki Müdafiə<br>Test Bazası</div>
-    <div class="hb-sub">Hər sessiyada ${QUIZ_COUNT} sual avtomatik seçilir.<br>Cavabla, öyrən, inkişaf et.</div>
+    <div class="hb-sub">Hər sessiyada ${QUIZ_COUNT} sual avtomatik seçilir.<br>Cavabla, öyrən, inkişaf et, dua et.</div>
     <div class="hb-stats">
       <div class="hb-stat"><div class="hb-stat-num">${ALL_QUESTIONS.length}</div><div class="hb-stat-lbl">Sual bazası</div></div>
       <div class="hb-divider"></div>
@@ -636,6 +636,7 @@ function renderHome(){
           ✅ Suallar hər dəfə avtomatik qarışdırılır<br>
           ✅ Hər sualdan sonra düzgün cavab göstərilir<br>
           ✅ Nəticə tarixçəsi saxlanılır
+          ✅ Sizin görəcək günləriniz qarşıdadı😵‍💫
         </div>
       </div>`;
     const loginBtn = el('button','btn btn-blue');
@@ -772,7 +773,7 @@ function renderResult(){
   const pct   = total ? Math.round((score/total)*100) : 0;
   const color = pct>=70?'#16a34a':pct>=50?'#d97706':'#dc2626';
   const emoji = pct>=70?'🏆':pct>=50?'📚':'💪';
-  const label = pct>=70?'Əla nəticə!':pct>=50?'Yaxşı, daha çalış!':'Daha çox hazırlaşmaq lazımdır';
+  const label = pct>=70?'Əla nəticə!':pct>=50?'Yaxşı, daha çalış!':'Daha çox hazırlaşmaq lazımdır, Bu smestr zərbəçi olmadinsa yaşamada day' ;
 
   const card = el('div','card fade-in');
 
