@@ -504,7 +504,7 @@ initBg();
 function drawBg(){cv.width=cv.offsetWidth;cv.height=cv.offsetHeight;ctx.clearRect(0,0,cv.width,cv.height);pts.forEach(function(p){p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>cv.width)p.vx*=-1;if(p.y<0||p.y>cv.height)p.vy*=-1;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='hsla(220,80%,55%,'+p.o+')';ctx.fill();});requestAnimationFrame(drawBg);}
 drawBg();
 
-var end = new Date('2026-04-18T17:00:00');
+var end = new Date('2026-05-16T17:00:00');
 var start = new Date('2026-04-01T00:00:00');
 
 var prev={d:-1,h:-1,m:-1,s:-1};
