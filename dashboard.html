@@ -19,7 +19,9 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--red:#b91c1c;--red-dark:#991b1b;--red-light:#fef2f2;--red-border:#fecaca}
 body{font-family:'Poppins',sans-serif;background:#f8faff;min-height:100vh;display:flex}
-.sidebar{width:240px;background:var(--red);min-height:100vh;padding:0;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;bottom:0}
+
+/* SIDEBAR */
+.sidebar{width:240px;background:var(--red);min-height:100vh;padding:0;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform .3s}
 .sidebar-brand{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,0.12)}
 .brand-icon{width:40px;height:40px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;margin-bottom:10px}
 .brand-name{font-size:15px;font-weight:700;color:#fff}
@@ -35,86 +37,93 @@ body{font-family:'Poppins',sans-serif;background:#f8faff;min-height:100vh;displa
 .admin-avatar{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
 .admin-name{font-size:13px;font-weight:600;color:#fff}
 .admin-role{font-size:10px;color:rgba(255,255,255,0.5)}
+
+/* MAIN */
 .main{flex:1;margin-left:240px;display:flex;flex-direction:column;min-height:100vh}
-.topbar{background:#fff;border-bottom:1px solid #e8edf5;padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-.topbar-left h1{font-size:18px;font-weight:700;color:#1e293b}
-.topbar-left p{font-size:11px;color:#94a3b8;margin-top:1px}
-.topbar-right{display:flex;align-items:center;gap:10px}
-.date-chip{background:var(--red-light);border:1px solid var(--red-border);border-radius:8px;padding:5px 12px;font-size:12px;color:var(--red);font-weight:600}
-.content{padding:24px 28px;flex:1}
+.topbar{background:#fff;border-bottom:1px solid #e8edf5;padding:0 24px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.menu-btn{display:none;width:36px;height:36px;border-radius:8px;background:#f8faff;border:1px solid #e8edf5;align-items:center;justify-content:center;cursor:pointer;font-size:18px}
+.topbar-title h1{font-size:17px;font-weight:700;color:#1e293b}
+.topbar-title p{font-size:11px;color:#94a3b8;margin-top:1px}
+.date-chip{background:var(--red-light);border:1px solid var(--red-border);border-radius:8px;padding:5px 12px;font-size:12px;color:var(--red);font-weight:600;white-space:nowrap}
+.content{padding:20px 24px;flex:1}
 
 /* STATS */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
-.stat-card{background:#fff;border:1px solid #e8edf5;border-radius:14px;padding:18px;position:relative;overflow:hidden}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:#fff;border:1px solid #e8edf5;border-radius:14px;padding:16px;position:relative;overflow:hidden}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--red)}
-.stat-icon{font-size:22px;margin-bottom:10px}
-.stat-label{font-size:11px;color:#94a3b8;font-weight:500;margin-bottom:3px}
-.stat-value{font-size:28px;font-weight:800;color:#1e293b}
+.stat-icon{font-size:20px;margin-bottom:8px}
+.stat-label{font-size:11px;color:#94a3b8;font-weight:500;margin-bottom:2px}
+.stat-value{font-size:26px;font-weight:800;color:#1e293b}
 
-/* TABS */
-.tabs-wrap{background:#fff;border:1px solid #e8edf5;border-radius:16px;overflow:hidden}
-.tabs-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f1f5f9}
-.tabs-title{font-size:15px;font-weight:700;color:#1e293b}
-.tabs-sub{font-size:12px;color:#94a3b8;margin-top:2px}
-.day-tabs{display:flex;gap:4px;padding:12px 20px;border-bottom:1px solid #f1f5f9;overflow-x:auto}
-.day-tab{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #e8edf5;background:#f8faff;color:#64748b;white-space:nowrap;transition:all .15s;font-family:'Poppins',sans-serif}
-.day-tab:hover{border-color:var(--red-border);color:var(--red)}
-.day-tab.active{background:var(--red);color:#fff;border-color:var(--red)}
+/* VIEW TOGGLE */
+.view-card{background:#fff;border:1px solid #e8edf5;border-radius:16px;overflow:hidden}
+.view-head{padding:16px 20px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;flex-wrap:gap}
+.view-title{font-size:14px;font-weight:700;color:#1e293b}
+.view-sub{font-size:11px;color:#94a3b8;margin-top:2px}
 
-/* SCHEDULE TABLE */
-.schedule-wrap{overflow-x:auto;padding:0}
-.schedule-table{width:100%;border-collapse:collapse;min-width:700px}
-.schedule-table th{background:#f8faff;padding:10px 14px;font-size:11px;font-weight:600;color:#64748b;text-align:left;border-bottom:1px solid #e8edf5;white-space:nowrap}
-.schedule-table th:first-child{width:100px}
-.schedule-table td{padding:10px 14px;font-size:12px;border-bottom:1px solid #f8fafc;vertical-align:top}
-.schedule-table tr:last-child td{border-bottom:none}
-.schedule-table tr:hover td{background:#fefafa}
-.time-cell{font-weight:700;color:#475569;white-space:nowrap;font-size:12px}
-.room-cell{display:flex;flex-direction:column;gap:3px}
-.lesson-block{background:#fff;border:1px solid #e8edf5;border-radius:8px;padding:6px 10px;transition:border-color .15s}
-.lesson-block:hover{border-color:var(--red-border)}
-.lesson-teacher{font-size:12px;font-weight:600;color:#1e293b}
-.lesson-subject{font-size:10px;color:#94a3b8;margin-top:1px}
-.lesson-room{display:inline-block;background:var(--red-light);color:var(--red);font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;margin-top:3px}
-.empty-cell{color:#e2e8f0;font-size:11px;padding:6px 0}
+/* MODE SWITCH */
+.mode-switch{display:flex;background:#f8faff;border:1px solid #e8edf5;border-radius:10px;padding:3px;gap:2px}
+.mode-btn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;background:none;color:#64748b;font-family:'Poppins',sans-serif;white-space:nowrap;transition:all .15s}
+.mode-btn.active{background:var(--red);color:#fff}
 
-/* LEGEND */
-.legend{display:flex;flex-wrap:wrap;gap:8px;padding:14px 20px;border-top:1px solid #f1f5f9}
-.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#64748b}
-.legend-dot{width:8px;height:8px;border-radius:50%;background:var(--red)}
+/* FILTER ROW */
+.filter-row{display:flex;gap:8px;padding:12px 20px;border-bottom:1px solid #f1f5f9;overflow-x:auto;flex-wrap:nowrap}
+.filter-chip{padding:6px 13px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #e8edf5;background:#f8faff;color:#64748b;white-space:nowrap;transition:all .15s;font-family:'Poppins',sans-serif;flex-shrink:0}
+.filter-chip:hover{border-color:var(--red-border);color:var(--red)}
+.filter-chip.active{background:var(--red);color:#fff;border-color:var(--red)}
 
-/* BOTTOM GRID */
-.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
-.mini-card{background:#fff;border:1px solid #e8edf5;border-radius:14px;overflow:hidden}
-.mini-head{padding:14px 18px;border-bottom:1px solid #f1f5f9;font-size:14px;font-weight:700;color:#1e293b}
-.teacher-list{padding:4px 0}
-.teacher-item{display:flex;align-items:center;gap:10px;padding:9px 18px;transition:background .15s}
-.teacher-item:hover{background:#f8faff}
-.t-avatar{width:32px;height:32px;border-radius:50%;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--red);flex-shrink:0}
-.t-name{font-size:12px;font-weight:600;color:#1e293b}
-.t-info{font-size:10px;color:#94a3b8;margin-top:1px}
-.t-badge{margin-left:auto;background:var(--red-light);border:1px solid var(--red-border);border-radius:20px;padding:2px 8px;font-size:10px;color:var(--red);font-weight:600;white-space:nowrap}
-.room-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px}
-.room-item{border-radius:10px;padding:10px;text-align:center;border:1px solid #e8edf5}
-.room-item.busy{background:var(--red-light);border-color:var(--red-border)}
-.room-item.free{background:#f0fdf4;border-color:#bbf7d0}
-.room-num{font-size:14px;font-weight:700;color:#1e293b}
-.room-status{font-size:10px;margin-top:2px;font-weight:500}
-.room-item.busy .room-status{color:var(--red)}
-.room-item.free .room-status{color:#16a34a}
+/* CARD LIST VIEW (mobile-friendly) */
+.card-list{padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.day-group{margin-bottom:4px}
+.day-group-title{font-size:11px;font-weight:700;color:#94a3b8;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;padding:0 4px}
+.lesson-card{background:#f8faff;border:1px solid #e8edf5;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;transition:border-color .15s}
+.lesson-card:hover{border-color:var(--red-border);background:var(--red-light)}
+.lc-time{font-size:12px;font-weight:700;color:var(--red);min-width:90px;flex-shrink:0}
+.lc-body{flex:1;min-width:0}
+.lc-teacher{font-size:13px;font-weight:600;color:#1e293b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lc-subject{font-size:11px;color:#94a3b8;margin-top:1px}
+.lc-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.lc-room{background:var(--red-light);color:var(--red);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px}
+.lc-day{font-size:10px;color:#94a3b8}
+
+/* TABLE VIEW */
+.table-wrap{overflow-x:auto}
+.sched-table{width:100%;border-collapse:collapse;min-width:600px;font-size:12px}
+.sched-table th{background:#f8faff;padding:9px 12px;font-size:11px;font-weight:600;color:#64748b;text-align:left;border-bottom:1px solid #e8edf5;white-space:nowrap}
+.sched-table td{padding:9px 12px;border-bottom:1px solid #f8fafc;vertical-align:middle}
+.sched-table tr:last-child td{border-bottom:none}
+.sched-table tr:hover td{background:#fefafa}
+.cell-block{display:flex;flex-direction:column}
+.cell-teacher{font-size:12px;font-weight:600;color:#1e293b}
+.cell-subject{font-size:10px;color:#94a3b8}
+.cell-badge{display:inline-block;background:var(--red-light);color:var(--red);font-size:10px;font-weight:600;padding:1px 7px;border-radius:5px;margin-top:3px}
+.empty-cell{color:#d1d5db;font-size:12px}
+.time-col{font-weight:700;color:#475569;white-space:nowrap;font-size:12px}
+
+/* OVERLAY */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:90}
+.overlay.show{display:block}
 
 @media(max-width:768px){
-  .sidebar{display:none}
+  .sidebar{transform:translateX(-240px)}
+  .sidebar.open{transform:translateX(0)}
   .main{margin-left:0}
   .stats{grid-template-columns:repeat(2,1fr)}
-  .content{padding:16px}
-  .bottom-grid{grid-template-columns:1fr}
+  .content{padding:14px 12px}
+  .topbar{padding:0 14px}
+  .menu-btn{display:flex}
+  .view-head{flex-direction:column;align-items:flex-start;gap:10px}
+  .mode-switch{width:100%}
+  .mode-btn{flex:1;text-align:center}
 }
 </style>
 </head>
 <body>
 
-<aside class="sidebar">
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
   <div class="sidebar-brand">
     <div class="brand-icon">OS</div>
     <div class="brand-name">Olympiad School</div>
@@ -143,217 +152,224 @@ body{font-family:'Poppins',sans-serif;background:#f8faff;min-height:100vh;displa
 <div class="main">
   <div class="topbar">
     <div class="topbar-left">
-      <h1>Admin Dashboard</h1>
-      <p>Olympiad School — Həftəlik idarəetmə paneli</p>
+      <div class="menu-btn" onclick="toggleSidebar()">☰</div>
+      <div class="topbar-title">
+        <h1>Admin Dashboard</h1>
+        <p>Olympiad School — idarəetmə paneli</p>
+      </div>
     </div>
-    <div class="topbar-right">
-      <div class="date-chip" id="todayDate"></div>
-    </div>
+    <div class="date-chip" id="todayDate"></div>
   </div>
 
   <div class="content">
     <div class="stats">
-      <div class="stat-card">
-        <div class="stat-icon">🎓</div>
-        <div class="stat-label">Aktiv Şagirdlər</div>
-        <div class="stat-value">428</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">👨‍🏫</div>
-        <div class="stat-label">Müəllimlər</div>
-        <div class="stat-value">24</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">🚪</div>
-        <div class="stat-label">Otaqlar</div>
-        <div class="stat-value">11</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">📚</div>
-        <div class="stat-label">Bu həftə dərslər</div>
-        <div class="stat-value">58</div>
-      </div>
+      <div class="stat-card"><div class="stat-icon">🎓</div><div class="stat-label">Aktiv Şagirdlər</div><div class="stat-value">428</div></div>
+      <div class="stat-card"><div class="stat-icon">👨‍🏫</div><div class="stat-label">Müəllimlər</div><div class="stat-value">24</div></div>
+      <div class="stat-card"><div class="stat-icon">🚪</div><div class="stat-label">Otaqlar</div><div class="stat-value">11</div></div>
+      <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-label">Bu həftə dərslər</div><div class="stat-value">58</div></div>
     </div>
 
-    <!-- WEEKLY SCHEDULE -->
-    <div class="tabs-wrap">
-      <div class="tabs-head">
+    <div class="view-card">
+      <div class="view-head">
         <div>
-          <div class="tabs-title">Həftəlik Dərs Cədvəli</div>
-          <div class="tabs-sub">11 otaq · Bazar ertəsi — Şənbə</div>
+          <div class="view-title">Həftəlik Dərs Cədvəli</div>
+          <div class="view-sub">Gün, otaq və ya müəllimə görə bax</div>
+        </div>
+        <div class="mode-switch">
+          <button class="mode-btn active" onclick="setMode('day',this)">📅 Günlük</button>
+          <button class="mode-btn" onclick="setMode('room',this)">🚪 Otaq</button>
+          <button class="mode-btn" onclick="setMode('teacher',this)">👨‍🏫 Müəllim</button>
         </div>
       </div>
-      <div class="day-tabs">
-        <button class="day-tab active" onclick="showDay(0,this)">Bazar ertəsi</button>
-        <button class="day-tab" onclick="showDay(1,this)">Çərşənbə axşamı</button>
-        <button class="day-tab" onclick="showDay(2,this)">Çərşənbə</button>
-        <button class="day-tab" onclick="showDay(3,this)">Cümə axşamı</button>
-        <button class="day-tab" onclick="showDay(4,this)">Cümə</button>
-        <button class="day-tab" onclick="showDay(5,this)">Şənbə</button>
-      </div>
-      <div class="schedule-wrap">
-        <table class="schedule-table">
-          <thead>
-            <tr>
-              <th>Saat</th>
-              <th>Otaq 1</th>
-              <th>Otaq 2</th>
-              <th>Otaq 3</th>
-              <th>Otaq 4</th>
-              <th>Otaq 5</th>
-              <th>Otaq 6</th>
-              <th>Otaq 7</th>
-              <th>Otaq 8</th>
-              <th>Otaq 9</th>
-              <th>Otaq 10</th>
-              <th>Otaq 11</th>
-            </tr>
-          </thead>
-          <tbody id="scheduleBody"></tbody>
-        </table>
-      </div>
-      <div class="legend">
-        <div class="legend-item"><div class="legend-dot"></div>Dərs var</div>
-        <div class="legend-item" style="color:#94a3b8"><div style="width:8px;height:8px;border-radius:50%;background:#e2e8f0;display:inline-block"></div>Boş otaq</div>
-      </div>
-    </div>
 
-    <div class="bottom-grid">
-      <div class="mini-card">
-        <div class="mini-head">Müəllim Yükü (Bu həftə)</div>
-        <div class="teacher-list" id="teacherList"></div>
-      </div>
-      <div class="mini-card">
-        <div class="mini-head">Otaq Vəziyyəti (Bu gün)</div>
-        <div class="room-grid" id="roomGrid"></div>
-      </div>
+      <div class="filter-row" id="filterRow"></div>
+      <div id="scheduleContent"></div>
     </div>
   </div>
 </div>
 
 <script>
-const teachers = [
-  {name:'Lalə müəllimə', init:'L', subject:'Riyaziyyat', lessons:12},
-  {name:'Tural müəllim', init:'Tu', subject:'Fizika', lessons:10},
-  {name:'Aytac müəllimə', init:'Ay', subject:'Kimya', lessons:9},
-  {name:'Aidə müəllimə', init:'Ai', subject:'Biologiya', lessons:11},
-  {name:'Turan müəllim', init:'Tr', subject:'Tarix', lessons:8},
-  {name:'Nigar müəllimə', init:'N', subject:'İngilis dili', lessons:10},
-  {name:'Sərdar müəllim', init:'S', subject:'Azərbaycan dili', lessons:9},
-  {name:'Kənan müəllim', init:'K', subject:'Coğrafiya', lessons:7},
-  {name:'Röya müəllimə', init:'R', subject:'Riyaziyyat', lessons:11},
-  {name:'Orxan müəllim', init:'O', subject:'İnformatika', lessons:8},
+const DAYS = ['Bazar ertəsi','Çərşənbə axşamı','Çərşənbə','Cümə axşamı','Cümə','Şənbə'];
+const SLOTS = ['09:00–10:30','10:30–12:00','12:00–13:30','13:30–15:00','15:00–16:30'];
+const TEACHERS = [
+  {name:'Lalə müəllimə',   init:'L',  subject:'Riyaziyyat'},
+  {name:'Tural müəllim',   init:'Tu', subject:'Fizika'},
+  {name:'Aytac müəllimə',  init:'Ay', subject:'Kimya'},
+  {name:'Aidə müəllimə',   init:'Ai', subject:'Biologiya'},
+  {name:'Turan müəllim',   init:'Tr', subject:'Tarix'},
+  {name:'Nigar müəllimə',  init:'N',  subject:'İngilis dili'},
+  {name:'Sərdar müəllim',  init:'S',  subject:'Azərb. dili'},
+  {name:'Kənan müəllim',   init:'K',  subject:'Coğrafiya'},
+  {name:'Röya müəllimə',   init:'R',  subject:'Riyaziyyat'},
+  {name:'Orxan müəllim',   init:'O',  subject:'İnformatika'},
 ];
 
-const slots = [
-  '09:00–10:30',
-  '10:30–12:00',
-  '12:00–13:30',
-  '13:30–15:00',
-  '15:00–16:30',
-];
-
-// Each day: array of 5 slots, each slot: array of 11 rooms (null or {teacher,subject})
-function rnd(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-const days = [];
+// Generate schedule: days[d][slot][room] = teacher index or null
+const schedule = [];
 for(let d=0;d<6;d++){
-  const daySlots=[];
+  const dayData=[];
   for(let s=0;s<5;s++){
-    const rooms=[];
-    const usedTeachers=new Set();
-    // 9-10 rooms busy
-    const busyCount = 9 + Math.floor(Math.random()*2);
-    const busyRooms = new Set();
-    while(busyRooms.size < busyCount) busyRooms.add(Math.floor(Math.random()*11));
-    for(let r=0;r<11;r++){
-      if(busyRooms.has(r)){
-        const avail = teachers.filter(t=>!usedTeachers.has(t.name));
-        if(avail.length>0){
-          const t=rnd(avail);
-          usedTeachers.add(t.name);
-          rooms.push({teacher:t.name, subject:t.subject});
-        } else {
-          rooms.push(null);
-        }
-      } else {
-        rooms.push(null);
-      }
-    }
-    daySlots.push(rooms);
+    const rooms=new Array(11).fill(null);
+    const busy = 9 + Math.floor(Math.random()*2);
+    const usedT=new Set();
+    const roomIdxs=[...Array(11).keys()].sort(()=>Math.random()-.5).slice(0,busy);
+    let ti=0;
+    roomIdxs.forEach(r=>{
+      // find unused teacher
+      while(ti<TEACHERS.length && usedT.has(ti)) ti++;
+      if(ti<TEACHERS.length){ rooms[r]=ti; usedT.add(ti); ti++; }
+    });
+    dayData.push(rooms);
   }
-  days.push(daySlots);
+  schedule.push(dayData);
 }
 
-function showDay(idx, tabEl){
-  document.querySelectorAll('.day-tab').forEach(t=>t.classList.remove('active'));
-  tabEl.classList.add('active');
-  renderSchedule(idx);
-  renderRooms(idx);
+let currentMode='day';
+let currentFilter=0;
+
+function setMode(mode, btn){
+  currentMode=mode;
+  currentFilter=0;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderFilters();
+  renderContent();
 }
 
-function renderSchedule(dayIdx){
-  const tbody = document.getElementById('scheduleBody');
-  const dayData = days[dayIdx];
-  tbody.innerHTML = dayData.map((slot,si)=>{
-    const cells = slot.map((room,ri)=>{
-      if(!room) return `<td><span class="empty-cell">—</span></td>`;
-      return `<td>
-        <div class="lesson-block">
-          <div class="lesson-teacher">${room.teacher}</div>
-          <div class="lesson-subject">${room.subject}</div>
-          <span class="lesson-room">Otaq ${ri+1}</span>
+function renderFilters(){
+  const row=document.getElementById('filterRow');
+  let items=[];
+  if(currentMode==='day') items=DAYS;
+  else if(currentMode==='room') items=Array.from({length:11},(_,i)=>'Otaq '+(i+1));
+  else items=TEACHERS.map(t=>t.name);
+  row.innerHTML=items.map((item,i)=>
+    `<button class="filter-chip ${i===currentFilter?'active':''}" onclick="selectFilter(${i},this)">${item}</button>`
+  ).join('');
+}
+
+function selectFilter(idx, el){
+  currentFilter=idx;
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderContent();
+}
+
+function renderContent(){
+  if(currentMode==='day') renderDayView();
+  else if(currentMode==='room') renderRoomView();
+  else renderTeacherView();
+}
+
+function renderDayView(){
+  const d=currentFilter;
+  const content=document.getElementById('scheduleContent');
+  let html='<div class="card-list">';
+  SLOTS.forEach((slot,s)=>{
+    const lessons=[];
+    schedule[d][s].forEach((t,r)=>{
+      if(t!==null) lessons.push({teacher:TEACHERS[t],room:r+1,slot});
+    });
+    if(lessons.length===0) return;
+    html+=`<div class="day-group-title">${slot}</div>`;
+    lessons.forEach(l=>{
+      html+=`<div class="lesson-card">
+        <div class="lc-time">${l.slot}</div>
+        <div class="lc-body">
+          <div class="lc-teacher">${l.teacher.name}</div>
+          <div class="lc-subject">${l.teacher.subject}</div>
         </div>
-      </td>`;
-    }).join('');
-    return `<tr><td class="time-cell">${slots[si]}</td>${cells}</tr>`;
-  }).join('');
-}
-
-function renderRooms(dayIdx){
-  const grid = document.getElementById('roomGrid');
-  // Count busy rooms across all slots for this day
-  const roomBusy = Array(11).fill(0);
-  days[dayIdx].forEach(slot=>{
-    slot.forEach((r,i)=>{ if(r) roomBusy[i]++; });
+        <div class="lc-right">
+          <div class="lc-room">Otaq ${l.room}</div>
+        </div>
+      </div>`;
+    });
   });
-  grid.innerHTML = roomBusy.map((count,i)=>{
-    const busy = count > 0;
-    return `<div class="room-item ${busy?'busy':'free'}">
-      <div class="room-num">${i+1}</div>
-      <div class="room-status">${busy? count+' dərs':'Boş'}</div>
-    </div>`;
-  }).join('');
+  html+='</div>';
+  content.innerHTML=html;
 }
 
-function renderTeachers(){
-  const list = document.getElementById('teacherList');
-  list.innerHTML = teachers.map(t=>`
-    <div class="teacher-item">
-      <div class="t-avatar">${t.init}</div>
-      <div>
-        <div class="t-name">${t.name}</div>
-        <div class="t-info">${t.subject}</div>
-      </div>
-      <div class="t-badge">${t.lessons} dərs</div>
-    </div>
-  `).join('');
+function renderRoomView(){
+  const r=currentFilter;
+  const content=document.getElementById('scheduleContent');
+  let html='<div class="card-list">';
+  DAYS.forEach((day,d)=>{
+    const dayLessons=[];
+    SLOTS.forEach((slot,s)=>{
+      const t=schedule[d][s][r];
+      if(t!==null) dayLessons.push({teacher:TEACHERS[t],slot,s});
+    });
+    if(dayLessons.length===0) return;
+    html+=`<div class="day-group-title">${day}</div>`;
+    dayLessons.forEach(l=>{
+      html+=`<div class="lesson-card">
+        <div class="lc-time">${l.slot}</div>
+        <div class="lc-body">
+          <div class="lc-teacher">${l.teacher.name}</div>
+          <div class="lc-subject">${l.teacher.subject}</div>
+        </div>
+        <div class="lc-right">
+          <div class="lc-room">Otaq ${r+1}</div>
+        </div>
+      </div>`;
+    });
+  });
+  html+='</div>';
+  content.innerHTML=html;
 }
 
-const d=new Date();
-const months=['Yanvar','Fevral','Mart','Aprel','May','İyun','İyul','Avqust','Sentyabr','Oktyabr','Noyabr','Dekabr'];
-document.getElementById('todayDate').textContent=d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear();
+function renderTeacherView(){
+  const ti=currentFilter;
+  const content=document.getElementById('scheduleContent');
+  let html='<div class="card-list">';
+  DAYS.forEach((day,d)=>{
+    const dayLessons=[];
+    SLOTS.forEach((slot,s)=>{
+      schedule[d][s].forEach((t,r)=>{
+        if(t===ti) dayLessons.push({slot,room:r+1});
+      });
+    });
+    if(dayLessons.length===0) return;
+    html+=`<div class="day-group-title">${day}</div>`;
+    dayLessons.forEach(l=>{
+      html+=`<div class="lesson-card">
+        <div class="lc-time">${l.slot}</div>
+        <div class="lc-body">
+          <div class="lc-teacher">${TEACHERS[ti].name}</div>
+          <div class="lc-subject">${TEACHERS[ti].subject}</div>
+        </div>
+        <div class="lc-right">
+          <div class="lc-room">Otaq ${l.room}</div>
+        </div>
+      </div>`;
+    });
+  });
+  html+='</div>';
+  content.innerHTML=html;
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
 
 document.querySelectorAll('.nav-item').forEach(btn=>{
   btn.addEventListener('click',function(){
     document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
     this.classList.add('active');
+    closeSidebar();
   });
 });
 
-renderSchedule(0);
-renderRooms(0);
-renderTeachers();
+const d=new Date();
+const months=['Yanvar','Fevral','Mart','Aprel','May','İyun','İyul','Avqust','Sentyabr','Oktyabr','Noyabr','Dekabr'];
+document.getElementById('todayDate').textContent=d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear();
+
+renderFilters();
+renderContent();
 </script>
 </body>
 </html>
