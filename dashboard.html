@@ -19,104 +19,96 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--red:#b91c1c;--red-dark:#991b1b;--red-light:#fef2f2;--red-border:#fecaca}
 body{font-family:'Poppins',sans-serif;background:#f8faff;min-height:100vh;display:flex}
-
-/* SIDEBAR */
-.sidebar{width:260px;background:var(--red);min-height:100vh;padding:0;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;bottom:0;overflow:hidden}
-.sidebar-brand{padding:28px 24px 24px;border-bottom:1px solid rgba(255,255,255,0.12)}
-.brand-icon{width:44px;height:44px;background:rgba(255,255,255,0.15);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff;margin-bottom:12px}
-.brand-name{font-size:16px;font-weight:700;color:#fff;line-height:1.2}
-.brand-sub{font-size:11px;color:rgba(255,255,255,0.55);margin-top:2px;letter-spacing:.04em}
-.nav-section{padding:20px 16px 0;flex:1}
-.nav-label{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,0.4);padding:0 8px;margin-bottom:8px}
-.nav-item{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:rgba(255,255,255,0.65);font-size:13.5px;cursor:pointer;transition:all .15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:'Poppins',sans-serif}
+.sidebar{width:240px;background:var(--red);min-height:100vh;padding:0;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;bottom:0}
+.sidebar-brand{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,0.12)}
+.brand-icon{width:40px;height:40px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;margin-bottom:10px}
+.brand-name{font-size:15px;font-weight:700;color:#fff}
+.brand-sub{font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px}
+.nav-section{padding:16px 12px 0;flex:1}
+.nav-label{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);padding:0 8px;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:9px;color:rgba(255,255,255,0.65);font-size:13px;cursor:pointer;transition:all .15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:'Poppins',sans-serif}
 .nav-item:hover{background:rgba(255,255,255,0.1);color:#fff}
 .nav-item.active{background:rgba(255,255,255,0.18);color:#fff;font-weight:600}
-.nav-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;background:rgba(255,255,255,0.08)}
-.nav-item.active .nav-icon{background:rgba(255,255,255,0.2)}
-.sidebar-footer{padding:16px;border-top:1px solid rgba(255,255,255,0.12)}
+.nav-icon{font-size:15px;width:20px;text-align:center}
+.sidebar-footer{padding:14px;border-top:1px solid rgba(255,255,255,0.12)}
 .admin-card{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.1);border-radius:10px}
-.admin-avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff}
+.admin-avatar{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
 .admin-name{font-size:13px;font-weight:600;color:#fff}
-.admin-role{font-size:11px;color:rgba(255,255,255,0.5)}
+.admin-role{font-size:10px;color:rgba(255,255,255,0.5)}
+.main{flex:1;margin-left:240px;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:#fff;border-bottom:1px solid #e8edf5;padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.topbar-left h1{font-size:18px;font-weight:700;color:#1e293b}
+.topbar-left p{font-size:11px;color:#94a3b8;margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.date-chip{background:var(--red-light);border:1px solid var(--red-border);border-radius:8px;padding:5px 12px;font-size:12px;color:var(--red);font-weight:600}
+.content{padding:24px 28px;flex:1}
 
-/* MAIN */
-.main{flex:1;margin-left:260px;display:flex;flex-direction:column;min-height:100vh}
-.topbar{background:#fff;border-bottom:1px solid #e8edf5;padding:0 36px;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
-.topbar-left h1{font-size:20px;font-weight:700;color:#1e293b}
-.topbar-left p{font-size:12px;color:#94a3b8;margin-top:1px}
-.topbar-right{display:flex;align-items:center;gap:12px}
-.notif-btn{width:38px;height:38px;border-radius:10px;background:#f8faff;border:1px solid #e8edf5;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;position:relative}
-.notif-dot{width:8px;height:8px;background:var(--red);border-radius:50%;position:absolute;top:6px;right:6px;border:2px solid #fff}
-.date-chip{background:var(--red-light);border:1px solid var(--red-border);border-radius:8px;padding:6px 14px;font-size:12px;color:var(--red);font-weight:600}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:#fff;border:1px solid #e8edf5;border-radius:14px;padding:18px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--red)}
+.stat-icon{font-size:22px;margin-bottom:10px}
+.stat-label{font-size:11px;color:#94a3b8;font-weight:500;margin-bottom:3px}
+.stat-value{font-size:28px;font-weight:800;color:#1e293b}
 
-.content{padding:28px 36px;flex:1}
+/* TABS */
+.tabs-wrap{background:#fff;border:1px solid #e8edf5;border-radius:16px;overflow:hidden}
+.tabs-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #f1f5f9}
+.tabs-title{font-size:15px;font-weight:700;color:#1e293b}
+.tabs-sub{font-size:12px;color:#94a3b8;margin-top:2px}
+.day-tabs{display:flex;gap:4px;padding:12px 20px;border-bottom:1px solid #f1f5f9;overflow-x:auto}
+.day-tab{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #e8edf5;background:#f8faff;color:#64748b;white-space:nowrap;transition:all .15s;font-family:'Poppins',sans-serif}
+.day-tab:hover{border-color:var(--red-border);color:var(--red)}
+.day-tab.active{background:var(--red);color:#fff;border-color:var(--red)}
 
-/* STAT CARDS */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
-.stat-card{background:#fff;border:1px solid #e8edf5;border-radius:16px;padding:20px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
-.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.07)}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--red);border-radius:16px 16px 0 0}
-.stat-icon{width:42px;height:42px;background:var(--red-light);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:14px}
-.stat-label{font-size:12px;color:#94a3b8;font-weight:500;margin-bottom:4px}
-.stat-value{font-size:30px;font-weight:800;color:#1e293b;line-height:1}
-.stat-trend{font-size:11px;color:#22c55e;margin-top:6px;font-weight:500}
+/* SCHEDULE TABLE */
+.schedule-wrap{overflow-x:auto;padding:0}
+.schedule-table{width:100%;border-collapse:collapse;min-width:700px}
+.schedule-table th{background:#f8faff;padding:10px 14px;font-size:11px;font-weight:600;color:#64748b;text-align:left;border-bottom:1px solid #e8edf5;white-space:nowrap}
+.schedule-table th:first-child{width:100px}
+.schedule-table td{padding:10px 14px;font-size:12px;border-bottom:1px solid #f8fafc;vertical-align:top}
+.schedule-table tr:last-child td{border-bottom:none}
+.schedule-table tr:hover td{background:#fefafa}
+.time-cell{font-weight:700;color:#475569;white-space:nowrap;font-size:12px}
+.room-cell{display:flex;flex-direction:column;gap:3px}
+.lesson-block{background:#fff;border:1px solid #e8edf5;border-radius:8px;padding:6px 10px;transition:border-color .15s}
+.lesson-block:hover{border-color:var(--red-border)}
+.lesson-teacher{font-size:12px;font-weight:600;color:#1e293b}
+.lesson-subject{font-size:10px;color:#94a3b8;margin-top:1px}
+.lesson-room{display:inline-block;background:var(--red-light);color:var(--red);font-size:10px;font-weight:600;padding:1px 6px;border-radius:4px;margin-top:3px}
+.empty-cell{color:#e2e8f0;font-size:11px;padding:6px 0}
 
-/* GRID LAYOUT */
-.grid-2{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+/* LEGEND */
+.legend{display:flex;flex-wrap:wrap;gap:8px;padding:14px 20px;border-top:1px solid #f1f5f9}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#64748b}
+.legend-dot{width:8px;height:8px;border-radius:50%;background:var(--red)}
 
-/* SCHEDULE CARD */
-.card{background:#fff;border:1px solid #e8edf5;border-radius:16px;overflow:hidden}
-.card-head{padding:18px 22px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between}
-.card-title{font-size:15px;font-weight:700;color:#1e293b}
-.card-sub{font-size:12px;color:#94a3b8;margin-top:1px}
-.view-all{font-size:12px;color:var(--red);font-weight:600;cursor:pointer;border:none;background:none;font-family:'Poppins',sans-serif}
-
-/* TIMELINE */
-.timeline{padding:8px 0}
-.tl-item{display:flex;gap:0;position:relative}
-.tl-time-col{width:90px;flex-shrink:0;padding:12px 0 12px 22px;display:flex;flex-direction:column;align-items:flex-end;padding-right:16px}
-.tl-time{font-size:12px;font-weight:600;color:#64748b}
-.tl-dur{font-size:10px;color:#94a3b8;margin-top:2px}
-.tl-line-col{width:24px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;position:relative}
-.tl-dot{width:12px;height:12px;border-radius:50%;background:var(--red);border:2px solid #fff;box-shadow:0 0 0 2px var(--red-border);margin-top:16px;flex-shrink:0;z-index:1}
-.tl-line{flex:1;width:2px;background:#f1f5f9;margin-top:2px}
-.tl-item:last-child .tl-line{display:none}
-.tl-body{flex:1;padding:8px 22px 8px 10px}
-.tl-card{background:#f8faff;border:1px solid #e8edf5;border-radius:12px;padding:12px 14px;transition:border-color .2s,background .2s}
-.tl-card:hover{border-color:var(--red-border);background:var(--red-light)}
-.tl-slot{font-size:11px;color:var(--red);font-weight:700;letter-spacing:.04em;margin-bottom:6px}
-.tl-teachers{display:flex;flex-wrap:wrap;gap:5px}
-.tl-chip{background:#fff;border:1px solid #e8edf5;border-radius:20px;padding:3px 10px;font-size:11px;color:#475569;font-weight:500;display:flex;align-items:center;gap:5px}
-.tl-chip-dot{width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0}
-
-/* RIGHT COLUMN */
-.mini-card{background:#fff;border:1px solid #e8edf5;border-radius:16px;overflow:hidden;margin-bottom:16px}
-.mini-card:last-child{margin-bottom:0}
-.mini-head{padding:14px 18px;border-bottom:1px solid #f1f5f9}
-.mini-title{font-size:14px;font-weight:700;color:#1e293b}
-
-/* TEACHER LIST */
-.teacher-list{padding:8px 0}
-.teacher-item{display:flex;align-items:center;gap:12px;padding:10px 18px;transition:background .15s}
+/* BOTTOM GRID */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.mini-card{background:#fff;border:1px solid #e8edf5;border-radius:14px;overflow:hidden}
+.mini-head{padding:14px 18px;border-bottom:1px solid #f1f5f9;font-size:14px;font-weight:700;color:#1e293b}
+.teacher-list{padding:4px 0}
+.teacher-item{display:flex;align-items:center;gap:10px;padding:9px 18px;transition:background .15s}
 .teacher-item:hover{background:#f8faff}
-.t-avatar{width:36px;height:36px;border-radius:50%;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--red);flex-shrink:0}
-.t-name{font-size:13px;font-weight:600;color:#1e293b}
-.t-lessons{font-size:11px;color:#94a3b8;margin-top:1px}
-.t-badge{margin-left:auto;background:var(--red-light);border:1px solid var(--red-border);border-radius:20px;padding:2px 9px;font-size:11px;color:var(--red);font-weight:600}
+.t-avatar{width:32px;height:32px;border-radius:50%;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--red);flex-shrink:0}
+.t-name{font-size:12px;font-weight:600;color:#1e293b}
+.t-info{font-size:10px;color:#94a3b8;margin-top:1px}
+.t-badge{margin-left:auto;background:var(--red-light);border:1px solid var(--red-border);border-radius:20px;padding:2px 8px;font-size:10px;color:var(--red);font-weight:600;white-space:nowrap}
+.room-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:14px}
+.room-item{border-radius:10px;padding:10px;text-align:center;border:1px solid #e8edf5}
+.room-item.busy{background:var(--red-light);border-color:var(--red-border)}
+.room-item.free{background:#f0fdf4;border-color:#bbf7d0}
+.room-num{font-size:14px;font-weight:700;color:#1e293b}
+.room-status{font-size:10px;margin-top:2px;font-weight:500}
+.room-item.busy .room-status{color:var(--red)}
+.room-item.free .room-status{color:#16a34a}
 
-/* QUICK STATS */
-.quick-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#e8edf5}
-.qs-item{background:#fff;padding:16px 18px;text-align:center}
-.qs-val{font-size:22px;font-weight:800;color:var(--red)}
-.qs-label{font-size:11px;color:#94a3b8;margin-top:2px;font-weight:500}
-
-@media(max-width:900px){
-  .sidebar{transform:translateX(-260px)}
+@media(max-width:768px){
+  .sidebar{display:none}
   .main{margin-left:0}
   .stats{grid-template-columns:repeat(2,1fr)}
-  .grid-2{grid-template-columns:1fr}
-  .content{padding:20px 16px}
-  .topbar{padding:0 16px}
+  .content{padding:16px}
+  .bottom-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -130,36 +122,20 @@ body{font-family:'Poppins',sans-serif;background:#f8faff;min-height:100vh;displa
   </div>
   <div class="nav-section">
     <div class="nav-label">Əsas</div>
-    <button class="nav-item active">
-      <div class="nav-icon">🏠</div> Dashboard
-    </button>
-    <button class="nav-item">
-      <div class="nav-icon">📅</div> Dərs Cədvəli
-    </button>
-    <button class="nav-item">
-      <div class="nav-icon">👨‍🏫</div> Müəllimlər
-    </button>
-    <button class="nav-item">
-      <div class="nav-icon">👥</div> Qruplar
-    </button>
-    <button class="nav-item">
-      <div class="nav-icon">🎓</div> Şagirdlər
-    </button>
-    <div class="nav-label" style="margin-top:16px">Digər</div>
-    <button class="nav-item">
-      <div class="nav-icon">🚪</div> Otaqlar
-    </button>
-    <button class="nav-item">
-      <div class="nav-icon">🔔</div> Bildirişlər
-    </button>
+    <button class="nav-item active"><span class="nav-icon">🏠</span> Dashboard</button>
+    <button class="nav-item"><span class="nav-icon">📅</span> Həftəlik Cədvəl</button>
+    <button class="nav-item"><span class="nav-icon">👨‍🏫</span> Müəllimlər</button>
+    <button class="nav-item"><span class="nav-icon">👥</span> Qruplar</button>
+    <button class="nav-item"><span class="nav-icon">🎓</span> Şagirdlər</button>
+    <div class="nav-label" style="margin-top:14px">Digər</div>
+    <button class="nav-item"><span class="nav-icon">🚪</span> Otaqlar</button>
+    <button class="nav-item"><span class="nav-icon">🔔</span> Bildirişlər</button>
+    <button class="nav-item"><span class="nav-icon">⚙️</span> Tənzimləmələr</button>
   </div>
   <div class="sidebar-footer">
     <div class="admin-card">
       <div class="admin-avatar">A</div>
-      <div>
-        <div class="admin-name">Admin</div>
-        <div class="admin-role">Super Admin</div>
-      </div>
+      <div><div class="admin-name">Admin</div><div class="admin-role">Super Admin</div></div>
     </div>
   </div>
 </aside>
@@ -168,10 +144,9 @@ body{font-family:'Poppins',sans-serif;background:#f8faff;min-height:100vh;displa
   <div class="topbar">
     <div class="topbar-left">
       <h1>Admin Dashboard</h1>
-      <p>Xoş gəlmisiniz — Olympiad School idarəetmə paneli</p>
+      <p>Olympiad School — Həftəlik idarəetmə paneli</p>
     </div>
     <div class="topbar-right">
-      <div class="notif-btn">🔔<div class="notif-dot"></div></div>
       <div class="date-chip" id="todayDate"></div>
     </div>
   </div>
@@ -182,163 +157,203 @@ body{font-family:'Poppins',sans-serif;background:#f8faff;min-height:100vh;displa
         <div class="stat-icon">🎓</div>
         <div class="stat-label">Aktiv Şagirdlər</div>
         <div class="stat-value">428</div>
-        <div class="stat-trend">↑ 12 bu ay</div>
       </div>
       <div class="stat-card">
         <div class="stat-icon">👨‍🏫</div>
         <div class="stat-label">Müəllimlər</div>
         <div class="stat-value">24</div>
-        <div class="stat-trend">↑ 2 yeni</div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon">👥</div>
-        <div class="stat-label">Qruplar</div>
-        <div class="stat-value">36</div>
-        <div class="stat-trend">↑ 4 aktiv</div>
+        <div class="stat-icon">🚪</div>
+        <div class="stat-label">Otaqlar</div>
+        <div class="stat-value">11</div>
       </div>
       <div class="stat-card">
         <div class="stat-icon">📚</div>
-        <div class="stat-label">Sabahkı Dərslər</div>
-        <div class="stat-value">5</div>
-        <div class="stat-trend">09:00 — 16:30</div>
+        <div class="stat-label">Bu həftə dərslər</div>
+        <div class="stat-value">58</div>
       </div>
     </div>
 
-    <div class="grid-2">
-      <!-- TIMELINE -->
-      <div class="card">
-        <div class="card-head">
-          <div>
-            <div class="card-title">Sabahkı Dərs Cədvəli</div>
-            <div class="card-sub">5 dərs · 09:00 — 16:30</div>
-          </div>
-          <button class="view-all">Hamısına bax →</button>
-        </div>
-        <div class="timeline">
-          <div class="tl-item">
-            <div class="tl-time-col"><div class="tl-time">09:00</div><div class="tl-dur">1.5 saat</div></div>
-            <div class="tl-line-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
-            <div class="tl-body">
-              <div class="tl-card">
-                <div class="tl-slot">09:00 — 10:30</div>
-                <div class="tl-teachers">
-                  <div class="tl-chip"><div class="tl-chip-dot"></div>Lalə müəllimə</div>
-                  <div class="tl-chip"><div class="tl-chip-dot"></div>Tural müəllim</div>
-                  <div class="tl-chip"><div class="tl-chip-dot"></div>Aytac müəllimə</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="tl-item">
-            <div class="tl-time-col"><div class="tl-time">10:30</div><div class="tl-dur">1.5 saat</div></div>
-            <div class="tl-line-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
-            <div class="tl-body">
-              <div class="tl-card">
-                <div class="tl-slot">10:30 — 12:00</div>
-                <div class="tl-teachers">
-                  <div class="tl-chip"><div class="tl-chip-dot"></div>Lalə müəllimə</div>
-                  <div class="tl-chip"><div class="tl-chip-dot"></div>Tural müəllim</div>
-                  <div class="tl-chip"><div class="tl-chip-dot"></div>Aidə müəllimə</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="tl-item">
-            <div class="tl-time-col"><div class="tl-time">12:00</div><div class="tl-dur">1.5 saat</div></div>
-            <div class="tl-line-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
-            <div class="tl-body">
-              <div class="tl-card">
-                <div class="tl-slot">12:00 — 13:30</div>
-                <div class="tl-teachers">
-                  <div class="tl-chip"><div class="tl-chip-dot"></div>Aytac müəllimə</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="tl-item">
-            <div class="tl-time-col"><div class="tl-time">13:30</div><div class="tl-dur">1.5 saat</div></div>
-            <div class="tl-line-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
-            <div class="tl-body">
-              <div class="tl-card">
-                <div class="tl-slot">13:30 — 15:00</div>
-                <div class="tl-teachers">
-                  <div class="tl-chip"><div class="tl-chip-dot"></div>Turan müəllim</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="tl-item">
-            <div class="tl-time-col"><div class="tl-time">15:00</div><div class="tl-dur">1.5 saat</div></div>
-            <div class="tl-line-col"><div class="tl-dot"></div><div class="tl-line"></div></div>
-            <div class="tl-body">
-              <div class="tl-card">
-                <div class="tl-slot">15:00 — 16:30</div>
-                <div class="tl-teachers">
-                  <div class="tl-chip"><div class="tl-chip-dot"></div>Aidə müəllimə</div>
-                </div>
-              </div>
-            </div>
-          </div>
+    <!-- WEEKLY SCHEDULE -->
+    <div class="tabs-wrap">
+      <div class="tabs-head">
+        <div>
+          <div class="tabs-title">Həftəlik Dərs Cədvəli</div>
+          <div class="tabs-sub">11 otaq · Bazar ertəsi — Şənbə</div>
         </div>
       </div>
+      <div class="day-tabs">
+        <button class="day-tab active" onclick="showDay(0,this)">Bazar ertəsi</button>
+        <button class="day-tab" onclick="showDay(1,this)">Çərşənbə axşamı</button>
+        <button class="day-tab" onclick="showDay(2,this)">Çərşənbə</button>
+        <button class="day-tab" onclick="showDay(3,this)">Cümə axşamı</button>
+        <button class="day-tab" onclick="showDay(4,this)">Cümə</button>
+        <button class="day-tab" onclick="showDay(5,this)">Şənbə</button>
+      </div>
+      <div class="schedule-wrap">
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th>Saat</th>
+              <th>Otaq 1</th>
+              <th>Otaq 2</th>
+              <th>Otaq 3</th>
+              <th>Otaq 4</th>
+              <th>Otaq 5</th>
+              <th>Otaq 6</th>
+              <th>Otaq 7</th>
+              <th>Otaq 8</th>
+              <th>Otaq 9</th>
+              <th>Otaq 10</th>
+              <th>Otaq 11</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleBody"></tbody>
+        </table>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot"></div>Dərs var</div>
+        <div class="legend-item" style="color:#94a3b8"><div style="width:8px;height:8px;border-radius:50%;background:#e2e8f0;display:inline-block"></div>Boş otaq</div>
+      </div>
+    </div>
 
-      <!-- RIGHT -->
-      <div>
-        <div class="mini-card">
-          <div class="mini-head"><div class="mini-title">Müəllim Yükü</div></div>
-          <div class="teacher-list">
-            <div class="teacher-item">
-              <div class="t-avatar">L</div>
-              <div><div class="t-name">Lalə müəllimə</div><div class="t-lessons">2 dərs sabah</div></div>
-              <div class="t-badge">2 dərs</div>
-            </div>
-            <div class="teacher-item">
-              <div class="t-avatar">T</div>
-              <div><div class="t-name">Tural müəllim</div><div class="t-lessons">2 dərs sabah</div></div>
-              <div class="t-badge">2 dərs</div>
-            </div>
-            <div class="teacher-item">
-              <div class="t-avatar">Ay</div>
-              <div><div class="t-name">Aytac müəllimə</div><div class="t-lessons">2 dərs sabah</div></div>
-              <div class="t-badge">2 dərs</div>
-            </div>
-            <div class="teacher-item">
-              <div class="t-avatar">Tu</div>
-              <div><div class="t-name">Turan müəllim</div><div class="t-lessons">1 dərs sabah</div></div>
-              <div class="t-badge">1 dərs</div>
-            </div>
-            <div class="teacher-item">
-              <div class="t-avatar">Ai</div>
-              <div><div class="t-name">Aidə müəllimə</div><div class="t-lessons">2 dərs sabah</div></div>
-              <div class="t-badge">2 dərs</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="mini-card">
-          <div class="mini-head"><div class="mini-title">Ümumi Statistika</div></div>
-          <div class="quick-stats">
-            <div class="qs-item"><div class="qs-val">7.5</div><div class="qs-label">Saat (sabah)</div></div>
-            <div class="qs-item"><div class="qs-val">5</div><div class="qs-label">Dərs bloku</div></div>
-            <div class="qs-item"><div class="qs-val">5</div><div class="qs-label">Müəllim</div></div>
-            <div class="qs-item"><div class="qs-val">36</div><div class="qs-label">Qrup</div></div>
-          </div>
-        </div>
+    <div class="bottom-grid">
+      <div class="mini-card">
+        <div class="mini-head">Müəllim Yükü (Bu həftə)</div>
+        <div class="teacher-list" id="teacherList"></div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-head">Otaq Vəziyyəti (Bu gün)</div>
+        <div class="room-grid" id="roomGrid"></div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
+const teachers = [
+  {name:'Lalə müəllimə', init:'L', subject:'Riyaziyyat', lessons:12},
+  {name:'Tural müəllim', init:'Tu', subject:'Fizika', lessons:10},
+  {name:'Aytac müəllimə', init:'Ay', subject:'Kimya', lessons:9},
+  {name:'Aidə müəllimə', init:'Ai', subject:'Biologiya', lessons:11},
+  {name:'Turan müəllim', init:'Tr', subject:'Tarix', lessons:8},
+  {name:'Nigar müəllimə', init:'N', subject:'İngilis dili', lessons:10},
+  {name:'Sərdar müəllim', init:'S', subject:'Azərbaycan dili', lessons:9},
+  {name:'Kənan müəllim', init:'K', subject:'Coğrafiya', lessons:7},
+  {name:'Röya müəllimə', init:'R', subject:'Riyaziyyat', lessons:11},
+  {name:'Orxan müəllim', init:'O', subject:'İnformatika', lessons:8},
+];
+
+const slots = [
+  '09:00–10:30',
+  '10:30–12:00',
+  '12:00–13:30',
+  '13:30–15:00',
+  '15:00–16:30',
+];
+
+// Each day: array of 5 slots, each slot: array of 11 rooms (null or {teacher,subject})
+function rnd(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+const days = [];
+for(let d=0;d<6;d++){
+  const daySlots=[];
+  for(let s=0;s<5;s++){
+    const rooms=[];
+    const usedTeachers=new Set();
+    // 9-10 rooms busy
+    const busyCount = 9 + Math.floor(Math.random()*2);
+    const busyRooms = new Set();
+    while(busyRooms.size < busyCount) busyRooms.add(Math.floor(Math.random()*11));
+    for(let r=0;r<11;r++){
+      if(busyRooms.has(r)){
+        const avail = teachers.filter(t=>!usedTeachers.has(t.name));
+        if(avail.length>0){
+          const t=rnd(avail);
+          usedTeachers.add(t.name);
+          rooms.push({teacher:t.name, subject:t.subject});
+        } else {
+          rooms.push(null);
+        }
+      } else {
+        rooms.push(null);
+      }
+    }
+    daySlots.push(rooms);
+  }
+  days.push(daySlots);
+}
+
+function showDay(idx, tabEl){
+  document.querySelectorAll('.day-tab').forEach(t=>t.classList.remove('active'));
+  tabEl.classList.add('active');
+  renderSchedule(idx);
+  renderRooms(idx);
+}
+
+function renderSchedule(dayIdx){
+  const tbody = document.getElementById('scheduleBody');
+  const dayData = days[dayIdx];
+  tbody.innerHTML = dayData.map((slot,si)=>{
+    const cells = slot.map((room,ri)=>{
+      if(!room) return `<td><span class="empty-cell">—</span></td>`;
+      return `<td>
+        <div class="lesson-block">
+          <div class="lesson-teacher">${room.teacher}</div>
+          <div class="lesson-subject">${room.subject}</div>
+          <span class="lesson-room">Otaq ${ri+1}</span>
+        </div>
+      </td>`;
+    }).join('');
+    return `<tr><td class="time-cell">${slots[si]}</td>${cells}</tr>`;
+  }).join('');
+}
+
+function renderRooms(dayIdx){
+  const grid = document.getElementById('roomGrid');
+  // Count busy rooms across all slots for this day
+  const roomBusy = Array(11).fill(0);
+  days[dayIdx].forEach(slot=>{
+    slot.forEach((r,i)=>{ if(r) roomBusy[i]++; });
+  });
+  grid.innerHTML = roomBusy.map((count,i)=>{
+    const busy = count > 0;
+    return `<div class="room-item ${busy?'busy':'free'}">
+      <div class="room-num">${i+1}</div>
+      <div class="room-status">${busy? count+' dərs':'Boş'}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTeachers(){
+  const list = document.getElementById('teacherList');
+  list.innerHTML = teachers.map(t=>`
+    <div class="teacher-item">
+      <div class="t-avatar">${t.init}</div>
+      <div>
+        <div class="t-name">${t.name}</div>
+        <div class="t-info">${t.subject}</div>
+      </div>
+      <div class="t-badge">${t.lessons} dərs</div>
+    </div>
+  `).join('');
+}
+
+const d=new Date();
+const months=['Yanvar','Fevral','Mart','Aprel','May','İyun','İyul','Avqust','Sentyabr','Oktyabr','Noyabr','Dekabr'];
+document.getElementById('todayDate').textContent=d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear();
+
 document.querySelectorAll('.nav-item').forEach(btn=>{
   btn.addEventListener('click',function(){
     document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
     this.classList.add('active');
   });
 });
-const d=new Date();
-const months=['Yanvar','Fevral','Mart','Aprel','May','İyun','İyul','Avqust','Sentyabr','Oktyabr','Noyabr','Dekabr'];
-document.getElementById('todayDate').textContent=d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear();
+
+renderSchedule(0);
+renderRooms(0);
+renderTeachers();
 </script>
 </body>
 </html>
