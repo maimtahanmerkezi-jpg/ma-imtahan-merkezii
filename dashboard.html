@@ -35,8 +35,7 @@ body{font-family:'Poppins',sans-serif;background:#f0f5ff;min-height:100vh;displa
 .table-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:24px}
 .table-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
 .table-header h2{font-size:18px;font-weight:600;color:#1e293b}
-.add-btn{background:#b91c1c;color:#fff;border:none;padding:10px 18px;border-radius:10px;font-size:13px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:600;transition:background 0.2s}
-.add-btn:hover{background:#991b1b}
+.date-badge{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:6px 14px;font-size:13px;color:#b91c1c;font-weight:600}
 table{width:100%;border-collapse:collapse;font-size:14px}
 thead th{text-align:left;color:#94a3b8;padding:0 0 12px;font-weight:500;border-bottom:1px solid #f1f5f9}
 tbody tr{border-bottom:1px solid #f8fafc;transition:background 0.1s}
@@ -44,8 +43,10 @@ tbody tr:last-child{border-bottom:none}
 tbody td{padding:14px 0;color:#334155}
 tbody td:first-child{font-weight:600;color:#1e293b}
 tbody tr:hover{background:#fef2f2}
+.teacher-chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:#fef2f2;border:1px solid #fecaca;border-radius:20px;padding:3px 10px;font-size:12px;color:#b91c1c;font-weight:500}
 @media(max-width:768px){
-  .sidebar{width:100%;min-height:auto;position:relative;flex-direction:row;flex-wrap:wrap;padding:16px}
+  .sidebar{width:100%;min-height:auto;position:relative;padding:16px}
   .main{margin-left:0;padding:16px}
   .stats{grid-template-columns:repeat(2,1fr)}
   .header{flex-direction:column;gap:12px}
@@ -89,42 +90,66 @@ tbody tr:hover{background:#fef2f2}
     </div>
     <div class="stat-card">
       <div class="stat-label">Bugünkü Dərslər</div>
-      <div class="stat-value">52</div>
+      <div class="stat-value">5</div>
     </div>
   </div>
 
   <div class="table-card">
     <div class="table-header">
-      <h2>Bugünkü Dərslər</h2>
-      <button class="add-btn">+ Yeni Dərs Əlavə Et</button>
+      <h2>Sabahkı Dərs Cədvəli</h2>
+      <div class="date-badge">Sabah</div>
     </div>
     <table>
       <thead>
         <tr>
-          <th>Saat</th>
-          <th>Fənn</th>
-          <th>Müəllim</th>
-          <th>Otaq</th>
+          <th style="width:160px">Saat</th>
+          <th>Müəllimlər</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>10:00</td>
-          <td>Riyaziyyat</td>
-          <td>Sərdar müəllim</td>
-          <td>101</td>
+          <td>09:00 — 10:30</td>
+          <td>
+            <div class="teacher-chips">
+              <span class="chip">Lalə müəllimə</span>
+              <span class="chip">Tural müəllim</span>
+              <span class="chip">Aytac müəllimə</span>
+            </div>
+          </td>
         </tr>
         <tr>
-          <td>11:00</td>
-          <td>İngilis dili</td>
-          <td>Aysel müəllimə</td>
-          <td>202</td>
+          <td>10:30 — 12:00</td>
+          <td>
+            <div class="teacher-chips">
+              <span class="chip">Lalə müəllimə</span>
+              <span class="chip">Tural müəllim</span>
+              <span class="chip">Aidə müəllimə</span>
+            </div>
+          </td>
         </tr>
         <tr>
-          <td>12:00</td>
-          <td>Azərbaycan dili</td>
-          <td>Nigar müəllimə</td>
-          <td>305</td>
+          <td>12:00 — 13:30</td>
+          <td>
+            <div class="teacher-chips">
+              <span class="chip">Aytac müəllimə</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>13:30 — 15:00</td>
+          <td>
+            <div class="teacher-chips">
+              <span class="chip">Turan müəllim</span>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>15:00 — 16:30</td>
+          <td>
+            <div class="teacher-chips">
+              <span class="chip">Aidə müəllimə</span>
+            </div>
+          </td>
         </tr>
       </tbody>
     </table>
